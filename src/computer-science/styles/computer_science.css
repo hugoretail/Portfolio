@@ -1,0 +1,144 @@
+body {
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 50px;
+    box-sizing: border-box;
+}
+
+
+.top-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #f4f4f4;
+    border-bottom: 1px solid #ccc;
+    padding: 10px 0;
+    text-align: center;
+    z-index: 1000;
+}
+
+.top-bar nav ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.top-bar nav ul li {
+    display: inline;
+}
+
+.top-bar nav ul li a {
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+    padding: 5px 10px;
+}
+
+.top-bar nav ul li a:hover {
+    background-color: #ddd;
+}
+
+div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    max-width: 50%;
+}
+
+main, section, footer {
+    width: 100%;
+}
+
+p {
+    text-align:left;
+}
+
+#skills {
+    width: 100%;
+    text-align: left;
+    margin: 20px 0;
+}
+
+#skills h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+}
+
+#skills ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#skills ul > li {
+    margin-bottom: 20px;
+    font-weight: bold;
+    color: #555;
+}
+
+#skills ul > li ul {
+    list-style-type: disc;
+    padding-left: 20px;
+    margin-top: 10px;
+}
+
+#skills ul > li ul > li {
+    font-weight: normal;
+    color: #333;
+}
+
+#projects {
+    width: 100%;
+    text-align: left;
+    margin: 20px 0;
+}
+
+#projects h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+}
+
+#projects .project h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #555;
+    font-weight: bold;
+}
+
+.project {
+    margin-bottom: 20px;
+    text-align: left;
+    max-width: none; /* Remove any width restrictions */
+}
+
+.project img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.project p {
+    font-size: 14px;
+    color: #333;
+    line-height: 1.5;
+}
+
+
+footer {
+    margin-top: 20px;
+}
+
