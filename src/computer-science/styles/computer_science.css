@@ -104,6 +104,18 @@ p {
     margin: 20px 0;
 }
 
+#projects img {
+    border: 1px solid black;
+    border-radius: 25px;
+    transition: transform 0.3s ease, cursor 0.3s ease;
+}
+
+#projects img:hover {
+    cursor: pointer;
+    transform: scale(1.10);
+}
+
+
 #projects p {
     padding-bottom: 50px;
     border-bottom: 1px solid black;
