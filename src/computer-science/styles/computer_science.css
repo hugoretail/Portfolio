@@ -105,6 +105,8 @@ p {
 }
 
 #projects img {
+    width: 50%;
+    height:auto;
     border: 1px solid black;
     border-radius: 25px;
     transition: transform 0.3s ease, cursor 0.3s ease;
