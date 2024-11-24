@@ -34,17 +34,12 @@ jobs:
         
       - name: Setup Pages
         uses: actions/configure-pages@v5
-
-      - name: Copy files to build directory
-        run: |
-          mkdir -p build
-          cp -r src/* build/
         
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           # Upload entire repository
-          path: 'build'
+          path: '.'
           
       - name: Deploy to GitHub Pages
         id: deployment
