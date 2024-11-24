@@ -132,35 +132,48 @@
         
         <section id="projects">
             <h2>Projects</h2>
-            <div class="project">
+            <div id="filters-container">
+                <button id="toggle-filters" class="toggle-filters-btn">Show Filters</button>
+            </div>
+            <div id="filter-container" class="filters" style="display: none;">
+                <label><input type="checkbox" class="filter-checkbox" value="AI"> AI</label>
+                <label><input type="checkbox" class="filter-checkbox" value="Web"> Web</label>
+                <label><input type="checkbox" class="filter-checkbox" value="Networks"> Networks</label>
+                <label><input type="checkbox" class="filter-checkbox" value="Games"> Games</label>
+                <label><input type="checkbox" class="filter-checkbox" value="Data"> Data Science</label>
+                <label><input type="checkbox" class="filter-checkbox" value="Security"> Security</label>
+                <label><input type="checkbox" class="filter-checkbox" value="DevOps"> DevOps</label>
+                <label><input type="checkbox" class="filter-checkbox" value="Cloud"> Cloud</label>
+            </div>
+            <div class="project" data-tags="Web">
                 <h3>Japanese Conjugator</h3>
                 <img src="../../assets/img/en/retex_japanese_conjugator_en.webp" alt="Japanese Conjugator RETEX" data-modal="true">
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.</p>
+                <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Accusamus reiciendis doloremque explicabo corporis repellat numquam at expedita quo itaque suscipit, voluptatum deleniti beatae eaque ut quod dolorem praesentium illum repellendus.</p>
             </div>
-            <div class="project">
+            <div class="project" data-tags="Games">
                 <h3>Labyrinth Update</h3>
                 <img src="../../assets/img/en/retex_labyrinth_update_en.webp" alt="Labyrinth Update RETEX" data-modal="true">
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.</p>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. At in repudiandae libero sint eveniet a, consectetur, iste error distinctio unde, minima consequuntur. Eius aliquid quisquam blanditiis, nesciunt facere asperiores maxime?</p>
             </div>
-            <div class="project">
+            <div class="project" data-tags="Data Science DevOps">
                 <h3>Anhydralgo</h3>
                 <img src="../../assets/img/en/retex_anhydralgo_en.webp" alt="Project RETEX" data-modal="true">
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.</p>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut explicabo consequuntur commodi. Possimus, animi quos ea repudiandae vero laborum laudantium facilis voluptatum, maiores consequuntur officiis impedit dolorum itaque voluptate quaerat.</p>
             </div>
-            <div class="project">
+            <div class="project" data-tags="Networks Cloud">
                 <h3>Network Installation Tutorial</h3>
                 <img src="../../assets/img/en/retex_network_installation_tutorial_en.webp" alt="Network Installation Tutorial RETEX" data-modal="true">
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.</p>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime, obcaecati. Magni inventore necessitatibus fuga optio, voluptates amet aspernatur possimus esse facere laboriosam, rerum a quaerat vel. Ratione laboriosam eos corporis?</p>
             </div>
-            <div class="project">
+            <div class="project" data-tags="Web">
                 <h3>Graffiting The Streets</h3>
                 <img src="../../assets/img/en/retex_graffiting_the_streets_en.webp" alt="Graffiting The Streets RETEX" data-modal="true">
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.</p>
+                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sit sed est consequatur aspernatur sint dignissimos iste illum incidunt molestias animi repellat eum enim assumenda expedita, pariatur ratione officia, asperiores doloremque!</p>
             </div>
-            <div class="project">
-                <h3>Towa IA</h3>
+            <div class="project" data-tags="Games AI">
+                <h3>Towa AI</h3>
                 <img src="../../assets/img/en/retex_towa_ai_en.webp" alt="Towa AI RETEX" data-modal="true">
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.</p>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugit tempora culpa possimus, perspiciatis, cum nostrum expedita nam magnam fugiat similique ipsum recusandae velit praesentium debitis quas doloremque saepe minus corrupti?</p>
             </div>
         </section>
 
@@ -175,5 +188,6 @@
     </div>
 
     <script src="scripts/display_modal.js"></script>
+    <script src="scripts/project_filter.js"></script>
 </body>
 </html>
