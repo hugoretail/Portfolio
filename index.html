@@ -123,8 +123,8 @@
     </footer>
 
     <script>
-        function loadTranslations(selectedLanguage) {
-            fetch(`./assets/translation/${selectedLanguage}/index.json`)
+        const loadTranslations = (selectedLanguage) => {
+            fetch(`./assets/translation/${selectedLanguage}/${selectedLanguage}-index.json`)
                 .then(response => {
                     if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
                     return response.json();
@@ -140,7 +140,7 @@
                     console.error("Error loading translations:", err);
                     loadTranslations("en");
                 });
-        }
+        };
 
         const userLanguage = navigator.language.split('-')[0];
 
@@ -154,6 +154,7 @@
         document.getElementById("language-select").addEventListener("change", () => {
             const selectedLanguage = document.getElementById("language-select").value;
             document.documentElement.lang = selectedLanguage;
+            sessionStorage.setItem("selectedLanguage", selectedLanguage);
             loadTranslations(selectedLanguage);
         });
     </script>
