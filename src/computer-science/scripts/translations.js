@@ -103,11 +103,18 @@ const loadTranslations = (selectedLanguage = 'en') => {
             { filterKey: "filter-devops", translationKey: "filter-devops" },
             { filterKey: "filter-cloud", translationKey: "filter-cloud" }
         ];
+        
         filterLabels.forEach(({ filterKey, translationKey }) => {
             const checkbox = document.getElementById(filterKey);
             if (checkbox) {
                 const label = checkbox.closest('label');
-                if (label) label.textContent = translations[translationKey] || label.textContent;
+                if (label) {
+                    // Preserve the checkbox and only update the text
+                    const textNode = document.createTextNode(translations[translationKey] || label.textContent);
+                    label.innerHTML = '';
+                    label.appendChild(checkbox);
+                    label.appendChild(textNode);
+                }
             }
         });
 

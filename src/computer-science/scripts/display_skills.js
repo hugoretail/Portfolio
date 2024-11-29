@@ -1,15 +1,16 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const toggles = document.querySelectorAll('.toggle-skill');
+    const headers = document.querySelectorAll('.skill-header');
 
-    toggles.forEach(toggle => {
-        toggle.addEventListener('click', (event) => {
-            const details = event.target.nextElementSibling;
+    headers.forEach(header => {
+        header.addEventListener('click', (event) => {
+            const details = header.closest('li').querySelector('.skill-details');
+            const toggleButton = header.querySelector('.toggle-skill');
             if (details.classList.contains('hidden')) {
                 details.classList.remove('hidden');
-                event.target.textContent = '▲'; 
+                toggleButton.textContent = '▲';
             } else {
                 details.classList.add('hidden');
-                event.target.textContent = '▼';
+                toggleButton.textContent = '▼';
             }
         });
     });
