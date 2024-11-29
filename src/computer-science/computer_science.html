@@ -3,215 +3,205 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Computer Science Portfolio - Hugo Retail</title>
+    <title id="page-title">Computer Science Portfolio - Hugo Retail</title>
+    <link rel="icen" href="data:,"> <!-- TODO -->
     <link rel="stylesheet" href="styles/computer_science.css">
 </head>
 <body>
     <header class="top-bar">
         <nav>
             <ul>
-                <li><a href="../../index.html">← Menu</a></li>
-                <li><a href="#about-me">About Me</a></li>
-                <li><a href="#skills">Skills</a></li>
-                <li><a href="#projects">Projects</a></li>
-                <li><a href="#contact">Contact</a></li>
+                <li><a id="menu-index" href="../../index.html">← Index</a></li>
+                <li><a id="menu-about" href="#about-me">About Me</a></li>
+                <li><a id="menu-skills" href="#skills">Skills</a></li>
+                <li><a id="menu-projects" href="#projects">Projects</a></li>
+                <li><a id="menu-contact" href="#contact">Contact</a></li>
             </ul>
         </nav>
     </header>
 
     <div class="content-wrapper">
         <main>
-            <h1>Aspiring developer in human languages and AI at the service of users</h1> 
-            <img src="../../assets/img/#" alt="Computer Science Profile Picture">
+            <h1 id="main-heading">Aspiring developer in human languages and AI at the service of users</h1> 
+            <img id="profile-image" src="../../assets/img/#" alt="Computer Science Profile Picture">
         </main>
         
         <section>
             <h2 id="about-me">Who am I</h2>
-            <p>
+            <p id="about-me-description">
                 My name is Hugo, and I am an aspiring AI developer currently refining my skills at Bordeaux University's IUT. Passionate about combining artificial intelligence with human languages, I am actively building a strong foundation in computer science, constantly learning and applying new technologies to shape my future career as an AI professional.
             </p>
         </section>        
 
         <section id="skills">
-            <h2>Skills</h2>
-            <ul>
-                <!-- <li><strong>Data analysis</strong> -->
-                    <!-- <ul> -->
-                        <!-- <li>Neural network fundamentals: TODO</li> -->
-                        <!-- <li>Deep-learning: TODO</li> -->
-                        <!-- <li>Visualization (Python, Jupyter): TODO</li> -->
-                    <!-- </ul> -->
-                <!-- </li> -->
-                <li><strong>Database</strong>
-                    <ul>
-                        <li>Relational: design relational databases by creating MCD, MLD, and MPD, and writing optimised SQL queries.</li>
-                        <li>Object: work with object-oriented databases, mapping objects to schemas and handling complex data structures.</li>
-                        <li>SGBD: SQL Server, MySQL, Oracle</li>
+            <h2 id="skills-heading">Skills</h2>
+            <ul id="skills-list">
+                <li id="skill-database"><strong>Database</strong>
+                    <ul id="database-skills">
+                        <li id="database-relational">Relational: design relational databases by creating MCD, MLD, and MPD, and writing optimised SQL queries.</li>
+                        <li id="database-object">Object: work with object-oriented databases, mapping objects to schemas and handling complex data structures.</li>
+                        <li id="database-sgbd">SGBD: SQL Server, MySQL, Oracle</li>
                     </ul>
                 </li>
-                <li><strong>Project management</strong>
-                    <ul>
-                        <li>Clean code: write concise, well-documented code and apply validation techniques.</li>
-                        <li>V-project management: follow V-model steps to ensure structured development and efficient testing.</li>
-                        <li>Agile methods (SCRUM): collaborate effectively in iterative sprints to deliver value progressively.</li>
-                        <li>Software engineering tools (AGL): Win'design</li>
+                <li id="skill-project-management"><strong>Project management</strong>
+                    <ul id="project-management-skills">
+                        <li id="project-management-clean-code">Clean code: write concise, well-documented code and apply validation techniques.</li>
+                        <li id="project-management-v-model">V-project management: follow V-model steps to ensure structured development and efficient testing.</li>
+                        <li id="project-management-agile">Agile methods (SCRUM): collaborate effectively in iterative sprints to deliver value progressively.</li>
+                        <li id="project-management-tools">Software engineering tools (AGL): Win'design</li>
                     </ul>
                 </li>
-                <li><strong>Software deployment tools</strong>
-                    <ul>
-                        <li>Github Actions: prepare workflows for efficient deployment automation and integration.</li>
-                        <li>Gitlab: manage repositories with clear versioning, detailed README files, and collaborative branching strategies.</li>
+                <li id="skill-deployment-tools"><strong>Software deployment tools</strong>
+                    <ul id="deployment-skills">
+                        <li id="deployment-github-actions">Github Actions: prepare workflows for efficient deployment automation and integration.</li>
+                        <li id="deployment-gitlab">Gitlab: manage repositories with clear versioning, detailed README files, and collaborative branching strategies.</li>
                     </ul>
                 </li>
-                <li><strong>Frameworks</strong>
-                    <ul>
-                        <li>Bootstrap: create responsive websites quickly and efficiently.</li>
-                        <!-- <li>React: TODO</li> -->
-                        <li>Symfony: use for structured development and secure database interactions.</li>
-                        <!-- <li>VueJS: TODO</li> -->
+                <li id="skill-frameworks"><strong>Frameworks</strong>
+                    <ul id="framework-skills">
+                        <li id="framework-bootstrap">Bootstrap: create responsive websites quickly and efficiently.</li>
+                        <li id="framework-symfony">Symfony: use for structured development and secure database interactions.</li>
                     </ul>
                 </li>
-                <li><strong>Continuous integration / CICD</strong>
-                    <ul>
-                        <li>Formal methods: apply formal verification techniques to ensure software consistency.</li>
-                        <li>Software quality: use best practices to maintain high code quality through continuous integration and regular reviews.</li>
-                        <li>Testing: fundamentals and automation.</li>
+                <li id="skill-ci-cd"><strong>Continuous integration / CICD</strong>
+                    <ul id="ci-cd-skills">
+                        <li id="ci-cd-formal-methods">Formal methods: apply formal verification techniques to ensure software consistency.</li>
+                        <li id="ci-cd-quality">Software quality: use best practices to maintain high code quality through continuous integration and regular reviews.</li>
+                        <li id="ci-cd-testing">Testing: fundamentals and automation.</li>
                     </ul>
                 </li>
-                <li><strong>Modeling languages and methods</strong>
-                    <ul>
-                        <li>Entity association diagram: design clear entity relationships to visualize and validate project structure before development.</li>
-                        <li>UML: model complex systems to represent class inheritance, abstraction, polymorphism, and user interaction scenarios (scnenarii).</li>
+                <li id="skill-modeling"><strong>Modeling languages and methods</strong>
+                    <ul id="modeling-skills">
+                        <li id="modeling-entity-diagram">Entity association diagram: design clear entity relationships to visualize and validate project structure before development.</li>
+                        <li id="modeling-uml">UML: model complex systems to represent class inheritance, abstraction, polymorphism, and user interaction scenarios (scnenarii).</li>
                     </ul>
                 </li>
-                <li><strong>Programming languages</strong>
-                    <ul>
-                        <li>System: C, C#</li>
-                        <li>Object-oriented: C#, Java</li>
-                        <li>Web development: HTML/CSS, Java, PHP, JavaScript</li>
-                        <li>Scripting/Automation: Bash, PHP</li>
+                <li id="skill-programming-languages"><strong>Programming languages</strong>
+                    <ul id="programming-language-skills">
+                        <li id="programming-system">System: C, C#</li>
+                        <li id="programming-object-oriented">Object-oriented: C#, Java</li>
+                        <li id="programming-web-dev">Web development: HTML/CSS, Java, PHP, JavaScript</li>
+                        <li id="programming-scripting">Scripting/Automation: Bash, PHP</li>
                     </ul>
                 </li>
-                <li><strong>Development tools</strong>
-                    <ul>
+                <li id="skill-development-tools"><strong>Development tools</strong>
+                    <ul id="development-tool-skills">
                         <li>Visual Studio Code</li>
                         <li>ECLIPSE and Visual Studio</li>
                         <li>Netbeans</li>
                         <li>JetBrains Suite: CLion, PyCharm, PhpStorm</li>
                     </ul>
                 </li>
-                <li><strong>Object-oriented programming</strong>
-                    <ul>
-                        <li>Programming and design paradigms: apply key OOP principles (inheritance, encapsulation, polymorphism, abstraction) to design efficient, reusable code.</li>
-                        <!-- <li>Layered architecture: TODO</li> -->
-                        <li>MVC architecture: use Model-View-Controller pattern to separate data, user interface, and control logic for better project organization.</li>
-                        <li>Design patterns: implement common design patterns (like Singleton, Factory, Observer) to solve recurring design problems.</li>
+                <li id="skill-oop"><strong>Object-oriented programming</strong>
+                    <ul id="oop-skills">
+                        <li id="oop-principles">Programming and design paradigms: apply key OOP principles (inheritance, encapsulation, polymorphism, abstraction) to design efficient, reusable code.</li>
+                        <li id="oop-mvc">MVC architecture: use Model-View-Controller pattern to separate data, user interface, and control logic for better project organization.</li>
+                        <li id="oop-design-patterns">Design patterns: implement common design patterns (like Singleton, Factory, Observer) to solve recurring design problems.</li>
                     </ul>
                 </li>
-                <li><strong>Networks</strong>
-                    <ul>
-                        <li>Definition and use of protocols: configure and manage DNS, DHCP protocols.</li>
-                        <li>HTTP/HTTPS: understand and implement HTTP and HTTPS requests and responses.</li>
-                        <li>Routing: TCP/IP</li>
-                        <li>OSI Model: apply to analyze and design network communcation layers.</li>
+                <li id="skill-networks"><strong>Networks</strong>
+                    <ul id="network-skills">
+                        <li id="network-protocols">Definition and use of protocols: configure and manage DNS, DHCP protocols.</li>
+                        <li id="network-http">HTTP/HTTPS: understand and implement HTTP and HTTPS requests and responses.</li>
+                        <li id="network-routing">Routing: TCP/IP</li>
+                        <li id="network-osi">OSI Model: apply to analyze and design network communcation layers.</li>
                     </ul>
                 </li>
-                <li><strong>Operating systems</strong>
-                    <ul>
+                <li id="skill-operating-systems"><strong>Operating systems</strong>
+                    <ul id="os-skills">
                         <li>UNIX (Linux): Ubuntu, Mint</li>
                         <li>Windows: 7, 8.1, 10, 11</li>
                     </ul>
                 </li>
-                <li><strong>Tests/Test methods</strong>
-                    <ul>
-                        <li>JUnit: write and run unit tests for Java applications.</li>
-                        <li>Test set design methodology: develop clear and structured test scenarios.</li>
-                        <li>Static analysis and proofs: verify program correctness using format methods.</li>
+                <li id="skill-testing"><strong>Tests/Test methods</strong>
+                    <ul id="testing-skills">
+                        <li id="testing-junit">JUnit: write and run unit tests for Java applications.</li>
+                        <li id="testing-methodology">Test set design methodology: develop clear and structured test scenarios.</li>
+                        <li id="testing-static-analysis">Static analysis and proofs: verify program correctness using format methods.</li>
                     </ul>
                 </li>
             </ul>
         </section>
         
         <section id="projects">
-            <h2>Projects</h2>
+            <h2 id="projects-heading">Projects</h2>
             <div id="filters-container">
                 <button id="toggle-filters" class="toggle-filters-btn">Show Filters</button>
             </div>
             <div id="filter-container" class="filters" style="display: none;">
-                <label><input type="checkbox" class="filter-checkbox" value="AI"> AI</label>
-                <label><input type="checkbox" class="filter-checkbox" value="Web"> Web</label>
-                <label><input type="checkbox" class="filter-checkbox" value="Networks"> Networks</label>
-                <label><input type="checkbox" class="filter-checkbox" value="Games"> Games</label>
-                <label><input type="checkbox" class="filter-checkbox" value="Data"> Data Science</label>
-                <!-- <label><input type="checkbox" class="filter-checkbox" value="Security"> Security</label> -->
-                <label><input type="checkbox" class="filter-checkbox" value="DevOps"> DevOps</label>
-                <label><input type="checkbox" class="filter-checkbox" value="Cloud"> Cloud</label>
+                <label><input type="checkbox" class="filter-checkbox" value="AI" id="filter-ai"> AI</label>
+                <label><input type="checkbox" class="filter-checkbox" value="Web" id="filter-web"> Web</label>
+                <label><input type="checkbox" class="filter-checkbox" value="Networks" id="filter-networks"> Networks</label>
+                <label><input type="checkbox" class="filter-checkbox" value="Games" id="filter-games"> Games</label>
+                <label><input type="checkbox" class="filter-checkbox" value="Data" id="filter-data"> Data Science</label>
+                <label><input type="checkbox" class="filter-checkbox" value="DevOps" id="filter-devops"> DevOps</label>
+                <label><input type="checkbox" class="filter-checkbox" value="Cloud" id="filter-cloud"> Cloud</label>
             </div>
-            <div class="project" data-tags="Web">
-                <h3>Japanese Conjugator</h3>
-                <img src="../../assets/img/en/retex_japanese_conjugator_en.webp" alt="Japanese Conjugator RETEX" data-modal="true">
-                <p>
+            <div class="project" data-tags="Web" id="project-japanese-conjugator">
+                <h3 id="project-japanese-conjugator-title">Japanese Conjugator</h3>
+                <img id="project-japanese-conjugator-image" src="../../assets/img/en/retex_japanese_conjugator_en.webp" alt="Japanese Conjugator RETEX" data-modal="true">
+                <p id="project-japanese-conjugator-description">
                     This was my first project, combining two passions: Japanese and JavaScript programming. I created the <strong>Japanese Conjugator Website</strong> to help others and myself in my japanese conjugation studies. This experience helped me explore open-source GitHub projects, get familiar with their documentation, and integrate external libraries into my work.
                 </p>
-                <ul>
+                <ul id="project-japanese-conjugator-links">
                     <li><a href="https://github.com/hugoretail/Japanese-Conjugator" target="_blank" rel="noopener noreferrer">GitHub Repository &#8599;</a></li>
                     <li><a href="https://hugoretail.github.io/Japanese-Conjugator/" target="_blank" rel="noopener noreferrer">Live Website &#8599;</a></li>
                 </ul>
             </div>
-            <div class="project" data-tags="Games">
-                <h3>Labyrinth Update</h3>
-                <img src="../../assets/img/en/retex_labyrinth_update_en.webp" alt="Labyrinth Update RETEX" data-modal="true">
-                <p>
+            <div class="project" data-tags="Games" id="project-labyrinth-update">
+                <h3 id="project-labyrinth-update-title">Labyrinth Update</h3>
+                <img id="project-labyrinth-update-image" src="../../assets/img/en/retex_labyrinth_update_en.webp" alt="Labyrinth Update RETEX" data-modal="true">
+                <p id="project-labyrinth-update-description">
                     Using the JavaFX library (i.e. in Java), I implemented the game, its rules and graphics. The principle is simple: it's a classic labyrinth game in which the aim is to reach the exit while avoiding the enemies lurking between the floors. My main objective in this project was to learn how to differentiate between the concrete part of the code, and its graphic part (sprites).    
                 </p>
             </div>
-            <div class="project" data-tags="Data Science DevOps">
-                <h3>Anhydralgo</h3>
-                <img src="../../assets/img/en/retex_anhydralgo_en.webp" alt="Project RETEX" data-modal="true">
-                <p>
+            <div class="project" data-tags="Data Science DevOps" id="project-anhydralgo">
+                <h3 id="project-anhydralgo-title">Anhydralgo</h3>
+                <img id="project-anhydralgo-image" src="../../assets/img/en/retex_anhydralgo_en.webp" alt="Project RETEX" data-modal="true">
+                <p id="project-anhydralgo-description">
                     My very first team project under real conditions, both in terms of deliverables and meeting deadlines. I have been the coordinator to ensure agreement and synchronization of the progress of tasks, while ensuring the implementation of automated statistical graphics generation.
                 </p>
-                <ul>
+                <ul id="project-anhydralgo-links">
                     <li><a href="https://github.com/khalidOuhmid/anhydralgo" target="_blank" rel="noopener noreferrer">GitHub Repository &#8599;</a></li>
                 </ul>
             </div>
-            <div class="project" data-tags="Networks Cloud">
-                <h3>Network Installation Tutorial</h3>
-                <img src="../../assets/img/en/retex_network_installation_tutorial_en.webp" alt="Network Installation Tutorial RETEX" data-modal="true">
-                <p>
+            <div class="project" data-tags="Networks Cloud" id="project-network-installation">
+                <h3 id="project-network-installation-title">Network Installation Tutorial</h3>
+                <img id="project-network-installation-image" src="../../assets/img/en/retex_network_installation_tutorial_en.webp" alt="Network Installation Tutorial RETEX" data-modal="true">
+                <p id="project-network-installation-description">
                     This project was divided into two parts: first, to install a network and then write a tutorial on how to use it. For the installation, I chose with my binôme to deploy its use through the office suite NextCloud offering a wide variety of tools to the user. I have done some of the configuration of these tools. For the writing of the tutorial, this one describes how to reproduce the steps of the installation we have conducted. I mainly wrote the English version of the tutorial.
                 </p>
             </div>
-            <div class="project" data-tags="Web">
-                <h3>Graffiting The Streets</h3>
-                <img src="../../assets/img/en/retex_graffiting_the_streets_en.webp" alt="Graffiting The Streets RETEX" data-modal="true">
-                <p>
+            <div class="project" data-tags="Web" id="project-graffiting-streets">
+                <h3 id="project-graffiting-streets-title">Graffiting The Streets</h3>
+                <img id="project-graffiting-streets-image" src="../../assets/img/en/retex_graffiting_the_streets_en.webp" alt="Graffiting The Streets RETEX" data-modal="true">
+                <p id="project-graffiting-streets-description">
                     This project consists of creating the front side of a website by applying an appropriate interface. I have created personas (main, secondary and anti-personas) in order to effectively target the type of visitors that my site should accommodate. I also adapted this site to the respect of Responsive Design development.  
                 </p>
             </div>
-            <div class="project" data-tags="Games AI">
-                <h3>Towa AI</h3>
-                <img src="../../assets/img/en/retex_towa_ai_en.webp" alt="Towa AI RETEX" data-modal="true">
-                <p>
+            <div class="project" data-tags="Games AI" id="project-towa-ai">
+                <h3 id="project-towa-ai-title">Towa AI</h3>
+                <img id="project-towa-ai-image" src="../../assets/img/en/retex_towa_ai_en.webp" alt="Towa AI RETEX" data-modal="true">
+                <p id="project-towa-ai-description">
                     My very first experience of applying an AI in a hands-on immersive simulation is in this project. In a competitive context, I developed a min-max AI adapted to the trend of play and strategies of other players' AI.
                 </p>
             </div>
         </section>
 
         <section id="contact">
-            <h2>Contact</h2>
-            <p>Feel free to reach out to me via the following channels:</p>
-            <ul>
-                <li><strong>Email:</strong> <a href="mailto:hugo.retail@hotmail.com">hugo.retail@hotmail.com</a></li>
-                <li><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/hugo-retail-4036062a0/" target="_blank" rel="noopener noreferrer">Hugo Retail &#8599;</a></li>
-                <li><strong>GitHub:</strong> <a href="https://github.com/hugoretail" target="_blank" rel="noopener noreferrer">GitHub Repository &#8599;</a></li>
-                <li><strong>Phone:</strong> <span><a href="tel:+33766820526">+33 7 66 82 05 26</a></span></li>
+            <h2 id="contact-heading">Contact</h2>
+            <p id="contact-intro">Feel free to reach out to me via the following channels:</p>
+            <ul id="contact-list">
+                <li id="contact-email"><strong>Email:</strong> <a href="mailto:hugo.retail@hotmail.com">hugo.retail@hotmail.com</a></li>
+                <li id="contact-linkedin"><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/hugo-retail-4036062a0/" target="_blank" rel="noopener noreferrer">Hugo Retail &#8599;</a></li>
+                <li id="contact-github"><strong>GitHub:</strong> <a href="https://github.com/hugoretail" target="_blank" rel="noopener noreferrer">GitHub Repository &#8599;</a></li>
+                <li id="contact-phone"><strong>Phone:</strong> <span><a href="tel:+33766820526">+33 7 66 82 05 26</a></span></li>
             </ul>
-            <p>Looking forward to connecting with you!</p>
+            <p id="contact-outro">Looking forward to connecting with you!</p>
         </section>        
         
         <footer>
-            <p>&copy; 2024 Your Name</p>
+            <p id="footer-copyright">&copy; 2024 Retail Hugo
         </footer>
     </div>
 
