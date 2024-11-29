@@ -15,6 +15,31 @@
             font-family: Verdana, Geneva, Tahoma, sans-serif;
         }
 
+        #languages {
+            position:fixed;
+            top:5%;
+            right:5%;
+            z-index:100;
+        }
+
+        #languages select {
+            background-color: rgb(230, 228, 228);
+            color: black;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 10px;
+            font-size: 14px;
+            cursor: pointer;
+            width: 120px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0);
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        #languages select:hover {
+            background-color: lightgray;
+        }
+
         main {
             display: flex;
             flex-direction: column; 
@@ -73,9 +98,12 @@
 </head>
 <body>
 
-    <div>
-        <button data-lang="en">English</button>
-        <button data-lang="fr">Français</button>
+    <div id="languages">
+        <select id="language-select">
+            <option value="en">English</option>
+            <option value="fr">Français</option>
+            
+        </select>
     </div>
 
     <main>
@@ -121,12 +149,12 @@
         document.documentElement.lang = defaultLanguage;
         loadTranslations(defaultLanguage);
 
-        document.querySelectorAll("[data-lang]").forEach(button => {
-            button.addEventListener("click", () => {
-                const selectedLanguage = button.getAttribute("data-lang");
-                document.documentElement.lang = selectedLanguage;
-                loadTranslations(selectedLanguage);
-            });
+        document.getElementById("language-select").value = defaultLanguage;
+
+        document.getElementById("language-select").addEventListener("change", () => {
+            const selectedLanguage = this.value;
+            document.documentElement.lang = selectedLanguage;
+            loadTranslations(selectedLanguage);
         });
     </script>
 </body>
