@@ -152,7 +152,7 @@
         document.getElementById("language-select").value = defaultLanguage;
 
         document.getElementById("language-select").addEventListener("change", () => {
-            const selectedLanguage = this.value;
+            const selectedLanguage = document.getElementById("language-select").value;
             document.documentElement.lang = selectedLanguage;
             loadTranslations(selectedLanguage);
         });
