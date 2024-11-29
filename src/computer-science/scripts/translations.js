@@ -84,13 +84,11 @@ const loadTranslations = (selectedLanguage = 'en') => {
             if (skillElement) {
                 const translationKey = element.id;
                 if (element.text === "strong") {
-                    // For strong elements (skill headers)
                     const strongElement = skillElement.querySelector('strong');
                     if (strongElement) {
                         strongElement.textContent = translations[translationKey] || strongElement.textContent;
                     }
                 } else if (element.text === "text") {
-                    // For text elements
                     skillElement.textContent = translations[translationKey] || skillElement.textContent;
                 }
             }

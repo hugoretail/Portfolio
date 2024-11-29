@@ -36,85 +36,109 @@
         <section id="skills">
             <h2 id="skills-heading">Skills</h2>
             <ul id="skills-list">
-                <li id="skill-database"><strong>Database</strong>
-                    <ul id="database-skills">
+                <li id="skill-database">
+                    <strong>Database</strong>
+                    <button class="toggle-skill">▼</button>
+                    <ul id="database-skills" class="skill-details hidden">
                         <li id="database-relational">Relational: design relational databases by creating MCD, MLD, and MPD, and writing optimised SQL queries.</li>
                         <li id="database-object">Object: work with object-oriented databases, mapping objects to schemas and handling complex data structures.</li>
                         <li id="database-sgbd">SGBD: SQL Server, MySQL, Oracle</li>
                     </ul>
                 </li>
-                <li id="skill-project-management"><strong>Project management</strong>
-                    <ul id="project-management-skills">
+                <li id="skill-project-management">
+                    <strong>Project management</strong>
+                    <button class="toggle-skill">▼</button>
+                    <ul id="project-management-skills" class="skill-details hidden">
                         <li id="project-management-clean-code">Clean code: write concise, well-documented code and apply validation techniques.</li>
                         <li id="project-management-v-model">V-project management: follow V-model steps to ensure structured development and efficient testing.</li>
                         <li id="project-management-agile">Agile methods (SCRUM): collaborate effectively in iterative sprints to deliver value progressively.</li>
                         <li id="project-management-tools">Software engineering tools (AGL): Win'design</li>
                     </ul>
                 </li>
-                <li id="skill-deployment-tools"><strong>Software deployment tools</strong>
-                    <ul id="deployment-skills">
+                <li id="skill-deployment-tools">
+                    <strong>Software deployment tools</strong>
+                    <button class="toggle-skill">▼</button>
+                    <ul id="deployment-skills" class="skill-details hidden">
                         <li id="deployment-github-actions">Github Actions: prepare workflows for efficient deployment automation and integration.</li>
                         <li id="deployment-gitlab">Gitlab: manage repositories with clear versioning, detailed README files, and collaborative branching strategies.</li>
                     </ul>
                 </li>
-                <li id="skill-frameworks"><strong>Frameworks</strong>
-                    <ul id="framework-skills">
+                <li id="skill-frameworks">
+                    <strong>Frameworks</strong>
+                    <button class="toggle-skill">▼</button>
+                    <ul id="framework-skills" class="skill-details hidden">
                         <li id="framework-bootstrap">Bootstrap: create responsive websites quickly and efficiently.</li>
                         <li id="framework-symfony">Symfony: use for structured development and secure database interactions.</li>
                     </ul>
                 </li>
-                <li id="skill-ci-cd"><strong>Continuous integration / CICD</strong>
-                    <ul id="ci-cd-skills">
+                <li id="skill-ci-cd">
+                    <strong>Continuous integration / CICD</strong>
+                    <button class="toggle-skill">▼</button>
+                    <ul id="ci-cd-skills" class="skill-details hidden">
                         <li id="ci-cd-formal-methods">Formal methods: apply formal verification techniques to ensure software consistency.</li>
                         <li id="ci-cd-quality">Software quality: use best practices to maintain high code quality through continuous integration and regular reviews.</li>
                         <li id="ci-cd-testing">Testing: fundamentals and automation.</li>
                     </ul>
                 </li>
-                <li id="skill-modeling"><strong>Modeling languages and methods</strong>
-                    <ul id="modeling-skills">
+                <li id="skill-modeling">
+                    <strong>Modeling languages and methods</strong>
+                    <button class="toggle-skill">▼</button>
+                    <ul id="modeling-skills" class="skill-details hidden">
                         <li id="modeling-entity-diagram">Entity association diagram: design clear entity relationships to visualize and validate project structure before development.</li>
                         <li id="modeling-uml">UML: model complex systems to represent class inheritance, abstraction, polymorphism, and user interaction scenarios (scnenarii).</li>
                     </ul>
                 </li>
-                <li id="skill-programming-languages"><strong>Programming languages</strong>
-                    <ul id="programming-language-skills">
+                <li id="skill-programming-languages">
+                    <strong>Programming languages</strong>
+                    <button class="toggle-skill">▼</button>
+                    <ul id="programming-language-skills" class="skill-details hidden">
                         <li id="programming-system">System: C, C#</li>
                         <li id="programming-object-oriented">Object-oriented: C#, Java</li>
                         <li id="programming-web-dev">Web development: HTML/CSS, Java, PHP, JavaScript</li>
                         <li id="programming-scripting">Scripting/Automation: Bash, PHP</li>
                     </ul>
                 </li>
-                <li id="skill-development-tools"><strong>Development tools</strong>
-                    <ul id="development-tool-skills">
+                <li id="skill-development-tools">
+                    <strong>Development tools</strong>
+                    <button class="toggle-skill">▼</button>
+                    <ul id="development-tool-skills" class="skill-details hidden">
                         <li>Visual Studio Code</li>
                         <li>ECLIPSE and Visual Studio</li>
                         <li>Netbeans</li>
                         <li>JetBrains Suite: CLion, PyCharm, PhpStorm</li>
                     </ul>
                 </li>
-                <li id="skill-oop"><strong>Object-oriented programming</strong>
-                    <ul id="oop-skills">
+                <li id="skill-oop">
+                    <strong>Object-oriented programming</strong>
+                    <button class="toggle-skill">▼</button>
+                    <ul id="oop-skills" class="skill-details hidden">
                         <li id="oop-principles">Programming and design paradigms: apply key OOP principles (inheritance, encapsulation, polymorphism, abstraction) to design efficient, reusable code.</li>
                         <li id="oop-mvc">MVC architecture: use Model-View-Controller pattern to separate data, user interface, and control logic for better project organization.</li>
                         <li id="oop-design-patterns">Design patterns: implement common design patterns (like Singleton, Factory, Observer) to solve recurring design problems.</li>
                     </ul>
                 </li>
-                <li id="skill-networks"><strong>Networks</strong>
-                    <ul id="network-skills">
+                <li id="skill-networks">
+                    <strong>Networks</strong>
+                    <button class="toggle-skill">▼</button>
+                    <ul id="network-skills" class="skill-details hidden">
                         <li id="network-protocols">Definition and use of protocols: configure and manage DNS, DHCP protocols.</li>
                         <li id="network-http">HTTP/HTTPS: understand and implement HTTP and HTTPS requests and responses.</li>
                         <li id="network-routing">Routing: TCP/IP</li>
                         <li id="network-osi">OSI Model: apply to analyze and design network communcation layers.</li>
                     </ul>
                 </li>
-                <li id="skill-operating-systems"><strong>Operating systems</strong>
-                    <ul id="os-skills">
+                <li id="skill-operating-systems">
+                    <strong>Operating systems</strong>
+                    <button class="toggle-skill">▼</button>
+                    <ul id="os-skills" class="skill-details hidden">
                         <li>UNIX (Linux): Ubuntu, Mint</li>
                         <li>Windows: 7, 8.1, 10, 11</li>
                     </ul>
                 </li>
-                <li id="skill-testing"><strong>Tests/Test methods</strong>
-                    <ul id="testing-skills">
+                <li id="skill-testing">
+                    <strong>Tests/Test methods</strong>
+                    <button class="toggle-skill">▼</button>
+                    <ul id="testing-skills" class="skill-details hidden">
                         <li id="testing-junit">JUnit: write and run unit tests for Java applications.</li>
                         <li id="testing-methodology">Test set design methodology: develop clear and structured test scenarios.</li>
                         <li id="testing-static-analysis">Static analysis and proofs: verify program correctness using format methods.</li>
@@ -208,5 +232,6 @@
     <script src="scripts/display_modal.js"></script>
     <script src="scripts/project_filter.js"></script>
     <script src="scripts/translations.js"></script>
+    <script src="scripts/display_skills.js"></script>
 </body>
 </html>
