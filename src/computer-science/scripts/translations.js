@@ -1,5 +1,5 @@
 const loadTranslations = (selectedLanguage = 'en') => {
-    fetch(`../../../assets/translation/${selectedLanguage}/${selectedLanguage}-computer-science.json`)
+    fetch(`/Portfolio/assets/translation/${selectedLanguage}/${selectedLanguage}-computer-science.json`)
     .then(response => {
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
         return response.json();
