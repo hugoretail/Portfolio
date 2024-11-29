@@ -142,20 +142,20 @@
                 });
         };
 
-        const userLanguage = navigator.language.split('-')[0];
-
+        const selectedLanguage = sessionStorage.getItem("selectedLanguage") || navigator.language.split('-')[0];
         const supportedLanguages = ['en', 'fr', 'ja'];
-        const defaultLanguage = supportedLanguages.includes(userLanguage) ? userLanguage : 'en';
+        const defaultLanguage = supportedLanguages.includes(selectedLanguage) ? selectedLanguage : 'en';
+
         document.documentElement.lang = defaultLanguage;
         loadTranslations(defaultLanguage);
 
         document.getElementById("language-select").value = defaultLanguage;
 
         document.getElementById("language-select").addEventListener("change", () => {
-            const selectedLanguage = document.getElementById("language-select").value;
-            document.documentElement.lang = selectedLanguage;
-            sessionStorage.setItem("selectedLanguage", selectedLanguage);
-            loadTranslations(selectedLanguage);
+            const newLanguage = document.getElementById("language-select").value;
+            document.documentElement.lang = newLanguage;
+            sessionStorage.setItem("selectedLanguage", newLanguage);
+            loadTranslations(newLanguage);
         });
     </script>
 </body>

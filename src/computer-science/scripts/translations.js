@@ -23,6 +23,79 @@ const loadTranslations = (selectedLanguage = 'en') => {
             if (element) element.textContent = translations[id] || element.textContent;
         });
 
+        const skillElements = [
+            { id: "skill-database", text: "strong", childId: "database-skills" },
+            { id: "database-relational", text: "text" },
+            { id: "database-object", text: "text" },
+            { id: "database-sgbd", text: "text" },
+            
+            { id: "skill-project-management", text: "strong" },
+            { id: "project-management-clean-code", text: "text" },
+            { id: "project-management-v-model", text: "text" },
+            { id: "project-management-agile", text: "text" },
+            { id: "project-management-tools", text: "text" },
+            
+            { id: "skill-deployment-tools", text: "strong" },
+            { id: "deployment-github-actions", text: "text" },
+            { id: "deployment-gitlab", text: "text" },
+            
+            { id: "skill-frameworks", text: "strong" },
+            { id: "framework-bootstrap", text: "text" },
+            { id: "framework-symfony", text: "text" },
+            
+            { id: "skill-ci-cd", text: "strong" },
+            { id: "ci-cd-formal-methods", text: "text" },
+            { id: "ci-cd-quality", text: "text" },
+            { id: "ci-cd-testing", text: "text" },
+            
+            { id: "skill-modeling", text: "strong" },
+            { id: "modeling-entity-diagram", text: "text" },
+            { id: "modeling-uml", text: "text" },
+            
+            { id: "skill-programming-languages", text: "strong" },
+            { id: "programming-system", text: "text" },
+            { id: "programming-object-oriented", text: "text" },
+            { id: "programming-web-dev", text: "text" },
+            { id: "programming-scripting", text: "text" },
+            
+            { id: "skill-development-tools", text: "strong" },
+            
+            { id: "skill-oop", text: "strong" },
+            { id: "oop-principles", text: "text" },
+            { id: "oop-mvc", text: "text" },
+            { id: "oop-design-patterns", text: "text" },
+            
+            { id: "skill-networks", text: "strong" },
+            { id: "network-protocols", text: "text" },
+            { id: "network-http", text: "text" },
+            { id: "network-routing", text: "text" },
+            { id: "network-osi", text: "text" },
+            
+            { id: "skill-operating-systems", text: "strong" },
+            
+            { id: "skill-testing", text: "strong" },
+            { id: "testing-junit", text: "text" },
+            { id: "testing-methodology", text: "text" },
+            { id: "testing-static-analysis", text: "text" }
+        ];
+
+        skillElements.forEach(element => {
+            const skillElement = document.getElementById(element.id);
+            if (skillElement) {
+                const translationKey = element.id;
+                if (element.text === "strong") {
+                    // For strong elements (skill headers)
+                    const strongElement = skillElement.querySelector('strong');
+                    if (strongElement) {
+                        strongElement.textContent = translations[translationKey] || strongElement.textContent;
+                    }
+                } else if (element.text === "text") {
+                    // For text elements
+                    skillElement.textContent = translations[translationKey] || skillElement.textContent;
+                }
+            }
+        });
+
         const filterLabels = [
             { filterKey: "filter-ai", translationKey: "filter-ai" },
             { filterKey: "filter-web", translationKey: "filter-web" },
@@ -53,7 +126,7 @@ const loadTranslations = (selectedLanguage = 'en') => {
             const descElement = document.getElementById(`${baseId}-description`);
             
             if (titleElement) titleElement.textContent = translations[`${baseId}-title`] || titleElement.textContent;
-            if (descElement) descElement.textContent = translations[`${baseId}-description`] || descElement.textContent;
+            if (descElement) descElement.innerHTML = translations[`${baseId}-description`] || descElement.innerHTML;
         });
 
         const contactElements = [

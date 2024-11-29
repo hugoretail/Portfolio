@@ -60,7 +60,7 @@
     "filter-devops": "DevOps",
     "filter-cloud": "Cloud",
     "project-japanese-conjugator-title": "Japanese Conjugator",
-    "project-japanese-conjugator-description": "This was my first project, combining two passions: Japanese and JavaScript programming. I created the **Japanese Conjugator Website** to help others and myself in my japanese conjugation studies. This experience helped me explore open-source GitHub projects, get familiar with their documentation, and integrate external libraries into my work.",
+    "project-japanese-conjugator-description": "This was my first project, combining two passions: Japanese and JavaScript programming. I created the <strong>Japanese Conjugator Website</strong> to help others and myself in my japanese conjugation studies. This experience helped me explore open-source GitHub projects, get familiar with their documentation, and integrate external libraries into my work.",
     "project-labyrinth-update-title": "Labyrinth Update",
     "project-labyrinth-update-description": "Using the JavaFX library (i.e. in Java), I implemented the game, its rules and graphics. The principle is simple: it's a classic labyrinth game in which the aim is to reach the exit while avoiding the enemies lurking between the floors. My main objective in this project was to learn how to differentiate between the concrete part of the code, and its graphic part (sprites).",
     "project-anhydralgo-title": "Anhydralgo",
