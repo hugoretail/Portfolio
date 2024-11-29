@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Index Portfolio Retail Hugo</title>
+    <link rel="icen" href="data:,"> <!-- TODO -->
     <style>
         body {
             display: flex;
@@ -53,6 +54,8 @@
         }
 
         footer {
+            position:fixed;
+            bottom:0;
             margin-top: 25px;
             flex-direction: column;
             width: 100%;
@@ -69,20 +72,62 @@
     </style>
 </head>
 <body>
+
+    <div>
+        <button data-lang="en">English</button>
+        <button data-lang="fr">Français</button>
+    </div>
+
     <main>
         <div>
-            <h1>Hello!</h1>
+            <h1 id="title">Hello!</h1>
             <img src="assets/img/index_profile_picture.webp" alt="Profile picture">
-            <h2>Welcome to Hugo Retail's Portfolio.</h2>
+            <h2 id="welcome">Welcome to Hugo Retail's Portfolio.</h2>
         </div>
 
         <div>
-            <a href="src/computer-science/computer_science.html">Computer Science</a> <!-- Computer science portfolio -->
-            <a href="src/street-art/street_art.html" class="disabled">Street Art [W.I.P.]</a> <!-- Street-art portfolio -->
+            <a id="computer-science" href="src/computer-science/computer_science.html">Computer Science</a> <!-- Computer science portfolio -->
+            <a id="street-art" href="src/street-art/street_art.html" class="disabled">Street Art [W.I.P.]</a> <!-- Street-art portfolio -->
         </div>
     </main>
     <footer>
-        <p>Last update : 29/11/2024</p>
+        <p id="last-update">Last update : 29/11/2024</p>
     </footer>
+
+    <script>
+        function loadTranslations(selectedLanguage) {
+            fetch(`./assets/translation/${selectedLanguage}/index.json`)
+                .then(response => {
+                    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                    return response.json();
+                })
+                .then(translations => {
+                    document.getElementById("title").textContent = translations.title;
+                    document.getElementById("welcome").textContent = translations.welcome;
+                    document.getElementById("computer-science").textContent = translations.computerScience;
+                    document.getElementById("street-art").textContent = translations.streetArt;
+                    document.getElementById("last-update").textContent = translations.lastUpdate;
+                })
+                .catch(err => {
+                    console.error("Error loading translations:", err);
+                    loadTranslations("en");
+                });
+        }
+
+        const userLanguage = navigator.language.split('-')[0];
+
+        const supportedLanguages = ['en', 'fr'];
+        const defaultLanguage = supportedLanguages.includes(userLanguage) ? userLanguage : 'en';
+        document.documentElement.lang = defaultLanguage;
+        loadTranslations(defaultLanguage);
+
+        document.querySelectorAll("[data-lang]").forEach(button => {
+            button.addEventListener("click", () => {
+                const selectedLanguage = button.getAttribute("data-lang");
+                document.documentElement.lang = selectedLanguage;
+                loadTranslations(selectedLanguage);
+            });
+        });
+    </script>
 </body>
 </html>
