@@ -102,7 +102,7 @@
         <select id="language-select">
             <option value="en">English</option>
             <option value="fr">Français</option>
-            
+            <option value="ja">日本語</option>
         </select>
     </div>
 
@@ -144,7 +144,7 @@
 
         const userLanguage = navigator.language.split('-')[0];
 
-        const supportedLanguages = ['en', 'fr'];
+        const supportedLanguages = ['en', 'fr', 'ja'];
         const defaultLanguage = supportedLanguages.includes(userLanguage) ? userLanguage : 'en';
         document.documentElement.lang = defaultLanguage;
         loadTranslations(defaultLanguage);
