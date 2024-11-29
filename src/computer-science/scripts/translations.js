@@ -157,21 +157,9 @@ const loadTranslations = (selectedLanguage = 'en') => {
 };
 
 const initializeLanguage = () => {
-    const supportedLanguages = ['en', 'fr', 'ja'];
-    let selectedLanguage = sessionStorage.getItem("selectedLanguage");
-    if (!selectedLanguage) {
-        selectedLanguage = navigator.language.split('-')[0];
-    }
-
-    selectedLanguage = supportedLanguages.includes(selectedLanguage) 
-        ? selectedLanguage 
-        : 'en';
-
+    const selectedLanguage = sessionStorage.getItem("selectedLanguage") || 'en';
     document.documentElement.lang = selectedLanguage;
-
     loadTranslations(selectedLanguage);
-
-    sessionStorage.setItem("selectedLanguage", selectedLanguage);
 };
 
 document.addEventListener('DOMContentLoaded', initializeLanguage);
