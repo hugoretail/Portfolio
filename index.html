@@ -147,6 +147,7 @@
         const defaultLanguage = supportedLanguages.includes(selectedLanguage) ? selectedLanguage : 'en';
 
         document.documentElement.lang = defaultLanguage;
+        sessionStorage.setItem("selectedLanguage", defaultLanguage);
         loadTranslations(defaultLanguage);
 
         document.getElementById("language-select").value = defaultLanguage;
