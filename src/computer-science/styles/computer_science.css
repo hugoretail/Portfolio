@@ -291,6 +291,94 @@ p {
     text-decoration: underline;
 }
 
+body.dark-mode {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+body.dark-mode .top-bar {
+    background-color: #333333;
+    border-bottom: 1px solid #555555;
+}
+
+body.dark-mode .top-bar nav ul li a {
+    color: #e0e0e0;
+}
+
+body.dark-mode .top-bar nav ul li a:hover {
+    background-color: #555555;
+}
+
+body.dark-mode .content-wrapper {
+    background-color: transparent; /* コンテンツの背景色を透明に */
+    color: #e0e0e0;
+}
+
+body.dark-mode .skill-header {
+    background-color: #333333;
+    color: #e0e0e0;
+}
+
+body.dark-mode .toggle-skill {
+    background-color: #444444;
+    color: #e0e0e0;
+}
+
+body.dark-mode .toggle-skill:hover {
+    background-color: #555555;
+}
+
+body.dark-mode .filters {
+    background-color: #333333;
+    color: #e0e0e0; /* フィルターテキストの色を少し暗く */
+}
+
+body.dark-mode .filters label {
+    color: #e0e0e0; /* フィルターテキストの色を白に */
+}
+
+body.dark-mode .filters label:hover {
+    color: #ffffff;
+}
+
+body.dark-mode .toggle-filters-btn {
+    background-color: #444444; /* Hide filtersボタンの背景色を修正 */
+    color: #e0e0e0; /* Hide filtersボタンのテキスト色を修正 */
+    border: 1px solid #555555;
+}
+
+body.dark-mode .toggle-filters-btn:hover {
+    background-color: #555555;
+}
+
+body.dark-mode footer {
+    background-color: #333333;
+    color: #e0e0e0;
+}
+
+body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode h5, body.dark-mode h6 {
+    color: #ffffff;
+}
+
+body.dark-mode p, body.dark-mode a, body.dark-mode li {
+    color: #e0e0e0;
+}
+
+body.dark-mode a:hover {
+    background-color: #555555;
+}
+
+body.dark-mode #skills h2,
+body.dark-mode #skills ul > li,
+body.dark-mode #skills ul > li ul > li,
+body.dark-mode #projects h2,
+body.dark-mode #projects .project h3,
+body.dark-mode #projects .project p,
+body.dark-mode #projects .project a,
+body.dark-mode strong {
+    color: #ffffff;
+}
+
 /* Fixed Modal Styles */
 .modal {
     display: none;

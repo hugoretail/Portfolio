@@ -96,6 +96,53 @@
             text-decoration: none;
         }
 
+        body.dark-mode {
+        background-color: #121212;
+        color: #ffffff;
+        }
+
+        body.dark-mode a {
+            background-color: #333333;
+            color: #ffffff;
+        }
+
+        body.dark-mode a:hover {
+            background-color: #555555;
+        }
+
+        body.dark-mode #languages select:hover {
+            background-color: #555555;
+        }
+
+        body.dark-mode footer {
+            background-color: #333333;
+            color: #ffffff;
+        }
+
+        body.dark-mode #language-select, body.dark-mode #toggle-theme {
+            background-color: #333333;
+            color: #ffffff;
+            border: 1px solid #555555;
+        }
+
+        body.dark-mode #language-select:hover, body.dark-mode #toggle-theme:hover {
+            background-color: #555555;
+        }
+
+        #toggle-theme {
+            margin-top: 25px;
+            background-color: white;
+            color: black;
+            border: 1px solid #ccc;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        #toggle-theme:hover {
+            background-color: lightgray;
+        }
+
     </style>
 </head>
 <body>
@@ -106,6 +153,7 @@
             <option value="fr">Français</option>
             <option value="ja">日本語</option>
         </select>
+        <button id="toggle-theme">Light Mode</button>
     </div>
 
     <main>
@@ -159,6 +207,28 @@
             document.documentElement.lang = newLanguage;
             sessionStorage.setItem("selectedLanguage", newLanguage);
             loadTranslations(newLanguage);
+        });
+
+        const toggleThemeButton = document.getElementById('toggle-theme');
+        const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const currentTheme = sessionStorage.getItem('theme') || (prefersDarkScheme ? 'dark' : 'light');
+
+        if (currentTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            toggleThemeButton.textContent = 'Dark Mode';
+        } else {
+            document.body.classList.add('light-mode');
+            toggleThemeButton.textContent = 'Light Mode';
+        }
+
+        sessionStorage.setItem('theme', currentTheme);
+
+        toggleThemeButton.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            document.body.classList.toggle('light-mode');
+            const theme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
+            toggleThemeButton.textContent = theme === 'dark' ? 'Dark Mode' : 'Light Mode';
+            sessionStorage.setItem('theme', theme);
         });
     </script>
 </body>
