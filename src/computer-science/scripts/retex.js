@@ -1,7 +1,7 @@
 const updateImagePaths = (selectedLanguage) => {
     const images = document.querySelectorAll('img[data-lang-path]');
     images.forEach(img => {
-        const basePath = `../../assets/img/${selectedLanguage}/`;
+        const basePath = `./assets/img/${selectedLanguage}/`;
         const fileName = img.getAttribute('data-lang-path');
         img.src = `${basePath}${fileName}`;
     });
