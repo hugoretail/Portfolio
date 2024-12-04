@@ -2,7 +2,7 @@ const updateImagePaths = (selectedLanguage) => {
     const images = document.querySelectorAll('img[data-lang-path]');
     images.forEach(img => {
         const basePath = `https://raw.githubusercontent.com/hugoretail/Portfolio/main/assets/img/${selectedLanguage}/`;
-        const fileName = img.getAttribute('data-lang-path');
+        const fileName = "retex_" + img.getAttribute('data-lang-path') + "_" + defaultLanguage + ".webp";
         img.src = `${basePath}${fileName}`;
     });
 };
@@ -24,5 +24,5 @@ const defaultLanguage = supportedLanguages.includes(selectedLanguage) ? selected
 document.documentElement.lang = defaultLanguage;
 updateImagePaths(defaultLanguage);
 
-const currentTheme = sessionStorage.getItem('theme') || 'light';
-applyTheme(currentTheme);
+const storedTheme = sessionStorage.getItem('theme') || 'light';
+applyTheme(storedTheme);
