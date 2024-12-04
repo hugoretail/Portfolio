@@ -2,8 +2,21 @@ const updateImagePaths = (selectedLanguage) => {
     const images = document.querySelectorAll('img[data-lang-path]');
     images.forEach(img => {
         const basePath = `https://raw.githubusercontent.com/hugoretail/Portfolio/main/assets/img/${selectedLanguage}/`;
-        const fileName = "retex_" + img.getAttribute('data-lang-path') + "_" + defaultLanguage + ".webp";
-        img.src = `${basePath}${fileName}`;
+        const fallbackBasePath = `https://raw.githubusercontent.com/hugoretail/Portfolio/main/assets/img/en/`;
+        const fileName = "retex_" + img.getAttribute('data-lang-path') + "_" + selectedLanguage + ".webp";
+        const fallbackFileName = "retex_" + img.getAttribute('data-lang-path') + "_en.webp";
+        const imageUrl = `${basePath}${fileName}`;
+        const fallbackImageUrl = `${fallbackBasePath}${fallbackFileName}`;
+
+        fetch(imageUrl).then(response => {
+            if (response.ok) {
+                img.src = imageUrl;
+            } else {
+                img.src = fallbackImageUrl;
+            }
+        }).catch(() => {
+            img.src = fallbackImageUrl;
+        });
     });
 };
 
