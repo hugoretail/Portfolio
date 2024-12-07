@@ -60,7 +60,7 @@
     "filter-devops": "DevOps",
     "filter-cloud": "クラウド",
     "project-japanese-conjugator-title": "Japanese Conjugator",
-    "project-japanese-conjugator-description": "これは私の最初のプロジェクトで、二つの情熱、つまり日本語とJavaScriptプログラミングを組み合わせたものです。<strong>Japanese Conjugator </strong>を作成し、私自身の日本語活用学習をサポートするために他の人々にも役立ててもらいました。この経験を通じて、GitHubのオープンソースプロジェクトを探求し、ドキュメントを読み込み、外部ライブラリを統合する方法を学びました。",
+    "project-japanese-conjugator-description": "これは私の最初のプロジェクトで、二つの情熱、つまり日本語とJavaScriptプログラミングを組み合わせたものです。Japanese Conjugator を作成し、私自身の日本語活用学習をサポートするために他の人々にも役立ててもらいました。この経験を通じて、GitHubのオープンソースプロジェクトを探求し、ドキュメントを読み込み、外部ライブラリを統合する方法を学びました。",
     "project-labyrinth-update-title": "迷路のアップデート",
     "project-labyrinth-update-description": "JavaFXライブラリ（Java）を使用して、このゲームとそのルール、グラフィックスを実装しました。基本的なコンセプトはシンプルで、迷路ゲームの中で出口にたどり着き、敵を避けながら進むことです。このプロジェクトの主な目標は、コードの具象部分とグラフィック部分（スプライト）を区別する方法を学ぶことでした。",
     "project-anhydralgo-title": "Anhydralgo",

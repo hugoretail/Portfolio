@@ -129,10 +129,10 @@ const loadTranslations = (selectedLanguage = 'en') => {
         ];
         projectElements.forEach(baseId => {
             const titleElement = document.getElementById(`${baseId}-title`);
-            const descElement = document.getElementById(`${baseId}-description`);
+            const imageElement = document.getElementById(`${baseId}-image`);
             
             if (titleElement) titleElement.textContent = translations[`${baseId}-title`] || titleElement.textContent;
-            if (descElement) descElement.innerHTML = translations[`${baseId}-description`] || descElement.innerHTML;
+            if (imageElement) imageElement.setAttribute('data-description', translations[`${baseId}-description`] || imageElement.getAttribute('data-description'));
         });
 
         const contactElements = [
