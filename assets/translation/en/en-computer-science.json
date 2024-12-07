@@ -60,7 +60,7 @@
     "filter-devops": "DevOps",
     "filter-cloud": "Cloud",
     "project-graph-visualization-title": "Graph Visualization",
-    "project-graph-visualization-description": "english desc to do",
+    "project-graph-visualization-description": "Through this project, I learned how to manipulate graphs and visualize them interactively. Various algorithms were implemented: Prim, edge building, and this on different types of trees.",
     "project-japanese-conjugator-title": "Japanese Conjugator",
     "project-japanese-conjugator-description": "This was my first project, combining two passions: Japanese and JavaScript programming. I created the Japanese Conjugator Website to help others and myself in my japanese conjugation studies. This experience helped me explore open-source GitHub projects, get familiar with their documentation, and integrate external libraries into my work.",
     "project-labyrinth-update-title": "Labyrinth Update",

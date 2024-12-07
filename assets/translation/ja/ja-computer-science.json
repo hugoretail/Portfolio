@@ -60,7 +60,7 @@
     "filter-devops": "DevOps",
     "filter-cloud": "クラウド",
     "project-graph-visualization-title": "グラフの可視化",
-    "project-graph-visualization-description": "japanese dscp to do",
+    "project-graph-visualization-description": "このプロジェクトを通して、グラフを操作し、インタラクティブに可視化する方法を学びました。様々なアルゴリズムが実装された：プリム、エッジ構築、様々な種類のツリー。",
     "project-japanese-conjugator-title": "Japanese Conjugator",
     "project-japanese-conjugator-description": "これは私の最初のプロジェクトで、二つの情熱、つまり日本語とJavaScriptプログラミングを組み合わせたものです。Japanese Conjugator を作成し、私自身の日本語活用学習をサポートするために他の人々にも役立ててもらいました。この経験を通じて、GitHubのオープンソースプロジェクトを探求し、ドキュメントを読み込み、外部ライブラリを統合する方法を学びました。",
     "project-labyrinth-update-title": "迷路のアップデート",
