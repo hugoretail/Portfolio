@@ -120,6 +120,7 @@ const loadTranslations = (selectedLanguage = 'en') => {
         });
 
         const projectElements = [
+            "project-graph-visualization",
             "project-japanese-conjugator", 
             "project-labyrinth-update", 
             "project-anhydralgo", 

@@ -59,6 +59,8 @@
     "filter-data": "Data Science",
     "filter-devops": "DevOps",
     "filter-cloud": "Cloud",
+    "project-graph-visualization-title": "Visualisation de graphe",
+    "project-graph-visualization-description": "french desc to do",
     "project-japanese-conjugator-title": "Japanese Conjugator",
     "project-japanese-conjugator-description": "Il s'agit de mon premier projet combinant deux passions : Le japonais et la programmation JavaScript. J'ai créé ce site pour aider les autres et moi-même dans mes études de conjugaison japonaise. Cette expérience m'a permis d'explorer des projets open-source sur GitHub, de me familiariser avec leur documentation et d'intégrer des bibliothèques externes dans mon travail.",
     "project-labyrinth-update-title": "Mise à jour: Jeu de Labyrinthe",
