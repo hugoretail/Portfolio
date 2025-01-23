@@ -110,7 +110,6 @@ const loadTranslations = (selectedLanguage = 'en') => {
             if (checkbox) {
                 const label = checkbox.closest('label');
                 if (label) {
-                    // Preserve the checkbox and only update the text
                     const textNode = document.createTextNode(translations[translationKey] || label.textContent);
                     label.innerHTML = '';
                     label.appendChild(checkbox);
@@ -120,11 +119,12 @@ const loadTranslations = (selectedLanguage = 'en') => {
         });
 
         const projectElements = [
+            "project-graph-coding",
             "project-graph-visualization",
             "project-japanese-conjugator", 
             "project-labyrinth-update", 
             "project-anhydralgo", 
-            "project-network-installation", 
+            "project-network-installation",
             "project-graffiting-streets", 
             "project-towa-ai"
         ];

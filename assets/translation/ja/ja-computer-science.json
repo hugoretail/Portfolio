@@ -59,6 +59,8 @@
     "filter-data": "データサイエンス",
     "filter-devops": "DevOps",
     "filter-cloud": "クラウド",
+    "project-graph-coding-title": "グラフコーディング",
+    "project-graph-coding-description": "このプロジェクトでは、グラフ理論の基本を学び、グラフのアルゴリズムを実装しました。",
     "project-graph-visualization-title": "グラフの可視化",
     "project-graph-visualization-description": "このプロジェクトを通して、グラフを操作し、インタラクティブに可視化する方法を学びました。様々なアルゴリズムが実装された：プリム、エッジ構築、様々な種類のツリー。",
     "project-japanese-conjugator-title": "Japanese Conjugator",

@@ -6,10 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const selectedCheckbox = Array.from(checkboxes).find(cb => cb.checked);
 
         if (!selectedCheckbox) {
-            // If no filter is selected, show all projects
             projects.forEach(project => project.style.display = 'block');
         } else {
-            // Show only projects matching the selected filter
             const selectedTag = selectedCheckbox.value;
             projects.forEach(project => {
                 const projectTags = project.getAttribute('data-tags').split(' ');
@@ -20,7 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     checkboxes.forEach(checkbox => {
         checkbox.addEventListener('change', () => {
-            // Uncheck all other checkboxes when one is selected
             checkboxes.forEach(cb => {
                 if (cb !== checkbox) cb.checked = false;
             });
@@ -29,7 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Initialize the project view on page load
     updateProjects();
 });
 

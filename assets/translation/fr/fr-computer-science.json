@@ -59,6 +59,8 @@
     "filter-data": "Data Science",
     "filter-devops": "DevOps",
     "filter-cloud": "Cloud",
+    "project-graph-coding-title": "Codage de Graphes",
+    "project-graph-coding-description": "Ce projet consiste à apprendre les bases de la théorie des graphes et à implémenter des algorithmes de graphes.",
     "project-graph-visualization-title": "Visualisation de graphe",
     "project-graph-visualization-description": "Au travers ce projet, j'ai appris à manipuler des graphes et à les visualiser de manière interactive. Divers algorithmes ont donc été implémentés : Prim, edge building, et ceci sur différents types d'arbres.",
     "project-japanese-conjugator-title": "Japanese Conjugator",
