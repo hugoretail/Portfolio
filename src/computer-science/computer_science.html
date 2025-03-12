@@ -28,10 +28,16 @@
         
         <section>
             <h2 id="about-me">Who am I</h2>
-            <p id="about-me-description">
-                Passionate about Deep Learning, Natural Language Processing (NLP) and Hip-Hop culture, I honed my computer science skills at the IUT in Bordeaux. My creative approach is fuelled by this dual passion and, when I immerse myself in a personal project, my motivation stems from this unique fusion. ‘Coding graffiti’ or “making AI groove” are questions that inspire me. Discovering and sharing are at the heart of my concerns, a conviction reinforced by my experience as a BAFA youth worker. As a student, although my professional experience is still developing, I fully integrate my culture and creativity.
-            </p>
+            <div class="description-container">
+              <p id="about-me-description" class="collapsed">
+                Passionate about Deep Learning, Natural Language Processing (NLP) and Hip-Hop culture, I honed my computer science skills at the IUT in Bordeaux. My creative approach is fuelled by this dual passion and, when I immerse myself in a personal project, my motivation stems from this unique fusion. 'Coding graffiti' or "making AI groove" are questions that inspire me. Discovering and sharing are at the heart of my concerns, a conviction reinforced by my experience as a BAFA youth worker. As a student, although my professional experience is still developing, I fully integrate my culture and creativity.
+              </p>
+              <div id="toggle-about-me" class="toggle-button">
+                <span class="toggle-icon">+</span>
+              </div>
+            </div>
         </section>
+          
 
         <section id="skills">
             <h2 id="skills-heading">Skills</h2>
@@ -255,5 +261,6 @@
     <script src="scripts/display_skills.js"></script>
     <script src="scripts/theme.js"></script>
     <script src="scripts/retex.js"></script>
+    <script src="scripts/toggle_about_me.js"></script>
 </body>
 </html>
