@@ -18,12 +18,15 @@ export class GraffitiScene {
         this.raycaster = new THREE.Raycaster();
         this.intersected = null;
         this.activeMesh = null;
+        this.interactiveMeshes = [];
+        this.defaultCameraPos = new THREE.Vector3(0, 6, 16);
+        this.defaultLookAt = new THREE.Vector3(0, 2, 0);
 
         this.scene = new THREE.Scene();
         this.scene.fog = new THREE.FogExp2(0x050509, 0.045);
 
         this.camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 200);
-        this.camera.position.set(0, 5, 18);
+        this.camera.position.copy(this.defaultCameraPos ?? new THREE.Vector3(0, 5, 18));
 
         this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -36,7 +39,7 @@ export class GraffitiScene {
         this.controls.autoRotateSpeed = 0.8;
 
         this.#addLights();
-        this.#buildFloor();
+        this.#buildEnvironment();
         this.#createTotems();
 
         window.addEventListener("resize", () => this.#handleResize());
@@ -63,59 +66,214 @@ export class GraffitiScene {
         this.scene.add(cyan);
     }
 
-    #buildFloor() {
-        const geometry = new THREE.CylinderGeometry(9, 12, 0.6, 64, 1, true);
-        const material = new THREE.MeshStandardMaterial({
-            color: 0x0d0f17,
-            metalness: 0.4,
-            roughness: 0.6,
+    #buildEnvironment() {
+        const wallGeo = new THREE.PlaneGeometry(50, 28);
+        const wallMat = new THREE.MeshStandardMaterial({
+            color: 0x080711,
+            roughness: 0.95,
+            metalness: 0.15,
+            emissive: 0x120a1d,
+            emissiveIntensity: 0.8
+        });
+        const wall = new THREE.Mesh(wallGeo, wallMat);
+        wall.position.set(0, 8, -18);
+        this.scene.add(wall);
+
+        const groundGeo = new THREE.CircleGeometry(11, 64);
+        const groundMat = new THREE.MeshStandardMaterial({
+            color: 0x06050b,
+            metalness: 0.2,
+            roughness: 0.8,
             side: THREE.DoubleSide
         });
-        const floor = new THREE.Mesh(geometry, material);
-        floor.rotation.x = Math.PI / 2;
-        floor.position.y = -0.5;
-        this.scene.add(floor);
+        const ground = new THREE.Mesh(groundGeo, groundMat);
+        ground.rotation.x = -Math.PI / 2;
+        ground.position.y = -0.51;
+        this.scene.add(ground);
 
-        const particles = new THREE.BufferGeometry();
-        const count = 600;
-        const positions = new Float32Array(count * 3);
-        for (let i = 0; i < count; i += 1) {
-            positions[i * 3] = (Math.random() - 0.5) * 30;
-            positions[i * 3 + 1] = Math.random() * 12 + 1;
-            positions[i * 3 + 2] = (Math.random() - 0.5) * 30;
+        const ribbonGeo = new THREE.TorusGeometry(6.5, 0.12, 24, 180);
+        const ribbonMat = new THREE.MeshBasicMaterial({ color: 0x3c0f62, transparent: true, opacity: 0.6, side: THREE.DoubleSide });
+        const ribbon = new THREE.Mesh(ribbonGeo, ribbonMat);
+        ribbon.rotation.x = Math.PI / 2.35;
+        ribbon.position.y = 0.4;
+        ribbon.scale.set(1.4, 1, 1);
+        this.scene.add(ribbon);
+
+        this.#createDust();
+    }
+
+    #createDust() {
+        const particleCount = 900;
+        const positions = new Float32Array(particleCount * 3);
+        for (let i = 0; i < particleCount; i += 1) {
+            positions[i * 3] = (Math.random() - 0.5) * 40;
+            positions[i * 3 + 1] = Math.random() * 14 + 1;
+            positions[i * 3 + 2] = (Math.random() - 0.5) * 40;
         }
-        particles.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-        const particleMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.08, transparent: true, opacity: 0.45 });
-        this.sprayParticles = new THREE.Points(particles, particleMat);
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+
+        const sprite = this.#generateCircleTexture();
+        const material = new THREE.PointsMaterial({
+            map: sprite,
+            transparent: true,
+            opacity: 0.5,
+            depthWrite: false,
+            size: 0.22,
+            color: 0xffffff
+        });
+        this.sprayParticles = new THREE.Points(geometry, material);
         this.scene.add(this.sprayParticles);
     }
 
+    #generateCircleTexture() {
+        const size = 128;
+        const canvas = document.createElement("canvas");
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext("2d");
+        const gradient = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+        gradient.addColorStop(0, "rgba(255,255,255,1)");
+        gradient.addColorStop(1, "rgba(255,255,255,0)");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, size, size);
+        return new THREE.CanvasTexture(canvas);
+    }
+
     #createTotems() {
-        this.meshes = [];
-        const radius = 8;
+        this.totemGroups = [];
+        const radius = 7.5;
         const step = (Math.PI * 2) / this.nodes.length;
         this.nodes.forEach((node, index) => {
             const angle = index * step;
             const x = Math.cos(angle) * radius;
             const z = Math.sin(angle) * radius;
-            const height = 2.2 + Math.random() * 1.8;
 
-            const geometry = new THREE.CapsuleGeometry(0.6, height, 6, 12);
-            const material = new THREE.MeshStandardMaterial({
-                color: colorMap[node.vignette] || 0xffffff,
-                metalness: 0.4,
-                roughness: 0.3,
-                emissive: (colorMap[node.vignette] || 0xffffff) * 0.2,
-                emissiveIntensity: 0.4
+            const group = this.#buildTotem(node);
+            group.position.set(x, 0, z);
+            group.rotation.y = -angle + Math.PI / 2;
+            this.scene.add(group);
+            this.totemGroups.push(group);
+
+            group.traverse(child => {
+                if (child.isMesh) {
+                    child.userData = {
+                        nodeId: node.id,
+                        label: node.label,
+                        root: group
+                    };
+                    this.interactiveMeshes.push(child);
+                }
             });
-            const mesh = new THREE.Mesh(geometry, material);
-            mesh.position.set(x, height / 2, z);
-            mesh.rotation.y = angle;
-            mesh.userData = { nodeId: node.id, label: node.label };
-
-            this.scene.add(mesh);
-            this.meshes.push(mesh);
         });
+    }
+
+    #buildTotem(node) {
+        const group = new THREE.Group();
+        group.userData = { nodeId: node.id, label: node.label };
+        const accent = colorMap[node.vignette] || 0xffffff;
+
+        if (node.id === "graffiti" || node.id === "street") {
+            this.#buildSprayCan(group, accent);
+        } else if (node.id === "cs") {
+            this.#buildHoloModule(group, accent);
+        } else {
+            this.#buildInkGlyph(group, accent);
+        }
+
+        gsap.to(group.position, {
+            y: "+=0.6",
+            duration: 2 + Math.random(),
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut"
+        });
+        gsap.to(group.rotation, {
+            y: "+=0.6",
+            duration: 6,
+            repeat: -1,
+            ease: "sine.inOut"
+        });
+
+        return group;
+    }
+
+    #buildSprayCan(group, accent) {
+        const bodyMat = new THREE.MeshPhysicalMaterial({
+            color: accent,
+            metalness: 0.3,
+            roughness: 0.25,
+            clearcoat: 0.8,
+            clearcoatRoughness: 0.1,
+            emissive: accent,
+            emissiveIntensity: 0.08
+        });
+        const body = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 3.2, 48), bodyMat);
+        body.position.y = 2.2;
+        group.add(body);
+
+        const capMat = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.6, roughness: 0.2 });
+        const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.52, 0.52, 0.5, 32), capMat);
+        cap.position.y = 3.6;
+        group.add(cap);
+
+        const nozzle = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.2, 0.25, 16), new THREE.MeshStandardMaterial({ color: 0xffffff }));
+        nozzle.position.set(0, 3.95, 0.08);
+        group.add(nozzle);
+
+        const dripMat = new THREE.MeshStandardMaterial({ color: accent, emissive: accent, emissiveIntensity: 0.4, transparent: true, opacity: 0.8 });
+        const drip = new THREE.Mesh(new THREE.CapsuleGeometry(0.15, 0.8, 6, 12), dripMat);
+        drip.position.set(0.5, 1.5, 0.3);
+        drip.rotation.z = Math.PI / 5;
+        group.add(drip);
+    }
+
+    #buildHoloModule(group, accent) {
+        const prismMat = new THREE.MeshPhysicalMaterial({
+            color: 0x10152a,
+            metalness: 0.4,
+            roughness: 0.1,
+            transmission: 0.7,
+            transparent: true,
+            opacity: 0.9,
+            emissive: accent,
+            emissiveIntensity: 0.25
+        });
+        const prism = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.4, 2.4, 6), prismMat);
+        prism.position.y = 1.8;
+        group.add(prism);
+
+        const core = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.7, 0.7), new THREE.MeshStandardMaterial({ color: accent, emissive: accent, emissiveIntensity: 0.8 }));
+        core.position.y = 1.8;
+        group.add(core);
+
+        const edges = new THREE.LineSegments(
+            new THREE.EdgesGeometry(new THREE.BoxGeometry(1.3, 1.3, 1.3)),
+            new THREE.LineBasicMaterial({ color: accent, transparent: true, opacity: 0.4 })
+        );
+        edges.position.y = 1.8;
+        group.add(edges);
+    }
+
+    #buildInkGlyph(group, accent) {
+        const orbMat = new THREE.MeshStandardMaterial({
+            color: accent,
+            metalness: 0.2,
+            roughness: 0.5,
+            emissive: accent,
+            emissiveIntensity: 0.15,
+            transparent: true,
+            opacity: 0.95
+        });
+        const orb = new THREE.Mesh(new THREE.IcosahedronGeometry(1.2, 1), orbMat);
+        orb.position.y = 1.6;
+        group.add(orb);
+
+        const ringMat = new THREE.MeshBasicMaterial({ color: accent, transparent: true, opacity: 0.35, side: THREE.DoubleSide });
+        const ring = new THREE.Mesh(new THREE.RingGeometry(0.8, 1.4, 32), ringMat);
+        ring.rotation.x = Math.PI / 2;
+        ring.position.y = 1.6;
+        group.add(ring);
     }
 
     #handleResize() {
@@ -134,40 +292,57 @@ export class GraffitiScene {
 
     #handleClick() {
         if (this.intersected) {
-            const mesh = this.intersected.object;
-            this.#focusMesh(mesh);
-            this.onSelect(mesh.userData.nodeId);
+            const root = this.intersected.object.userData?.root || this.intersected.object;
+            this.#focusTotem(root);
+            this.onSelect(root.userData.nodeId);
+        } else {
+            this.clearFocus(true);
         }
     }
 
-    #focusMesh(mesh) {
-        if (!mesh) return;
-        if (this.activeMesh && this.activeMesh !== mesh) {
+    #focusTotem(group) {
+        if (!group) return;
+        if (this.activeMesh && this.activeMesh !== group) {
             gsap.to(this.activeMesh.scale, { x: 1, y: 1, z: 1, duration: 0.8, ease: "power2.out" });
         }
-        this.activeMesh = mesh;
-        gsap.to(mesh.scale, { x: 1.2, y: 1.2, z: 1.2, duration: 0.8, ease: "back.out(2)" });
+        this.activeMesh = group;
+        gsap.to(group.scale, { x: 1.15, y: 1.15, z: 1.15, duration: 0.8, ease: "back.out(2)" });
 
-        const target = mesh.position.clone().normalize().multiplyScalar(10);
-        target.y += 2.5;
-        gsap.to(this.camera.position, {
-            duration: 1.2,
-            x: target.x,
-            y: target.y,
-            z: target.z,
-            ease: "power2.out",
-            onUpdate: () => {
-                this.camera.lookAt(mesh.position);
-            }
-        });
+        const target = group.position.clone().normalize().multiplyScalar(10);
+        target.y += 3;
+        this.#moveCamera(target, group.position.clone().setY(1.5));
     }
 
     highlightNodeById(nodeId) {
-        const mesh = this.meshes.find(m => m.userData.nodeId === nodeId);
-        if (mesh) {
-            this.#focusMesh(mesh);
+        const group = this.totemGroups.find(m => m.userData.nodeId === nodeId);
+        if (group) {
+            this.#focusTotem(group);
             this.onSelect(nodeId);
         }
+    }
+
+    clearFocus(shouldNotify = false) {
+        if (this.activeMesh) {
+            gsap.to(this.activeMesh.scale, { x: 1, y: 1, z: 1, duration: 0.6, ease: "power2.out" });
+            this.activeMesh = null;
+        }
+        this.#moveCamera(this.defaultCameraPos, this.defaultLookAt);
+        if (shouldNotify) {
+            this.onSelect(null);
+        }
+    }
+
+    #moveCamera(position, lookAt) {
+        gsap.to(this.camera.position, {
+            duration: 1,
+            x: position.x,
+            y: position.y,
+            z: position.z,
+            ease: "power2.out",
+            onUpdate: () => {
+                this.camera.lookAt(lookAt);
+            }
+        });
     }
 
     #loop() {
@@ -182,7 +357,7 @@ export class GraffitiScene {
 
     #updateRaycaster() {
         this.raycaster.setFromCamera(this.pointer, this.camera);
-        const intersects = this.raycaster.intersectObjects(this.meshes);
+        const intersects = this.raycaster.intersectObjects(this.interactiveMeshes, false);
 
         if (intersects.length) {
             if (this.intersected !== intersects[0]) {

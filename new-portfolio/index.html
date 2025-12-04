@@ -19,11 +19,17 @@
     <div class="texture-noise" aria-hidden="true"></div>
 
     <div id="entry-overlay" class="overlay active">
+        <div class="overlay__sprayfield" aria-hidden="true">
+            <span class="spray spark-1"></span>
+            <span class="spray spark-2"></span>
+            <span class="spray spark-3"></span>
+        </div>
+        <svg class="overlay__stroke" viewBox="0 0 600 280" aria-hidden="true" focusable="false">
+            <path d="M20 240 C80 210 140 210 180 230 C230 255 260 200 300 170 C340 140 360 180 400 210 C450 245 520 200 560 80"/>
+        </svg>
         <div class="overlay__inner">
-            <p class="eyebrow">Graffiti × Computer Science</p>
-            <h1>Welcome to NeoGraff</h1>
-            <p>Navigate a floating back-alley solar system and unlock my stories by tagging the monuments.</p>
-            <button id="enter-scene">Enter the Yard</button>
+            <h1>Hugo Retail Portfolio</h1>
+            <p class="overlay__hint">Hold anywhere to spray</p>
         </div>
     </div>
 
@@ -32,19 +38,13 @@
             <span class="brand__tag">Hugo Retail</span>
             <span class="brand__role">Creative Technologist · Graffiti Artist</span>
         </div>
-        <nav class="hud__nav" aria-label="Primary">
-            <button data-node="about">About</button>
-            <button data-node="cs">Computer Science</button>
-            <button data-node="graffiti">Graffiti Wall</button>
-            <button data-node="street">Street Art</button>
-            <button data-node="contact">Contact</button>
-        </nav>
+        <span class="brand__spray" aria-hidden="true">NeoGraff</span>
     </header>
 
     <main id="panel-layer" aria-live="polite">
         <section class="panel panel--placeholder" id="panel-placeholder">
             <h2>Pick a totem to begin</h2>
-            <p>Each sculpture floats on the alley like a planet. Click it or use the navigation above to jump.</p>
+            <p>Every floating relic hides a part of my story. Click one to zoom in, click empty space to reset.</p>
         </section>
     </main>
 

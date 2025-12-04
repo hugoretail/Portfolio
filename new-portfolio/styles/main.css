@@ -46,8 +46,8 @@ canvas#graffiti-canvas {
 .overlay {
     position: fixed;
     inset: 0;
-    background: rgba(3, 3, 5, 0.95);
-    backdrop-filter: blur(10px);
+    background: rgba(3, 3, 5, 0.94);
+    backdrop-filter: blur(14px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -58,6 +58,26 @@ canvas#graffiti-canvas {
     pointer-events: none;
     visibility: hidden;
     transition: opacity 0.45s ease, visibility 0.45s ease;
+    --spray-x: 50%;
+    --spray-y: 50%;
+    --spray-scale: 0;
+}
+
+.overlay::after {
+    content: "";
+    position: absolute;
+    width: 45vmax;
+    height: 45vmax;
+    left: var(--spray-x);
+    top: var(--spray-y);
+    transform: translate(-50%, -50%) scale(var(--spray-scale));
+    border-radius: 50%;
+    background: conic-gradient(from 120deg, #fbff00, #ff6df0, #00e5ff, #ff8a00, #fbff00);
+    filter: blur(22px);
+    opacity: 0.75;
+    mix-blend-mode: screen;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
 }
 
 .overlay.active {
@@ -66,8 +86,14 @@ canvas#graffiti-canvas {
     visibility: visible;
 }
 
+.overlay.overlay--charging::after {
+    opacity: 0.95;
+}
+
 .overlay__inner {
     max-width: 560px;
+    position: relative;
+    z-index: 1;
 }
 
 .overlay h1 {
@@ -79,6 +105,71 @@ canvas#graffiti-canvas {
 
 .overlay p {
     color: rgba(255, 255, 255, 0.75);
+}
+
+.overlay__hint {
+    margin-top: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.45em;
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.overlay__sprayfield {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.overlay__sprayfield .spray {
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0));
+    filter: blur(25px);
+    opacity: 0;
+    animation: sprayPulse 6s infinite;
+}
+
+.overlay__sprayfield .spark-1 { top: 20%; left: 25%; animation-delay: 0s; }
+.overlay__sprayfield .spark-2 { bottom: 18%; right: 20%; animation-delay: 1.4s; }
+.overlay__sprayfield .spark-3 { top: 35%; right: 45%; animation-delay: 2.6s; }
+
+@keyframes sprayPulse {
+    0% { transform: scale(0.3); opacity: 0; }
+    20% { opacity: 0.8; }
+    60% { opacity: 0.4; }
+    100% { transform: scale(2.4); opacity: 0; }
+}
+
+.overlay__stroke {
+    position: absolute;
+    inset: 0;
+    width: min(80vw, 600px);
+    height: min(60vh, 320px);
+    margin: auto;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.overlay__stroke path {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.85);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 900;
+    stroke-dashoffset: 900;
+    animation: drawStroke 7.5s ease-in-out infinite;
+}
+
+@keyframes drawStroke {
+    0% { stroke-dashoffset: 900; opacity: 0; }
+    30% { stroke-dashoffset: 0; opacity: 1; }
+    65% { stroke-dashoffset: -50; opacity: 0.9; }
+    100% { stroke-dashoffset: -900; opacity: 0; }
 }
 
 .overlay button {
@@ -105,20 +196,32 @@ canvas#graffiti-canvas {
     color: rgba(255, 255, 255, 0.6);
 }
 
+
 .hud {
     position: fixed;
     top: 1.5rem;
-    left: 2rem;
-    right: 2rem;
+    left: 1.5rem;
     z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.75rem 1.25rem;
-    background: var(--glass);
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    backdrop-filter: blur(12px);
+    padding: 1.2rem 1.6rem;
+    background: rgba(5, 5, 9, 0.9);
+    border-radius: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(14px);
+    overflow: hidden;
+    isolation: isolate;
+}
+
+.hud::before {
+    content: "";
+    position: absolute;
+    inset: -40% auto auto -30%;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(255, 109, 240, 0.5), rgba(0, 0, 0, 0));
+    filter: blur(45px);
+    pointer-events: none;
+    z-index: -1;
 }
 
 .brand {
@@ -137,28 +240,17 @@ canvas#graffiti-canvas {
     color: rgba(255, 255, 255, 0.65);
 }
 
-.hud__nav {
-    display: flex;
-    gap: 0.35rem;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-}
-
-.hud__nav button {
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    background: rgba(0, 0, 0, 0.35);
-    color: var(--fg);
-    padding: 0.45rem 0.9rem;
-    border-radius: 999px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.2s ease, color 0.2s ease;
-}
-
-.hud__nav button:hover,
-.hud__nav button.active {
-    background: rgba(255, 255, 255, 0.9);
-    color: #050505;
+.brand__spray {
+    position: absolute;
+    right: -2rem;
+    bottom: -1rem;
+    font-family: "Syne", sans-serif;
+    font-size: 3rem;
+    color: rgba(255, 255, 255, 0.07);
+    transform: rotate(-12deg);
+    pointer-events: none;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
 }
 
 main#panel-layer {

@@ -8,6 +8,7 @@ export class PanelManager {
     constructor(root) {
         this.root = root;
         this.currentId = null;
+        this.placeholderMarkup = root.innerHTML;
     }
 
     show(node) {
@@ -18,6 +19,11 @@ export class PanelManager {
         section.innerHTML = this.#buildMarkup(node);
         this.root.replaceChildren(section);
         requestAnimationFrame(() => section.classList.add("revealed"));
+    }
+
+    reset() {
+        this.currentId = null;
+        this.root.innerHTML = this.placeholderMarkup;
     }
 
     #buildMarkup(node) {
