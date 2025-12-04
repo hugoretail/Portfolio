@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeoGraff · Hugo Retail</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='7' fill='%2300e5ff'/%3E%3Cpath d='M5 11l6-6' stroke='%23050509' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="./styles/main.css">
+</head>
+<body>
+    <noscript>
+        <div class="noscript">NeoGraff needs JavaScript/WebGL to paint the scene. Please enable both.</div>
+    </noscript>
+
+    <canvas id="graffiti-canvas" aria-hidden="true"></canvas>
+    <div class="texture-noise" aria-hidden="true"></div>
+
+    <div id="entry-overlay" class="overlay active">
+        <div class="overlay__inner">
+            <p class="eyebrow">Graffiti × Computer Science</p>
+            <h1>Welcome to NeoGraff</h1>
+            <p>Navigate a floating back-alley solar system and unlock my stories by tagging the monuments.</p>
+            <button id="enter-scene">Enter the Yard</button>
+        </div>
+    </div>
+
+    <header class="hud">
+        <div class="brand">
+            <span class="brand__tag">Hugo Retail</span>
+            <span class="brand__role">Creative Technologist · Graffiti Artist</span>
+        </div>
+        <nav class="hud__nav" aria-label="Primary">
+            <button data-node="about">About</button>
+            <button data-node="cs">Computer Science</button>
+            <button data-node="graffiti">Graffiti Wall</button>
+            <button data-node="street">Street Art</button>
+            <button data-node="contact">Contact</button>
+        </nav>
+    </header>
+
+    <main id="panel-layer" aria-live="polite">
+        <section class="panel panel--placeholder" id="panel-placeholder">
+            <h2>Pick a totem to begin</h2>
+            <p>Each sculpture floats on the alley like a planet. Click it or use the navigation above to jump.</p>
+        </section>
+    </main>
+
+    <div class="tooltip" id="tooltip" role="status" aria-live="polite"></div>
+
+    <script type="module" src="./scripts/main.js"></script>
+</body>
+</html>
