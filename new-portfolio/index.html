@@ -11,7 +11,7 @@
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23000'%3E%3C/rect%3E%3Cpath d='M6 23 L14 7 L18 14 L26 9' stroke='%23ff3cac' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
     <link rel="stylesheet" href="./styles/main.css">
 </head>
-<body>
+<body class="overlay-locked">
     <noscript>
         <div class="noscript">Ce portfolio a besoin de JavaScript et WebGL pour prendre vie.</div>
     </noscript>
@@ -25,12 +25,26 @@
 
     <div id="entry-overlay" class="overlay overlay--active">
         <div class="overlay__mist" aria-hidden="true"></div>
-        <div class="overlay__strokes" aria-hidden="true"></div>
+        <div class="overlay__strokes" aria-hidden="true">
+            <svg class="overlay__stroke" viewBox="0 0 1000 700" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                <path class="overlay__stroke-path" data-overlay-stroke-path pathLength="1" />
+            </svg>
+        </div>
         <div class="overlay__leaves" aria-hidden="true">
             <span class="overlay__leaf overlay__leaf--a"></span>
             <span class="overlay__leaf overlay__leaf--b"></span>
             <span class="overlay__leaf overlay__leaf--c"></span>
             <span class="overlay__leaf overlay__leaf--d"></span>
+            <span class="overlay__leaf overlay__leaf--e"></span>
+            <span class="overlay__leaf overlay__leaf--f"></span>
+            <span class="overlay__leaf overlay__leaf--g"></span>
+            <span class="overlay__leaf overlay__leaf--h"></span>
+        </div>
+        <div class="overlay__wind" aria-hidden="true">
+            <span class="overlay__gust overlay__gust--a"></span>
+            <span class="overlay__gust overlay__gust--b"></span>
+            <span class="overlay__gust overlay__gust--c"></span>
+            <span class="overlay__gust overlay__gust--d"></span>
         </div>
         <h1 class="overlay__title">
             <span class="overlay__title-main">Hugo Retail</span>
@@ -62,6 +76,7 @@
             }
         }
     </script>
+    <script type="module" src="./scripts/overlay-strokes.js"></script>
     <script type="module" src="./scripts/main.js"></script>
 </body>
 </html>

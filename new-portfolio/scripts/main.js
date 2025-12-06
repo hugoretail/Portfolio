@@ -18,12 +18,17 @@ let panelsHidden = true;
 
 init();
 
+function releaseOverlayLock() {
+  document.body.classList.remove("overlay-locked");
+}
+
 function init() {
   setupOverlay();
   setupPanelToggle();
   if (!hasWebGLSupport()) {
     fallback.hidden = false;
     overlay.remove();
+    releaseOverlayLock();
     return;
   }
 
@@ -39,13 +44,17 @@ function setupOverlay() {
   enterButton?.addEventListener("click", () => {
     if (!graffitiScene) {
       overlay.remove();
+      releaseOverlayLock();
       return;
     }
     gsap.to(overlay, {
       autoAlpha: 0,
       duration: 0.9,
       ease: "power3.out",
-      onComplete: () => overlay.remove()
+      onComplete: () => {
+        overlay.remove();
+        releaseOverlayLock();
+      }
     });
     hidePanels();
   });
