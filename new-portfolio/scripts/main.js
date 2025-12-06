@@ -1,140 +1,151 @@
-import { gsap } from "https://cdn.skypack.dev/gsap@3.12.5";
-import { graffitiNodes } from "./content.js";
+import { gsap } from "https://cdn.skypack.dev/gsap";
+import { panelContent, roomStops } from "./content.js";
 import { PanelManager } from "./panels.js";
-import { GraffitiScene } from "./scene.js";
+import { GraffitiStudioScene } from "./scene.js";
 
-const canvas = document.getElementById("graffiti-canvas");
+const canvas = document.getElementById("room-canvas");
 const overlay = document.getElementById("entry-overlay");
-const panelLayer = document.getElementById("panel-layer");
+const enterButton = document.getElementById("enter-room");
 const tooltip = document.getElementById("tooltip");
-let panelManager;
-let scene;
-let activeNodeId = null;
+const fallback = document.getElementById("webgl-fallback");
+const panelLayer = document.getElementById("panel-layer");
+const panelToggle = document.getElementById("panel-toggle");
 
-if (overlay) {
-    overlay.classList.add("active");
-    const inner = overlay.querySelector(".overlay__inner");
-    if (inner) {
-        gsap.fromTo(inner, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 1, ease: "power3.out" });
-    }
+const panelManager = new PanelManager(panelLayer);
+let graffitiScene = null;
+let currentStop = null;
+let panelsHidden = true;
+
+init();
+
+function init() {
+  setupOverlay();
+  setupPanelToggle();
+  if (!hasWebGLSupport()) {
+    fallback.hidden = false;
+    overlay.remove();
+    return;
+  }
+
+  graffitiScene = new GraffitiStudioScene({
+    canvas,
+    stops: roomStops,
+    onSelect: handleSceneSelect,
+    onHover: handleSceneHover
+  });
 }
 
-if (!isWebGLAvailable()) {
-    if (overlay) {
-        overlay.classList.add("active");
-        overlay.innerHTML = "<div class='overlay__inner'><h1>WebGL unavailable</h1><p>Your browser/device cannot render WebGL. Try on another device to explore NeoGraff.</p></div>";
+function setupOverlay() {
+  enterButton?.addEventListener("click", () => {
+    if (!graffitiScene) {
+      overlay.remove();
+      return;
     }
-} else {
-    panelManager = new PanelManager(panelLayer);
-    panelManager.reset();
-    scene = new GraffitiScene(canvas, graffitiNodes, handleSelect, tooltip);
-    const HOLD_DURATION = 1.15;
-    let sprayTween = null;
-
-    const dismissOverlay = () => {
-        if (!overlay?.classList.contains("active")) return;
-        sprayTween?.kill();
-        sprayTween = null;
-        overlay.classList.remove("overlay--charging");
-        gsap.timeline({
-            onComplete: () => {
-                overlay.classList.remove("active");
-                overlay.style.removeProperty("opacity");
-            }
-        })
-            .to(overlay, { "--spray-scale": 4, duration: 0.6, ease: "power2.out" })
-            .to(overlay, { opacity: 0, duration: 0.8, ease: "power3.inOut" }, "<0.1");
-    };
-
-    initSprayEntrance(dismissOverlay);
-
-    window.addEventListener("keydown", event => {
-        if (event.key === "Escape" && scene) {
-            scene.clearFocus();
-            panelManager.reset();
-            activeNodeId = null;
-        }
+    gsap.to(overlay, {
+      autoAlpha: 0,
+      duration: 0.9,
+      ease: "power3.out",
+      onComplete: () => overlay.remove()
     });
-
-    function handleSelect(nodeId) {
-        if (!nodeId || activeNodeId === nodeId) {
-            activeNodeId = null;
-            panelManager.reset();
-            if (scene && nodeId) {
-                // toggle off when same totem selected
-                scene.clearFocus();
-            }
-            return;
-        }
-
-        activeNodeId = nodeId;
-        const node = graffitiNodes.find(item => item.id === nodeId);
-        if (node) {
-            panelManager.show(node);
-        }
-    }
-
-    function initSprayEntrance(onEnter) {
-        if (!overlay) return;
-        let pointerId = null;
-
-        overlay.addEventListener("pointermove", event => {
-            if (!overlay.classList.contains("active")) return;
-            overlay.style.setProperty("--spray-x", `${event.clientX}px`);
-            overlay.style.setProperty("--spray-y", `${event.clientY}px`);
-        });
-
-        overlay.addEventListener("pointerdown", event => {
-            if (sprayTween || !overlay.classList.contains("active")) return;
-            pointerId = event.pointerId;
-            overlay.classList.add("overlay--charging");
-            overlay.setPointerCapture?.(pointerId);
-            sprayTween = gsap.to(overlay, {
-                duration: HOLD_DURATION,
-                ease: "power2.out",
-                "--spray-scale": 1.8,
-                onComplete: () => {
-                    sprayTween = null;
-                    overlay.classList.remove("overlay--charging");
-                    releasePointer();
-                    onEnter();
-                }
-            });
-        });
-
-        const cancelCharge = () => {
-            if (!sprayTween) return;
-            sprayTween.kill();
-            sprayTween = null;
-            overlay.classList.remove("overlay--charging");
-            gsap.to(overlay, { "--spray-scale": 0, duration: 0.35, ease: "power2.in" });
-            releasePointer();
-        };
-
-        overlay.addEventListener("pointerup", cancelCharge);
-        overlay.addEventListener("pointerleave", cancelCharge);
-        overlay.addEventListener("pointercancel", cancelCharge);
-
-        window.addEventListener("keydown", event => {
-            if ((event.key === "Enter" || event.key === " ") && overlay?.classList.contains("active")) {
-                onEnter();
-            }
-        });
-
-        function releasePointer() {
-            if (pointerId !== null) {
-                overlay.releasePointerCapture?.(pointerId);
-                pointerId = null;
-            }
-        }
-    }
+    hidePanels();
+  });
 }
 
-function isWebGLAvailable() {
-    try {
-        const canvas = document.createElement("canvas");
-        return !!(window.WebGLRenderingContext && (canvas.getContext("webgl") || canvas.getContext("experimental-webgl")));
-    } catch (error) {
-        return false;
-    }
+function setupPanelToggle() {
+  panelLayer?.classList.toggle("panel-layer--hidden", panelsHidden);
+  updatePanelToggle();
+  panelToggle?.addEventListener("click", () => {
+    panelsHidden ? showPanels() : hidePanels();
+  });
+}
+
+function activateStop(id, options = { focusScene: false }) {
+  if (!panelContent[id]) {
+    panelManager.render(null);
+    currentStop = null;
+    if (panelToggle) panelToggle.hidden = true;
+    return;
+  }
+  currentStop = id;
+  panelManager.render(panelContent[id]);
+  if (panelToggle) panelToggle.hidden = false;
+  if (panelsHidden) {
+    showPanels();
+  }
+  if (options.focusScene) {
+    graffitiScene?.focusStop(id);
+  }
+}
+
+function handleSceneSelect(stopId) {
+  if (!stopId) {
+    panelManager.render(null);
+    currentStop = null;
+    hidePanels();
+    if (panelToggle) panelToggle.hidden = true;
+    return;
+  }
+  activateStop(stopId, { focusScene: false });
+}
+
+function handleSceneHover(payload) {
+  if (!payload) {
+    tooltip.hidden = true;
+    return;
+  }
+  tooltip.hidden = false;
+  tooltip.textContent = payload.stop?.tooltip || payload.stop?.label || "Station";
+  tooltip.style.left = `${payload.x + 12}px`;
+  tooltip.style.top = `${payload.y + 12}px`;
+}
+
+function hasWebGLSupport() {
+  try {
+    const testCanvas = document.createElement("canvas");
+    return Boolean(window.WebGL2RenderingContext && testCanvas.getContext("webgl2"));
+  } catch (error) {
+    return false;
+  }
+}
+
+window.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    if (!currentStop) return;
+    event.preventDefault();
+    handleSceneSelect(null);
+    graffitiScene?.resetFocus();
+    return;
+  }
+  if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
+  event.preventDefault();
+  const direction = event.key === "ArrowRight" ? 1 : -1;
+  cycleStops(direction);
+});
+
+function cycleStops(direction) {
+  const index = roomStops.findIndex((stop) => stop.id === currentStop);
+  const fallbackIndex = direction > 0 ? 0 : roomStops.length - 1;
+  const activeIndex = index >= 0 ? index : fallbackIndex;
+  let nextIndex = activeIndex + direction;
+  nextIndex = Math.max(0, Math.min(roomStops.length - 1, nextIndex));
+  if (nextIndex === activeIndex) return;
+  activateStop(roomStops[nextIndex].id, { focusScene: true });
+}
+
+function hidePanels() {
+  panelsHidden = true;
+  panelLayer.classList.add("panel-layer--hidden");
+  updatePanelToggle();
+}
+
+function showPanels() {
+  panelsHidden = false;
+  panelLayer.classList.remove("panel-layer--hidden");
+  updatePanelToggle();
+}
+
+function updatePanelToggle() {
+  if (!panelToggle) return;
+  panelToggle.setAttribute("aria-pressed", String(!panelsHidden));
+  panelToggle.textContent = panelsHidden ? "Afficher infos" : "Masquer infos";
 }

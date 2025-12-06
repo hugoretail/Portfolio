@@ -1,55 +1,67 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeoGraff · Hugo Retail</title>
+    <meta name="description" content="Portfolio immersif de Hugo Retail, graffiti artist et développeur BUT Informatique.">
+    <title>Atelier NeoGraff · Hugo Retail</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@500;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='7' fill='%2300e5ff'/%3E%3Cpath d='M5 11l6-6' stroke='%23050509' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E">
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Unbounded:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23000'%3E%3C/rect%3E%3Cpath d='M6 23 L14 7 L18 14 L26 9' stroke='%23ff3cac' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
     <link rel="stylesheet" href="./styles/main.css">
 </head>
 <body>
     <noscript>
-        <div class="noscript">NeoGraff needs JavaScript/WebGL to paint the scene. Please enable both.</div>
+        <div class="noscript">Ce portfolio a besoin de JavaScript et WebGL pour prendre vie.</div>
     </noscript>
 
-    <canvas id="graffiti-canvas" aria-hidden="true"></canvas>
-    <div class="texture-noise" aria-hidden="true"></div>
-
-    <div id="entry-overlay" class="overlay active">
-        <div class="overlay__sprayfield" aria-hidden="true">
-            <span class="spray spark-1"></span>
-            <span class="spray spark-2"></span>
-            <span class="spray spark-3"></span>
-        </div>
-        <svg class="overlay__stroke" viewBox="0 0 600 280" aria-hidden="true" focusable="false">
-            <path d="M20 240 C80 210 140 210 180 230 C230 255 260 200 300 170 C340 140 360 180 400 210 C450 245 520 200 560 80"/>
-        </svg>
-        <div class="overlay__inner">
-            <h1>Hugo Retail Portfolio</h1>
-            <p class="overlay__hint">Hold anywhere to spray</p>
-        </div>
+    <div id="webgl-fallback" class="fallback" role="alert" hidden>
+        WebGL n'est pas disponible sur cet appareil. Une visite vidéo est en préparation.
     </div>
 
-    <header class="hud">
-        <div class="brand">
-            <span class="brand__tag">Hugo Retail</span>
-            <span class="brand__role">Creative Technologist · Graffiti Artist</span>
-        </div>
-        <span class="brand__spray" aria-hidden="true">NeoGraff</span>
-    </header>
+    <canvas id="room-canvas" aria-hidden="true"></canvas>
+    <div class="grain" aria-hidden="true"></div>
 
-    <main id="panel-layer" aria-live="polite">
+    <div id="entry-overlay" class="overlay overlay--active">
+        <div class="overlay__mist" aria-hidden="true"></div>
+        <div class="overlay__strokes" aria-hidden="true"></div>
+        <div class="overlay__leaves" aria-hidden="true">
+            <span class="overlay__leaf overlay__leaf--a"></span>
+            <span class="overlay__leaf overlay__leaf--b"></span>
+            <span class="overlay__leaf overlay__leaf--c"></span>
+            <span class="overlay__leaf overlay__leaf--d"></span>
+        </div>
+        <h1 class="overlay__title">
+            <span class="overlay__title-main">Hugo Retail</span>
+            <span class="overlay__title-sub">Creative Tech &amp; Graffiti</span>
+        </h1>
+        <button id="enter-room" class="overlay__cta" type="button" aria-label="Entrer dans l'atelier">Glisser dans l'atelier</button>
+    </div>
+
+    <div class="corner-brand" aria-label="Signature">
+        <span class="corner-brand__paper" aria-hidden="true"></span>
+        <span class="corner-brand__label">Hugo Retail</span>
+    </div>
+
+    <main id="panel-layer" class="panel-layer panel-layer--hidden" aria-live="polite">
         <section class="panel panel--placeholder" id="panel-placeholder">
-            <h2>Pick a totem to begin</h2>
-            <p>Every floating relic hides a part of my story. Click one to zoom in, click empty space to reset.</p>
+            <h2>Glisse dans l'atelier</h2>
+            <p>Sélectionne un objet 3D ou utilise les flèches du clavier pour te déplacer. Chaque station révèle un pan de mon travail.</p>
         </section>
     </main>
 
-    <div class="tooltip" id="tooltip" role="status" aria-live="polite"></div>
+    <button id="panel-toggle" class="panel-toggle" type="button" aria-pressed="false" hidden>Afficher infos</button>
 
+    <div id="tooltip" class="tooltip" role="status" aria-live="polite" hidden></div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.162.0/build/three.module.js"
+            }
+        }
+    </script>
     <script type="module" src="./scripts/main.js"></script>
 </body>
 </html>

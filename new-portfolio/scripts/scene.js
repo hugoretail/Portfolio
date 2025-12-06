@@ -1,373 +1,715 @@
-import { gsap } from "https://cdn.skypack.dev/gsap@3.12.5";
-import * as THREE from "https://unpkg.com/three@0.163.0/build/three.module.js";
-import { OrbitControls } from "https://unpkg.com/three@0.163.0/examples/jsm/controls/OrbitControls.js?module";
+import { gsap } from "https://cdn.skypack.dev/gsap";
+import * as THREE from "https://unpkg.com/three@0.162.0/build/three.module.js";
+import { GLTFLoader } from "https://unpkg.com/three@0.162.0/examples/jsm/loaders/GLTFLoader.js";
 
-const colorMap = {
-    spray: 0xff6df0,
-    holo: 0x00e5ff,
-    ink: 0xffb347
-};
+export class GraffitiStudioScene {
+  constructor({ canvas, stops, onSelect, onHover }) {
+    this.canvas = canvas;
+    this.stops = stops;
+    this.onSelect = onSelect;
+    this.onHover = onHover;
 
-export class GraffitiScene {
-    constructor(canvas, nodes, onSelect, tooltipEl) {
-        this.canvas = canvas;
-        this.nodes = nodes;
-        this.onSelect = onSelect;
-        this.tooltipEl = tooltipEl;
-        this.pointer = new THREE.Vector2();
-        this.raycaster = new THREE.Raycaster();
-        this.intersected = null;
-        this.activeMesh = null;
-        this.interactiveMeshes = [];
-        this.defaultCameraPos = new THREE.Vector3(0, 6, 16);
-        this.defaultLookAt = new THREE.Vector3(0, 2, 0);
+    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.8));
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    this.renderer.toneMappingExposure = 1.1;
 
-        this.scene = new THREE.Scene();
-        this.scene.fog = new THREE.FogExp2(0x050509, 0.045);
+    this.scene = new THREE.Scene();
+    this.scene.background = null;
+    this.scene.fog = new THREE.FogExp2(0xf7ecde, 0.05);
 
-        this.camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 200);
-        this.camera.position.copy(this.defaultCameraPos ?? new THREE.Vector3(0, 5, 18));
+    this.camera = new THREE.PerspectiveCamera(
+      52,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      120
+    );
+    this.camera.position.set(0, 2.1, 5.4);
+    this.currentLookAt = new THREE.Vector3(0, 1.4, -0.2);
 
-        this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.pointer = new THREE.Vector2();
+    this.parallax = new THREE.Vector2();
+    this.raycaster = new THREE.Raycaster();
+    this.clock = new THREE.Clock();
+    this.gltfLoader = new GLTFLoader();
 
-        this.controls = new OrbitControls(this.camera, canvas);
-        this.controls.enablePan = false;
-        this.controls.enableZoom = false;
-        this.controls.autoRotate = true;
-        this.controls.autoRotateSpeed = 0.8;
+    this.stopInstances = new Map();
+    this.interactiveMeshes = [];
+    this.floatingItems = [];
+    this.anchorObjects = {};
+    this.seaTexture = this.createSeaTexture();
 
-        this.#addLights();
-        this.#buildEnvironment();
-        this.#createTotems();
+    this.createEnvironment();
+    this.createStops();
 
-        window.addEventListener("resize", () => this.#handleResize());
-        canvas.addEventListener("pointermove", e => this.#handlePointerMove(e));
-        canvas.addEventListener("click", () => this.#handleClick());
+    this.handleResize = this.handleResize.bind(this);
+    this.handlePointerMove = this.handlePointerMove.bind(this);
+    this.handlePointerLeave = this.handlePointerLeave.bind(this);
+    this.handleClick = this.handleClick.bind(this);
 
-        this.#loop();
-    }
+    window.addEventListener("resize", this.handleResize);
+    canvas.addEventListener("pointermove", this.handlePointerMove);
+    canvas.addEventListener("pointerleave", this.handlePointerLeave);
+    canvas.addEventListener("click", this.handleClick);
 
-    #addLights() {
-        const ambient = new THREE.AmbientLight(0xffffff, 0.5);
-        this.scene.add(ambient);
+    this.handleResize();
+    this.animate();
+  }
 
-        const dir = new THREE.DirectionalLight(0xfef7d3, 1.1);
-        dir.position.set(6, 8, 4);
-        this.scene.add(dir);
+  createEnvironment() {
+    const floorGeo = new THREE.PlaneGeometry(20, 12);
+    const floorMat = new THREE.MeshStandardMaterial({
+      color: 0xdcc0a7,
+      metalness: 0.2,
+      roughness: 0.85
+    });
+    const floor = new THREE.Mesh(floorGeo, floorMat);
+    floor.rotation.x = -Math.PI / 2;
+    floor.receiveShadow = true;
+    this.scene.add(floor);
 
-        const magenta = new THREE.PointLight(0xff00d4, 1.4, 40);
-        magenta.position.set(-6, 2, 0);
-        this.scene.add(magenta);
+    const wallGeo = new THREE.PlaneGeometry(22, 9.5);
+    const wallMat = new THREE.MeshStandardMaterial({
+      color: 0xf5e8d9,
+      metalness: 0.03,
+      roughness: 0.96
+    });
+    const wall = new THREE.Mesh(wallGeo, wallMat);
+    wall.position.set(0, 2.4, -1.7);
+    this.scene.add(wall);
 
-        const cyan = new THREE.SpotLight(0x00e5ff, 1.6, 50, Math.PI / 5, 0.5);
-        cyan.position.set(4, 6, -5);
-        this.scene.add(cyan);
-    }
+    const leftWall = new THREE.Mesh(
+      new THREE.PlaneGeometry(12, 9.5),
+      new THREE.MeshStandardMaterial({ color: 0xf8eddf, metalness: 0.04, roughness: 0.95 })
+    );
+    leftWall.position.set(-10, 2.4, 0.2);
+    leftWall.rotation.y = Math.PI / 2;
+    this.scene.add(leftWall);
 
-    #buildEnvironment() {
-        const wallGeo = new THREE.PlaneGeometry(50, 28);
-        const wallMat = new THREE.MeshStandardMaterial({
-            color: 0x080711,
-            roughness: 0.95,
-            metalness: 0.15,
-            emissive: 0x120a1d,
-            emissiveIntensity: 0.8
-        });
-        const wall = new THREE.Mesh(wallGeo, wallMat);
-        wall.position.set(0, 8, -18);
-        this.scene.add(wall);
+    const rightWall = new THREE.Mesh(
+      new THREE.PlaneGeometry(12, 9.5),
+      new THREE.MeshStandardMaterial({ color: 0xf8eddf, metalness: 0.04, roughness: 0.95 })
+    );
+    rightWall.position.set(10, 2.4, 0.2);
+    rightWall.rotation.y = -Math.PI / 2;
+    this.scene.add(rightWall);
 
-        const groundGeo = new THREE.CircleGeometry(11, 64);
-        const groundMat = new THREE.MeshStandardMaterial({
-            color: 0x06050b,
-            metalness: 0.2,
-            roughness: 0.8,
-            side: THREE.DoubleSide
-        });
-        const ground = new THREE.Mesh(groundGeo, groundMat);
-        ground.rotation.x = -Math.PI / 2;
-        ground.position.y = -0.51;
-        this.scene.add(ground);
+    const ceiling = new THREE.Mesh(
+      new THREE.PlaneGeometry(20, 12),
+      new THREE.MeshStandardMaterial({ color: 0xfaf4ea, roughness: 1 })
+    );
+    ceiling.rotation.x = Math.PI / 2;
+    ceiling.position.y = 4.8;
+    this.scene.add(ceiling);
 
-        const ribbonGeo = new THREE.TorusGeometry(6.5, 0.12, 24, 180);
-        const ribbonMat = new THREE.MeshBasicMaterial({ color: 0x3c0f62, transparent: true, opacity: 0.6, side: THREE.DoubleSide });
-        const ribbon = new THREE.Mesh(ribbonGeo, ribbonMat);
-        ribbon.rotation.x = Math.PI / 2.35;
-        ribbon.position.y = 0.4;
-        ribbon.scale.set(1.4, 1, 1);
-        this.scene.add(ribbon);
+    const ambient = new THREE.HemisphereLight(0xfff7eb, 0xf3d9c3, 0.78);
+    this.scene.add(ambient);
 
-        this.#createDust();
-    }
+    const keyLight = new THREE.DirectionalLight(0xffedd3, 0.85);
+    keyLight.position.set(4, 6.2, 3.2);
+    this.scene.add(keyLight);
 
-    #createDust() {
-        const particleCount = 900;
-        const positions = new Float32Array(particleCount * 3);
-        for (let i = 0; i < particleCount; i += 1) {
-            positions[i * 3] = (Math.random() - 0.5) * 40;
-            positions[i * 3 + 1] = Math.random() * 14 + 1;
-            positions[i * 3 + 2] = (Math.random() - 0.5) * 40;
-        }
-        const geometry = new THREE.BufferGeometry();
-        geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    const windowLight = new THREE.DirectionalLight(0xfdf3df, 0.6);
+    windowLight.position.set(6, 4.5, -4.5);
+    this.scene.add(windowLight);
 
-        const sprite = this.#generateCircleTexture();
-        const material = new THREE.PointsMaterial({
-            map: sprite,
-            transparent: true,
-            opacity: 0.5,
-            depthWrite: false,
-            size: 0.22,
-            color: 0xffffff
-        });
-        this.sprayParticles = new THREE.Points(geometry, material);
-        this.scene.add(this.sprayParticles);
-    }
+    const lampLight = new THREE.PointLight(0xffd6a5, 1, 12, 2);
+    lampLight.position.set(-4.2, 3.1, 1.6);
+    this.scene.add(lampLight);
 
-    #generateCircleTexture() {
-        const size = 128;
-        const canvas = document.createElement("canvas");
-        canvas.width = size;
-        canvas.height = size;
-        const ctx = canvas.getContext("2d");
-        const gradient = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
-        gradient.addColorStop(0, "rgba(255,255,255,1)");
-        gradient.addColorStop(1, "rgba(255,255,255,0)");
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, size, size);
-        return new THREE.CanvasTexture(canvas);
-    }
+    this.createRoomDetails();
+  }
 
-    #createTotems() {
-        this.totemGroups = [];
-        const radius = 7.5;
-        const step = (Math.PI * 2) / this.nodes.length;
-        this.nodes.forEach((node, index) => {
-            const angle = index * step;
-            const x = Math.cos(angle) * radius;
-            const z = Math.sin(angle) * radius;
+  createRoomDetails() {
+    const baseboard = new THREE.Mesh(
+      new THREE.BoxGeometry(22, 0.3, 0.12),
+      new THREE.MeshStandardMaterial({ color: 0xe9ddcf, roughness: 0.7 })
+    );
+    baseboard.position.set(0, 0.15, -1.64);
+    this.scene.add(baseboard);
 
-            const group = this.#buildTotem(node);
-            group.position.set(x, 0, z);
-            group.rotation.y = -angle + Math.PI / 2;
-            this.scene.add(group);
-            this.totemGroups.push(group);
+    const rug = new THREE.Mesh(
+      new THREE.CircleGeometry(2.25, 48),
+      new THREE.MeshStandardMaterial({ color: 0xfce1c6, roughness: 0.95 })
+    );
+    rug.rotation.x = -Math.PI / 2;
+    rug.position.set(-1.5, 0.01, 0.35);
+    this.scene.add(rug);
 
-            group.traverse(child => {
-                if (child.isMesh) {
-                    child.userData = {
-                        nodeId: node.id,
-                        label: node.label,
-                        root: group
-                    };
-                    this.interactiveMeshes.push(child);
-                }
-            });
-        });
-    }
+    const sofa = new THREE.Group();
+    const sofaBase = new THREE.Mesh(
+      new THREE.BoxGeometry(4, 0.78, 1.4),
+      new THREE.MeshStandardMaterial({ color: 0xe2e3eb, roughness: 0.6 })
+    );
+    sofaBase.position.y = 0.39;
+    const sofaBack = new THREE.Mesh(
+      new THREE.BoxGeometry(4, 1.05, 0.45),
+      new THREE.MeshStandardMaterial({ color: 0xcfd0d8, roughness: 0.5 })
+    );
+    sofaBack.position.set(0, 1.02, -0.42);
+    const cushionMaterial = new THREE.MeshStandardMaterial({ color: 0xf4d9c8, roughness: 0.8 });
+    const cushionLeft = new THREE.Mesh(new THREE.BoxGeometry(1.45, 0.45, 1.2), cushionMaterial);
+    cushionLeft.position.set(-0.9, 0.88, 0.05);
+    const cushionRight = cushionLeft.clone();
+    cushionRight.position.x = 0.9;
+    sofa.add(sofaBase, sofaBack, cushionLeft, cushionRight);
+    sofa.position.set(-2.6, 0, -0.15);
+    this.scene.add(sofa);
 
-    #buildTotem(node) {
-        const group = new THREE.Group();
-        group.userData = { nodeId: node.id, label: node.label };
-        const accent = colorMap[node.vignette] || 0xffffff;
+    const coffeeTable = new THREE.Group();
+    const tableTop = new THREE.Mesh(
+      new THREE.BoxGeometry(1.8, 0.08, 1),
+      new THREE.MeshStandardMaterial({ color: 0xe8c9a6, roughness: 0.6 })
+    );
+    tableTop.position.y = 0.44;
+    const legMaterial = new THREE.MeshStandardMaterial({ color: 0xaf825f });
+    const tableLeg = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.44, 0.12), legMaterial);
+    tableLeg.position.set(0.65, 0.22, 0.35);
+    const leg2 = tableLeg.clone();
+    leg2.position.set(-0.65, 0.22, 0.35);
+    const leg3 = tableLeg.clone();
+    leg3.position.set(0.65, 0.22, -0.35);
+    const leg4 = tableLeg.clone();
+    leg4.position.set(-0.65, 0.22, -0.35);
+    coffeeTable.add(tableTop, tableLeg, leg2, leg3, leg4);
+    coffeeTable.position.set(-1.7, 0, 0.65);
+    this.scene.add(coffeeTable);
+    this.placeSprayCan(coffeeTable);
 
-        if (node.id === "graffiti" || node.id === "street") {
-            this.#buildSprayCan(group, accent);
-        } else if (node.id === "cs") {
-            this.#buildHoloModule(group, accent);
-        } else {
-            this.#buildInkGlyph(group, accent);
-        }
+    const atelierDesk = new THREE.Group();
+    const deskTop = new THREE.Mesh(
+      new THREE.BoxGeometry(2.8, 0.08, 1.4),
+      new THREE.MeshStandardMaterial({ color: 0xf3d3b0, roughness: 0.55 })
+    );
+    deskTop.position.y = 1.02;
+    const deskLegMaterial = new THREE.MeshStandardMaterial({ color: 0xc49a7c });
+    const deskLegFrontLeft = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.06, 0.06, 1.05, 16),
+      deskLegMaterial
+    );
+    deskLegFrontLeft.position.set(-1.1, 0.5, 0.55);
+    const deskLegFrontRight = deskLegFrontLeft.clone();
+    deskLegFrontRight.position.x = 1.1;
+    const deskLegBackLeft = deskLegFrontLeft.clone();
+    deskLegBackLeft.position.z = -0.55;
+    const deskLegBackRight = deskLegFrontRight.clone();
+    deskLegBackRight.position.z = -0.55;
+    const sketchPad = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.9, 0.65),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 })
+    );
+    sketchPad.rotation.x = -Math.PI / 2.05;
+    sketchPad.position.set(-0.2, 1.06, 0);
+    const deskLamp = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.04, 0.04, 0.9, 12),
+      new THREE.MeshStandardMaterial({ color: 0x8f7c6a })
+    );
+    deskLamp.position.set(0.9, 0.9, -0.3);
+    const lampShade = new THREE.Mesh(
+      new THREE.ConeGeometry(0.25, 0.35, 24),
+      new THREE.MeshStandardMaterial({ color: 0xfff3da, emissive: 0xfff1d0, emissiveIntensity: 0.4 })
+    );
+    lampShade.position.set(0.9, 1.35, -0.3);
+    const stool = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.35, 0.4, 0.45, 24),
+      new THREE.MeshStandardMaterial({ color: 0xd8a777 })
+    );
+    stool.position.set(-0.3, 0.23, -0.9);
+    atelierDesk.add(
+      deskTop,
+      deskLegFrontLeft,
+      deskLegFrontRight,
+      deskLegBackLeft,
+      deskLegBackRight,
+      sketchPad,
+      deskLamp,
+      lampShade,
+      stool
+    );
+    atelierDesk.position.set(-5.2, 0, 0.45);
+    this.scene.add(atelierDesk);
+    this.anchorObjects.atelier = atelierDesk;
 
-        gsap.to(group.position, {
-            y: "+=0.6",
-            duration: 2 + Math.random(),
-            repeat: -1,
-            yoyo: true,
-            ease: "sine.inOut"
-        });
-        gsap.to(group.rotation, {
-            y: "+=0.6",
-            duration: 6,
-            repeat: -1,
-            ease: "sine.inOut"
-        });
+    const mural = new THREE.Group();
+    const muralFrame = new THREE.Mesh(
+      new THREE.PlaneGeometry(5.4, 3.3),
+      new THREE.MeshStandardMaterial({ color: 0xb7896b, roughness: 0.7 })
+    );
+    muralFrame.position.z = -0.03;
+    const muralPanel = new THREE.Mesh(
+      new THREE.PlaneGeometry(5, 2.9),
+      new THREE.MeshStandardMaterial({ color: 0xf9d6c3, roughness: 0.8 })
+    );
+    const muralStroke = new THREE.Mesh(
+      new THREE.PlaneGeometry(1.4, 0.2),
+      new THREE.MeshStandardMaterial({ color: 0xff715e, roughness: 0.4 })
+    );
+    muralStroke.rotation.z = THREE.MathUtils.degToRad(12);
+    muralStroke.position.set(0.8, 0.3, 0.02);
+    const muralCircle = new THREE.Mesh(
+      new THREE.CircleGeometry(0.35, 32),
+      new THREE.MeshStandardMaterial({ color: 0x2575fc })
+    );
+    muralCircle.position.set(-1, 0.9, 0.02);
+    mural.add(muralFrame, muralPanel, muralStroke, muralCircle);
+    mural.position.set(-0.2, 2.45, -1.66);
+    this.scene.add(mural);
+    this.anchorObjects.graffiti = mural;
 
-        return group;
-    }
+    const windowGroup = new THREE.Group();
+    const windowFrame = new THREE.Mesh(
+      new THREE.BoxGeometry(4.8, 3.2, 0.12),
+      new THREE.MeshStandardMaterial({ color: 0xc5b59f, roughness: 0.6 })
+    );
+    const windowView = new THREE.Mesh(
+      new THREE.PlaneGeometry(4.2, 2.6),
+      new THREE.MeshStandardMaterial({
+        map: this.seaTexture,
+        transparent: true,
+        opacity: 0.96,
+        roughness: 0.15
+      })
+    );
+    windowView.position.z = 0.07;
+    const muntinVertical = new THREE.Mesh(
+      new THREE.BoxGeometry(0.08, 2.6, 0.08),
+      new THREE.MeshStandardMaterial({ color: 0xaf9b83 })
+    );
+    const muntinHorizontal = new THREE.Mesh(
+      new THREE.BoxGeometry(4.2, 0.08, 0.08),
+      new THREE.MeshStandardMaterial({ color: 0xaf9b83 })
+    );
+    muntinVertical.position.z = 0.08;
+    muntinHorizontal.position.z = 0.08;
+    windowGroup.add(windowFrame, windowView, muntinVertical, muntinHorizontal);
+    windowGroup.position.set(4.5, 3, -1.63);
+    this.scene.add(windowGroup);
 
-    #buildSprayCan(group, accent) {
-        const bodyMat = new THREE.MeshPhysicalMaterial({
-            color: accent,
-            metalness: 0.3,
-            roughness: 0.25,
-            clearcoat: 0.8,
-            clearcoatRoughness: 0.1,
-            emissive: accent,
-            emissiveIntensity: 0.08
-        });
-        const body = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 3.2, 48), bodyMat);
-        body.position.y = 2.2;
-        group.add(body);
-
-        const capMat = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.6, roughness: 0.2 });
-        const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.52, 0.52, 0.5, 32), capMat);
-        cap.position.y = 3.6;
-        group.add(cap);
-
-        const nozzle = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.2, 0.25, 16), new THREE.MeshStandardMaterial({ color: 0xffffff }));
-        nozzle.position.set(0, 3.95, 0.08);
-        group.add(nozzle);
-
-        const dripMat = new THREE.MeshStandardMaterial({ color: accent, emissive: accent, emissiveIntensity: 0.4, transparent: true, opacity: 0.8 });
-        const drip = new THREE.Mesh(new THREE.CapsuleGeometry(0.15, 0.8, 6, 12), dripMat);
-        drip.position.set(0.5, 1.5, 0.3);
-        drip.rotation.z = Math.PI / 5;
-        group.add(drip);
-    }
-
-    #buildHoloModule(group, accent) {
-        const prismMat = new THREE.MeshPhysicalMaterial({
-            color: 0x10152a,
-            metalness: 0.4,
-            roughness: 0.1,
-            transmission: 0.7,
-            transparent: true,
-            opacity: 0.9,
-            emissive: accent,
-            emissiveIntensity: 0.25
-        });
-        const prism = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.4, 2.4, 6), prismMat);
-        prism.position.y = 1.8;
-        group.add(prism);
-
-        const core = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.7, 0.7), new THREE.MeshStandardMaterial({ color: accent, emissive: accent, emissiveIntensity: 0.8 }));
-        core.position.y = 1.8;
-        group.add(core);
-
-        const edges = new THREE.LineSegments(
-            new THREE.EdgesGeometry(new THREE.BoxGeometry(1.3, 1.3, 1.3)),
-            new THREE.LineBasicMaterial({ color: accent, transparent: true, opacity: 0.4 })
+    const techShelf = new THREE.Group();
+    const shelfMaterial = new THREE.MeshStandardMaterial({ color: 0xcaa274, roughness: 0.5 });
+    const shelfHeight = 2.4;
+    const sideGeometry = new THREE.BoxGeometry(0.12, shelfHeight, 0.38);
+    const sideLeft = new THREE.Mesh(sideGeometry, shelfMaterial);
+    sideLeft.position.set(-1, shelfHeight / 2, 0);
+    const sideRight = sideLeft.clone();
+    sideRight.position.x = 1;
+    const backPanel = new THREE.Mesh(
+      new THREE.BoxGeometry(2.1, shelfHeight, 0.02),
+      new THREE.MeshStandardMaterial({ color: 0xf1e5d6, roughness: 0.85 })
+    );
+    backPanel.position.set(0, shelfHeight / 2, -0.17);
+    techShelf.add(sideLeft, sideRight, backPanel);
+    const shelfLevels = [0.25, 1.15, 2.05];
+    shelfLevels.forEach((height, levelIndex) => {
+      const board = new THREE.Mesh(
+        new THREE.BoxGeometry(2.05, 0.08, 0.4),
+        new THREE.MeshStandardMaterial({ color: 0xe3c9a7, roughness: 0.5 })
+      );
+      board.position.y = height;
+      techShelf.add(board);
+      for (let i = 0; i < 4; i += 1) {
+        const book = new THREE.Mesh(
+          new THREE.BoxGeometry(0.25, 0.4 + Math.random() * 0.45, 0.18),
+          new THREE.MeshStandardMaterial({
+            color: new THREE.Color().setHSL(0.07 * (i + levelIndex) + 0.05, 0.45, 0.55)
+          })
         );
-        edges.position.y = 1.8;
-        group.add(edges);
+        book.position.set(-0.75 + i * 0.5, height + 0.35, (i % 2 === 0 ? -0.05 : 0.05));
+        techShelf.add(book);
+      }
+    });
+    techShelf.position.set(1.9, 0, -0.95);
+    this.scene.add(techShelf);
+    this.anchorObjects.code = techShelf;
+
+    const contactPlant = new THREE.Group();
+    const plantPot = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.4, 0.55, 0.55, 24),
+      new THREE.MeshStandardMaterial({ color: 0xe2b18d })
+    );
+    const plantLeaves = new THREE.Mesh(
+      new THREE.ConeGeometry(0.9, 1.6, 32),
+      new THREE.MeshStandardMaterial({ color: 0x5ea27b, roughness: 0.4 })
+    );
+    plantLeaves.position.y = 1.1;
+    const floorLampStem = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.05, 0.05, 1.6, 16),
+      new THREE.MeshStandardMaterial({ color: 0xe8d5c2 })
+    );
+    floorLampStem.position.set(0.6, 0.8, 0);
+    const floorLampShade = new THREE.Mesh(
+      new THREE.ConeGeometry(0.4, 0.55, 24),
+      new THREE.MeshStandardMaterial({ color: 0xfff6dc, emissive: 0xffe9b5, emissiveIntensity: 0.3 })
+    );
+    floorLampShade.position.set(0.6, 1.7, 0);
+    contactPlant.add(plantPot, plantLeaves, floorLampStem, floorLampShade);
+    contactPlant.position.set(4.1, 0, 1.2);
+    this.scene.add(contactPlant);
+    this.anchorObjects.contact = contactPlant;
+  }
+
+  createSeaTexture() {
+    const canvas = document.createElement("canvas");
+    canvas.width = 256;
+    canvas.height = 256;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+
+    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    gradient.addColorStop(0, "#d7f0ff");
+    gradient.addColorStop(0.55, "#7ecbff");
+    gradient.addColorStop(1, "#1f86b2");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.25)";
+    ctx.lineWidth = 3;
+    for (let i = 0; i < 3; i += 1) {
+      ctx.beginPath();
+      const baseY = 150 + i * 25;
+      ctx.moveTo(0, baseY);
+      for (let x = 0; x <= canvas.width; x += 32) {
+        const controlX = x + 16;
+        const controlY = baseY + (i % 2 === 0 ? 6 : -6);
+        ctx.quadraticCurveTo(controlX, controlY, x + 32, baseY);
+      }
+      ctx.stroke();
     }
 
-    #buildInkGlyph(group, accent) {
-        const orbMat = new THREE.MeshStandardMaterial({
-            color: accent,
-            metalness: 0.2,
-            roughness: 0.5,
-            emissive: accent,
-            emissiveIntensity: 0.15,
-            transparent: true,
-            opacity: 0.95
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.anisotropy = 4;
+    texture.needsUpdate = true;
+    return texture;
+  }
+
+  placeSprayCan(parent) {
+    const tableSurfaceHeight = 0.44;
+    const target = parent ?? this.scene;
+    this.gltfLoader.load(
+      "./assets/models/graffiti_spray_can.glb",
+      (gltf) => {
+        const sprayCan = gltf.scene;
+        const box = new THREE.Box3().setFromObject(sprayCan);
+        const size = new THREE.Vector3();
+        box.getSize(size);
+        const desiredHeight = 0.34;
+        const scaleFactor = desiredHeight / (size.y || 1);
+        sprayCan.scale.setScalar(scaleFactor);
+        sprayCan.rotation.y = THREE.MathUtils.degToRad(-30);
+        sprayCan.rotation.z = THREE.MathUtils.degToRad(2);
+        sprayCan.traverse((child) => {
+          if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+          }
         });
-        const orb = new THREE.Mesh(new THREE.IcosahedronGeometry(1.2, 1), orbMat);
-        orb.position.y = 1.6;
-        group.add(orb);
+        sprayCan.updateMatrixWorld(true);
+        const adjustedBox = new THREE.Box3().setFromObject(sprayCan);
+        sprayCan.position.set(0.25, tableSurfaceHeight - adjustedBox.min.y, -0.1);
+        target.add(sprayCan);
+      },
+      undefined,
+      (error) => {
+        console.warn("Failed to load graffiti spray can model", error);
+      }
+    );
+  }
 
-        const ringMat = new THREE.MeshBasicMaterial({ color: accent, transparent: true, opacity: 0.35, side: THREE.DoubleSide });
-        const ring = new THREE.Mesh(new THREE.RingGeometry(0.8, 1.4, 32), ringMat);
-        ring.rotation.x = Math.PI / 2;
-        ring.position.y = 1.6;
-        group.add(ring);
-    }
+  createStops() {
+    this.stops.forEach((stop) => {
+      const anchorMesh = stop.anchor ? this.anchorObjects?.[stop.anchor] : null;
+      let mesh = anchorMesh ?? this.createMeshForStop(stop);
+      if (!mesh) {
+        console.warn(`Aucun mesh pour le stop ${stop.id}`);
+        return;
+      }
 
-    #handleResize() {
-        this.camera.aspect = window.innerWidth / window.innerHeight;
-        this.camera.updateProjectionMatrix();
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
-    }
+      if (!anchorMesh) {
+        this.scene.add(mesh);
+      }
 
-    #handlePointerMove(event) {
-        const rect = this.canvas.getBoundingClientRect();
-        this.pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-        this.pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-        this.tooltipEl.style.left = `${event.clientX}px`;
-        this.tooltipEl.style.top = `${event.clientY}px`;
-    }
-
-    #handleClick() {
-        if (this.intersected) {
-            const root = this.intersected.object.userData?.root || this.intersected.object;
-            this.#focusTotem(root);
-            this.onSelect(root.userData.nodeId);
-        } else {
-            this.clearFocus(true);
-        }
-    }
-
-    #focusTotem(group) {
-        if (!group) return;
-        if (this.activeMesh && this.activeMesh !== group) {
-            gsap.to(this.activeMesh.scale, { x: 1, y: 1, z: 1, duration: 0.8, ease: "power2.out" });
-        }
-        this.activeMesh = group;
-        gsap.to(group.scale, { x: 1.15, y: 1.15, z: 1.15, duration: 0.8, ease: "back.out(2)" });
-
-        const target = group.position.clone().normalize().multiplyScalar(10);
-        target.y += 3;
-        this.#moveCamera(target, group.position.clone().setY(1.5));
-    }
-
-    highlightNodeById(nodeId) {
-        const group = this.totemGroups.find(m => m.userData.nodeId === nodeId);
-        if (group) {
-            this.#focusTotem(group);
-            this.onSelect(nodeId);
-        }
-    }
-
-    clearFocus(shouldNotify = false) {
-        if (this.activeMesh) {
-            gsap.to(this.activeMesh.scale, { x: 1, y: 1, z: 1, duration: 0.6, ease: "power2.out" });
-            this.activeMesh = null;
-        }
-        this.#moveCamera(this.defaultCameraPos, this.defaultLookAt);
-        if (shouldNotify) {
-            this.onSelect(null);
-        }
-    }
-
-    #moveCamera(position, lookAt) {
-        gsap.to(this.camera.position, {
-            duration: 1,
-            x: position.x,
-            y: position.y,
-            z: position.z,
-            ease: "power2.out",
-            onUpdate: () => {
-                this.camera.lookAt(lookAt);
-            }
+      mesh.userData.stopId = stop.id;
+      if (typeof mesh.traverse === "function") {
+        mesh.traverse((child) => {
+          child.userData.stopId = stop.id;
         });
+      }
+
+      this.interactiveMeshes.push(mesh);
+
+      if (!anchorMesh) {
+        this.floatingItems.push({
+          mesh,
+          basePosition: mesh.position.clone(),
+          amplitude: 0.18 + Math.random() * 0.22,
+          speed: 0.5 + Math.random() * 0.4,
+          offset: Math.random() * Math.PI * 2
+        });
+      }
+
+      this.stopInstances.set(stop.id, {
+        data: stop,
+        mesh
+      });
+    });
+  }
+
+  createMeshForStop(stop) {
+    if (stop.model?.url) {
+      return this.createModelForStop(stop);
+    }
+    if (!stop.mesh) {
+      console.warn(`Aucun mesh défini pour le stop ${stop.id}`);
+      return null;
     }
 
-    #loop() {
-        requestAnimationFrame(() => this.#loop());
-        this.controls.update();
-        if (this.sprayParticles) {
-            this.sprayParticles.rotation.y += 0.0008;
-        }
-        this.#updateRaycaster();
-        this.renderer.render(this.scene, this.camera);
+    const color = new THREE.Color(stop.mesh?.color ?? "#ffffff");
+    let geometry;
+    let material;
+
+    switch (stop.mesh.type) {
+      case "desk":
+        geometry = new THREE.BoxGeometry(2.6, 0.5, 1.2);
+        material = new THREE.MeshPhysicalMaterial({
+          color,
+          roughness: 0.4,
+          transmission: 0.15,
+          thickness: 0.6,
+          clearcoat: 1,
+          clearcoatRoughness: 0.2
+        });
+        break;
+      case "wall":
+        geometry = new THREE.PlaneGeometry(3.6, 2.8, 16, 16);
+        material = new THREE.MeshStandardMaterial({
+          color,
+          metalness: 0.2,
+          roughness: 0.65,
+          emissive: 0x330a13,
+          emissiveIntensity: 0.7
+        });
+        break;
+      case "prism":
+        geometry = new THREE.OctahedronGeometry(1.1, 0);
+        material = new THREE.MeshStandardMaterial({
+          color,
+          metalness: 0.8,
+          roughness: 0.2,
+          emissive: 0x113836,
+          emissiveIntensity: 0.6
+        });
+        break;
+      case "portal":
+        geometry = new THREE.TorusKnotGeometry(0.8, 0.18, 120, 16);
+        material = new THREE.MeshStandardMaterial({
+          color,
+          metalness: 0.3,
+          roughness: 0.25,
+          emissive: 0x331b02,
+          emissiveIntensity: 0.8
+        });
+        break;
+      default:
+        geometry = new THREE.BoxGeometry(1.2, 1.2, 1.2);
+        material = new THREE.MeshStandardMaterial({ color });
     }
 
-    #updateRaycaster() {
-        this.raycaster.setFromCamera(this.pointer, this.camera);
-        const intersects = this.raycaster.intersectObjects(this.interactiveMeshes, false);
+    const mesh = new THREE.Mesh(geometry, material);
+    const lookAt = stop.camera?.lookAt ?? [0, 1.4, 0];
+    mesh.position.set(lookAt[0], lookAt[1], 0);
 
-        if (intersects.length) {
-            if (this.intersected !== intersects[0]) {
-                this.intersected = intersects[0];
-                this.tooltipEl.textContent = this.intersected.object.userData.label;
-                this.tooltipEl.classList.add("visible");
-            }
+    if (stop.mesh.type === "desk") {
+      mesh.position.y = 0.75;
+    }
+    if (stop.mesh.type === "wall") {
+      mesh.position.z = -0.6;
+    }
+
+    return mesh;
+  }
+
+  createModelForStop(stop) {
+    const proxy = new THREE.Group();
+    const [px, py, pz] = stop.model?.position ?? stop.camera?.lookAt ?? [0, 1.4, 0];
+    proxy.position.set(px, py, pz ?? 0);
+
+    if (stop.model?.rotation) {
+      proxy.rotation.set(
+        THREE.MathUtils.degToRad(stop.model.rotation[0] ?? 0),
+        THREE.MathUtils.degToRad(stop.model.rotation[1] ?? 0),
+        THREE.MathUtils.degToRad(stop.model.rotation[2] ?? 0)
+      );
+    }
+
+    this.gltfLoader.load(
+      stop.model.url,
+      (gltf) => {
+        const model = gltf.scene;
+        const scale = stop.model?.scale ?? 1;
+        if (Array.isArray(scale)) {
+          model.scale.set(scale[0] ?? 1, scale[1] ?? 1, scale[2] ?? 1);
         } else {
-            this.intersected = null;
-            this.tooltipEl.classList.remove("visible");
+          model.scale.setScalar(scale);
         }
+        model.traverse((child) => {
+          if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+          }
+        });
+        proxy.add(model);
+      },
+      undefined,
+      (error) => {
+        console.warn(`Impossible de charger le modèle ${stop.model.url}`, error);
+      }
+    );
+
+    return proxy;
+  }
+
+  focusStop(id) {
+    const target = this.stopInstances.get(id);
+    if (!target) return;
+    this.activeStop = id;
+    const { camera } = target.data;
+    const [x, y, z] = camera.position;
+    const [tx, ty, tz] = camera.lookAt;
+
+    gsap.to(this.camera.position, {
+      x,
+      y,
+      z,
+      duration: 1.3,
+      ease: "power3.inOut"
+    });
+    gsap.to(this.currentLookAt, {
+      x: tx,
+      y: ty,
+      z: tz,
+      duration: 1.1,
+      ease: "power2.out"
+    });
+
+    this.highlightMesh(target.mesh);
+  }
+
+  resetFocus() {
+    this.activeStop = null;
+    gsap.to(this.camera.position, {
+      x: 0,
+      y: 2,
+      z: 5.4,
+      duration: 1.1,
+      ease: "power2.inOut"
+    });
+    gsap.to(this.currentLookAt, {
+      x: 0,
+      y: 1.4,
+      z: -0.2,
+      duration: 1,
+      ease: "power2.inOut"
+    });
+    this.clearHighlights();
+  }
+
+  highlightMesh(mesh) {
+    this.clearHighlights(mesh);
+    gsap.to(mesh.scale, { x: 1.1, y: 1.1, z: 1.1, duration: 0.6, ease: "power2.out" });
+  }
+
+  clearHighlights(except) {
+    this.interactiveMeshes.forEach((item) => {
+      if (item === except) return;
+      gsap.to(item.scale, { x: 1, y: 1, z: 1, duration: 0.8, ease: "power2.out" });
+    });
+  }
+
+  handlePointerMove(event) {
+    const rect = this.canvas.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+    this.pointer.set(x, y);
+    this.parallax.set(x, y);
+    this.updateHover(event);
+  }
+
+  handlePointerLeave() {
+    document.body.style.cursor = "";
+    this.hoveredMesh = null;
+    this.onHover?.(null);
+  }
+
+  handleClick() {
+    if (this.hoveredMesh) {
+      const stopId = this.hoveredMesh.userData.stopId;
+      this.onSelect?.(stopId);
+      this.focusStop(stopId);
+    } else {
+      this.onSelect?.(null);
+      this.resetFocus();
     }
+  }
+
+  updateHover(event) {
+    this.raycaster.setFromCamera(this.pointer, this.camera);
+    const hits = this.raycaster.intersectObjects(this.interactiveMeshes, true);
+    if (hits.length) {
+      let mesh = hits[0].object;
+      while (mesh && !mesh.userData.stopId) {
+        mesh = mesh.parent;
+      }
+      if (!mesh) {
+        document.body.style.cursor = "";
+        this.hoveredMesh = null;
+        this.onHover?.(null);
+        return;
+      }
+      this.hoveredMesh = mesh;
+      const stop = this.stopInstances.get(mesh.userData.stopId)?.data;
+      document.body.style.cursor = "pointer";
+      this.onHover?.({
+        stop,
+        x: event.clientX,
+        y: event.clientY
+      });
+    } else {
+      document.body.style.cursor = "";
+      this.hoveredMesh = null;
+      this.onHover?.(null);
+    }
+  }
+
+  handleResize() {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    this.camera.aspect = width / height;
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize(width, height);
+  }
+
+  animate() {
+    requestAnimationFrame(() => this.animate());
+    const elapsed = this.clock.getElapsedTime();
+
+    this.floatingItems.forEach((item) => {
+      const { mesh, basePosition, amplitude, speed, offset } = item;
+      mesh.position.y = basePosition.y + Math.sin(elapsed * speed + offset) * amplitude;
+      if (mesh.geometry.type === "OctahedronGeometry") {
+        mesh.rotation.y += 0.005;
+      }
+      if (mesh.geometry.type === "TorusKnotGeometry") {
+        mesh.rotation.y += 0.004;
+        mesh.rotation.x += 0.002;
+      }
+    });
+
+    const lookX = this.currentLookAt.x + this.parallax.x * 0.3;
+    const lookY = this.currentLookAt.y + this.parallax.y * 0.2;
+    this.camera.lookAt(lookX, lookY, this.currentLookAt.z);
+
+    this.renderer.render(this.scene, this.camera);
+  }
 }

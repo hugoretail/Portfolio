@@ -1,60 +1,139 @@
-const themeClassMap = {
-    spray: "panel--spray",
-    holo: "panel--holo",
-    ink: "panel--ink"
-};
+import { gsap } from "https://cdn.skypack.dev/gsap";
 
 export class PanelManager {
-    constructor(root) {
-        this.root = root;
-        this.currentId = null;
-        this.placeholderMarkup = root.innerHTML;
+  constructor(root) {
+    this.root = root;
+    this.activeId = null;
+  }
+
+  render(data) {
+    if (!data) {
+      this.renderPlaceholder();
+      return;
     }
 
-    show(node) {
-        if (!node || node.id === this.currentId) return;
-        this.currentId = node.id;
-        const section = document.createElement("section");
-        section.className = `panel ${themeClassMap[node.vignette] || ""}`.trim();
-        section.innerHTML = this.#buildMarkup(node);
-        this.root.replaceChildren(section);
-        requestAnimationFrame(() => section.classList.add("revealed"));
+    if (this.activeId === data.id) {
+      return;
     }
 
-    reset() {
-        this.currentId = null;
-        this.root.innerHTML = this.placeholderMarkup;
+    this.activeId = data.id;
+    const section = document.createElement("section");
+    section.className = `panel panel--${data.theme}`;
+    section.innerHTML = `
+      <div class="panel__header">
+        ${data.eyebrow ? `<p class="panel__eyebrow">${data.eyebrow}</p>` : ""}
+        <h2>${data.title}</h2>
+        ${data.intro ? `<p class="panel__intro">${data.intro}</p>` : ""}
+      </div>
+      ${this.renderHighlights(data.highlights)}
+      ${this.renderProjects(data.projects)}
+      ${this.renderTimeline(data.timeline)}
+      ${this.renderLinks(data.links)}
+    `;
+
+    this.root.innerHTML = "";
+    this.root.appendChild(section);
+    this.animatePanel(section, data.theme);
+  }
+
+  renderPlaceholder() {
+    this.root.innerHTML = `
+      <section class="panel panel--placeholder">
+        <h2>Choisis une station</h2>
+        <p>Chaque objet 3D révèle une partie de mon travail.</p>
+      </section>
+    `;
+  }
+
+  renderHighlights(items = []) {
+    if (!items.length) return "";
+    const chips = items
+      .map(
+        (item) => `
+        <article class="panel__chip">
+          <strong>${item.label}</strong>
+          <span>${item.value}</span>
+        </article>
+      `
+      )
+      .join("");
+    return `<div class="panel__grid">${chips}</div>`;
+  }
+
+  renderProjects(list = []) {
+    if (!list.length) return "";
+    const cards = list
+      .map(
+        (project) => `
+        <article class="project-card">
+          <h3>${project.title}</h3>
+          <p>${project.description}</p>
+          ${
+            project.tags && project.tags.length
+              ? `<div class="project-card__tags">${project.tags
+                  .map((tag) => `<span>${tag}</span>`)
+                  .join("")}</div>`
+              : ""
+          }
+          ${
+            project.link
+              ? `<a href="${project.link.url}" target="_blank" rel="noopener">${project.link.label}</a>`
+              : ""
+          }
+        </article>
+      `
+      )
+      .join("");
+    return `<div class="project-list">${cards}</div>`;
+  }
+
+  renderTimeline(rows = []) {
+    if (!rows.length) return "";
+    const html = rows
+      .map(
+        (row) => `
+        <div class="timeline-row">
+          <span>${row.year}</span>
+          <p>${row.detail}</p>
+        </div>
+      `
+      )
+      .join("");
+    return `<div class="panel__timeline">${html}</div>`;
+  }
+
+  renderLinks(links = []) {
+    if (!links.length) return "";
+    const html = links
+      .map(
+        (link) => `
+        <a class="hud__chip" href="${link.url}" target="_blank" rel="noopener">${link.label}</a>
+      `
+      )
+      .join("");
+    return `<div class="panel__links">${html}</div>`;
+  }
+
+  animatePanel(node, theme) {
+    const accent = this.getThemeColor(theme);
+    node.style.setProperty("--panel-accent", accent);
+    gsap.fromTo(
+      node,
+      { opacity: 0, y: 30 },
+      { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
+    );
+  }
+
+  getThemeColor(theme) {
+    switch (theme) {
+      case "spray":
+        return "var(--accent-spray)";
+      case "holo":
+        return "var(--accent-teal)";
+      case "signal":
+        return "var(--accent-amber)";
+      default:
+        return "var(--accent-ink)";
     }
-
-    #buildMarkup(node) {
-        const chips = (node.chips || [])
-            .map(chip => `<span class="panel__chip">${chip}</span>`)
-            .join("");
-
-        const projects = (node.projects || [])
-            .map(project => `
-                <article class="project-card">
-                    <h3>${project.title}</h3>
-                    <p><strong>${project.role}</strong></p>
-                    <p>${project.desc}</p>
-                    <p class="project-card__stack">${project.stack}</p>
-                    ${project.link ? `<a href="${project.link}" target="_blank" rel="noreferrer">Explore</a>` : ""}
-                </article>
-            `)
-            .join("");
-
-        const projectsBlock = projects
-            ? `<div class="panel__projects">${projects}</div>`
-            : "<p>Fresh work coming soon. I'm sketching the next wall.</p>";
-
-        return `
-            <div class="panel__header">
-                <p class="eyebrow">${node.label}</p>
-                <h2>${node.summary}</h2>
-            </div>
-            <div class="panel__chips">${chips}</div>
-            <p>${node.body}</p>
-            ${projectsBlock}
-        `;
-    }
+  }
 }
