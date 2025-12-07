@@ -135,7 +135,8 @@ export class GraffitiStudioScene {
       new THREE.MeshStandardMaterial({ color: 0xfce1c6, roughness: 0.95 })
     );
     rug.rotation.x = -Math.PI / 2;
-    rug.position.set(-1.5, 0.01, 0.35);
+    rug.position.set(-1.6, 0.01, 0.95);
+    rug.scale.set(0.98, 1, 1.08);
     this.scene.add(rug);
 
     const sofa = new THREE.Group();
@@ -155,7 +156,8 @@ export class GraffitiStudioScene {
     const cushionRight = cushionLeft.clone();
     cushionRight.position.x = 0.9;
     sofa.add(sofaBase, sofaBack, cushionLeft, cushionRight);
-    sofa.position.set(-2.6, 0, -0.15);
+    sofa.position.set(-2.25, 0, -0.12);
+    sofa.rotation.y = THREE.MathUtils.degToRad(-6);
     this.scene.add(sofa);
 
     const coffeeTable = new THREE.Group();
@@ -174,7 +176,8 @@ export class GraffitiStudioScene {
     const leg4 = tableLeg.clone();
     leg4.position.set(-0.65, 0.22, -0.35);
     coffeeTable.add(tableTop, tableLeg, leg2, leg3, leg4);
-    coffeeTable.position.set(-1.7, 0, 0.65);
+    coffeeTable.position.set(-1.15, 0, 1.05);
+    coffeeTable.rotation.y = THREE.MathUtils.degToRad(-7);
     this.scene.add(coffeeTable);
     this.placeSprayCan(coffeeTable);
 
@@ -216,7 +219,7 @@ export class GraffitiStudioScene {
       new THREE.CylinderGeometry(0.35, 0.4, 0.45, 24),
       new THREE.MeshStandardMaterial({ color: 0xd8a777 })
     );
-    stool.position.set(-0.3, 0.23, -0.9);
+    stool.position.set(0.2, 0.23, -0.82);
     atelierDesk.add(
       deskTop,
       deskLegFrontLeft,
@@ -228,7 +231,8 @@ export class GraffitiStudioScene {
       lampShade,
       stool
     );
-    atelierDesk.position.set(-5.2, 0, 0.45);
+    atelierDesk.position.set(-4.35, 0, 0.18);
+    atelierDesk.rotation.y = THREE.MathUtils.degToRad(6);
     this.scene.add(atelierDesk);
     this.anchorObjects.atelier = atelierDesk;
 
@@ -254,37 +258,42 @@ export class GraffitiStudioScene {
     );
     muralCircle.position.set(-1, 0.9, 0.02);
     mural.add(muralFrame, muralPanel, muralStroke, muralCircle);
-    mural.position.set(-0.2, 2.45, -1.66);
+    mural.position.set(-2.35, 3.12, -1.58);
     this.scene.add(mural);
     this.anchorObjects.graffiti = mural;
 
     const windowGroup = new THREE.Group();
     const windowFrame = new THREE.Mesh(
-      new THREE.BoxGeometry(4.8, 3.2, 0.12),
+      new THREE.BoxGeometry(4.6, 3, 0.12),
       new THREE.MeshStandardMaterial({ color: 0xc5b59f, roughness: 0.6 })
     );
     const windowView = new THREE.Mesh(
-      new THREE.PlaneGeometry(4.2, 2.6),
+      new THREE.PlaneGeometry(4.1, 2.5),
       new THREE.MeshStandardMaterial({
         map: this.seaTexture,
         transparent: true,
-        opacity: 0.96,
-        roughness: 0.15
+        opacity: 0.98,
+        roughness: 0.12
       })
     );
-    windowView.position.z = 0.07;
+    windowView.position.z = 0.12;
     const muntinVertical = new THREE.Mesh(
-      new THREE.BoxGeometry(0.08, 2.6, 0.08),
+      new THREE.BoxGeometry(0.08, 2.5, 0.08),
       new THREE.MeshStandardMaterial({ color: 0xaf9b83 })
     );
     const muntinHorizontal = new THREE.Mesh(
-      new THREE.BoxGeometry(4.2, 0.08, 0.08),
+      new THREE.BoxGeometry(4.1, 0.08, 0.08),
       new THREE.MeshStandardMaterial({ color: 0xaf9b83 })
     );
     muntinVertical.position.z = 0.08;
     muntinHorizontal.position.z = 0.08;
-    windowGroup.add(windowFrame, windowView, muntinVertical, muntinHorizontal);
-    windowGroup.position.set(4.5, 3, -1.63);
+    const windowSill = new THREE.Mesh(
+      new THREE.BoxGeometry(4.9, 0.2, 0.45),
+      new THREE.MeshStandardMaterial({ color: 0xd9c3a6, roughness: 0.6 })
+    );
+    windowSill.position.set(0, -1.65, 0.22);
+    windowGroup.add(windowFrame, windowView, muntinVertical, muntinHorizontal, windowSill);
+    windowGroup.position.set(1.6, 3.18, -1.4);
     this.scene.add(windowGroup);
 
     const techShelf = new THREE.Group();
@@ -316,11 +325,17 @@ export class GraffitiStudioScene {
             color: new THREE.Color().setHSL(0.07 * (i + levelIndex) + 0.05, 0.45, 0.55)
           })
         );
-        book.position.set(-0.75 + i * 0.5, height + 0.35, (i % 2 === 0 ? -0.05 : 0.05));
+        const xJitter = THREE.MathUtils.randFloatSpread(0.12);
+        const zJitter = THREE.MathUtils.randFloatSpread(0.1);
+        const yJitter = THREE.MathUtils.randFloat(-0.05, 0.08);
+        book.position.set(-0.75 + i * 0.5 + xJitter, height + 0.34 + yJitter, (i % 2 === 0 ? -0.05 : 0.05) + zJitter);
+        book.rotation.z = THREE.MathUtils.degToRad(THREE.MathUtils.randFloatSpread(6));
+        book.rotation.y = THREE.MathUtils.degToRad(THREE.MathUtils.randFloatSpread(8));
         techShelf.add(book);
       }
     });
-    techShelf.position.set(1.9, 0, -0.95);
+    techShelf.position.set(3.2, 0, -0.15);
+    techShelf.rotation.y = THREE.MathUtils.degToRad(-17);
     this.scene.add(techShelf);
     this.anchorObjects.code = techShelf;
 
@@ -338,14 +353,15 @@ export class GraffitiStudioScene {
       new THREE.CylinderGeometry(0.05, 0.05, 1.6, 16),
       new THREE.MeshStandardMaterial({ color: 0xe8d5c2 })
     );
-    floorLampStem.position.set(0.6, 0.8, 0);
+    floorLampStem.position.set(-0.2, 0.85, 0.24);
     const floorLampShade = new THREE.Mesh(
       new THREE.ConeGeometry(0.4, 0.55, 24),
       new THREE.MeshStandardMaterial({ color: 0xfff6dc, emissive: 0xffe9b5, emissiveIntensity: 0.3 })
     );
-    floorLampShade.position.set(0.6, 1.7, 0);
+    floorLampShade.position.set(-0.2, 1.78, 0.24);
     contactPlant.add(plantPot, plantLeaves, floorLampStem, floorLampShade);
-    contactPlant.position.set(4.1, 0, 1.2);
+    contactPlant.position.set(4.3, 0, 1.48);
+    contactPlant.rotation.y = THREE.MathUtils.degToRad(-12);
     this.scene.add(contactPlant);
     this.anchorObjects.contact = contactPlant;
   }
