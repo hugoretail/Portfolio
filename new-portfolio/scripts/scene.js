@@ -1,6 +1,7 @@
 import { gsap } from "https://cdn.skypack.dev/gsap";
 import * as THREE from "https://unpkg.com/three@0.162.0/build/three.module.js";
 import { GLTFLoader } from "https://unpkg.com/three@0.162.0/examples/jsm/loaders/GLTFLoader.js";
+import { OrbitControls } from './OrbitControls.js';
 
 export class GraffitiStudioScene {
   constructor({ canvas, stops, onSelect, onHover }) {
@@ -49,7 +50,44 @@ export class GraffitiStudioScene {
     this.createRoomDetails();
     this.createStops();
 
-    this.handleResize = this.handleResize.bind(this);
+
+    // Add base assets
+    this.addBed();
+    this.addSofa();
+    this.addCoffeeTable();
+
+    // Debug camera mode
+    this.debugCameraMode = false;
+    this.orbitControls = null;
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'm' || e.key === 'M') {
+      this.toggleDebugCamera();
+    }
+  });
+  this.toggleDebugCamera = () => {
+    if (!this.debugCameraMode) {
+      // Enable OrbitControls
+      if (!this.orbitControls) {
+        this.orbitControls = new OrbitControls(this.camera, this.renderer.domElement);
+        this.orbitControls.enableDamping = true;
+        this.orbitControls.dampingFactor = 0.08;
+        this.orbitControls.screenSpacePanning = false;
+        this.orbitControls.minDistance = 1;
+        this.orbitControls.maxDistance = 40;
+        this.orbitControls.target.set(0, 1.4, -0.2);
+      }
+      this.orbitControls.enabled = true;
+      this.debugCameraMode = true;
+    } else {
+      // Disable OrbitControls and reset camera
+      if (this.orbitControls) this.orbitControls.enabled = false;
+      this.camera.position.set(0, 2.1, 5.4);
+      this.currentLookAt.set(0, 1.4, -0.2);
+      this.debugCameraMode = false;
+    }
+  };
+
+  this.handleResize = this.handleResize.bind(this);
     this.handlePointerMove = this.handlePointerMove.bind(this);
     this.handlePointerLeave = this.handlePointerLeave.bind(this);
     this.handleClick = this.handleClick.bind(this);
@@ -190,26 +228,34 @@ export class GraffitiStudioScene {
     ceiling.receiveShadow = false;
     this.scene.add(ceiling);
 
-    const ambient = new THREE.HemisphereLight(0xfff7eb, 0x312943, 0.65);
+    const ambient = new THREE.AmbientLight(0xfff1df, 0.55);
     this.scene.add(ambient);
 
-    const sunLight = new THREE.DirectionalLight(0xffedd3, 0.85);
-    sunLight.castShadow = true;
-    sunLight.position.set(3.5, 7.5, 4.5);
-    sunLight.target.position.set(0, 0, -1);
-    sunLight.shadow.mapSize.set(2048, 2048);
-    sunLight.shadow.camera.near = 0.5;
-    sunLight.shadow.camera.far = 25;
-    sunLight.shadow.camera.left = -10;
-    sunLight.shadow.camera.right = 10;
-    sunLight.shadow.camera.top = 10;
-    sunLight.shadow.camera.bottom = -5;
-    this.scene.add(sunLight);
-    this.scene.add(sunLight.target);
+    // Warm ceiling light that behaves like an indoor pendant
+    const ceilingLight = new THREE.PointLight(0xffd4ac, 1.25, 32, 1.9);
+    ceilingLight.position.set(0.4, 4.4, 0.3);
+    ceilingLight.castShadow = true;
+    ceilingLight.shadow.mapSize.set(2048, 2048);
+    ceilingLight.shadow.bias = -0.0006;
+    this.scene.add(ceilingLight);
 
-    const fillLight = new THREE.DirectionalLight(0xfdf3df, 0.3);
-    fillLight.position.set(-2, 3.8, 2.2);
-    this.scene.add(fillLight);
+    // Side lamp style fill to soften shadows on seating area
+    const lampFill = new THREE.SpotLight(0xffc494, 0.75, 18, THREE.MathUtils.degToRad(55), 0.32, 1.15);
+    lampFill.position.set(-3.4, 3.1, -0.6);
+    lampFill.target.position.set(-1.4, 1.1, 0.1);
+    lampFill.castShadow = true;
+    lampFill.shadow.mapSize.set(1024, 1024);
+    lampFill.shadow.bias = -0.0004;
+    this.scene.add(lampFill);
+    this.scene.add(lampFill.target);
+
+    // Gentle front bounce mimicking wall reflections
+    const frontFill = new THREE.DirectionalLight(0xffe7cc, 0.32);
+    frontFill.position.set(1.2, 2.6, 5.8);
+    frontFill.target.position.set(1.6, 0.8, 0.2);
+    frontFill.castShadow = false;
+    this.scene.add(frontFill);
+    this.scene.add(frontFill.target);
   }
 
   createRoomDetails() {
@@ -287,37 +333,63 @@ export class GraffitiStudioScene {
     return texture;
   }
 
-  placeSprayCan(parent) {
-    const tableSurfaceHeight = 0.44;
-    const target = parent ?? this.scene;
+  loadModelAndPlace({ url, position, rotation = [0, 0, 0], targetSize = 1.5, parent = this.scene }) {
     this.gltfLoader.load(
-      "./assets/models/graffiti_spray_can.glb",
+      url,
       (gltf) => {
-        const sprayCan = gltf.scene;
-        const box = new THREE.Box3().setFromObject(sprayCan);
+        const model = gltf.scene;
+        const box = new THREE.Box3().setFromObject(model);
         const size = new THREE.Vector3();
         box.getSize(size);
-        const desiredHeight = 0.34;
-        const scaleFactor = desiredHeight / (size.y || 1);
-        sprayCan.scale.setScalar(scaleFactor);
-        sprayCan.rotation.y = THREE.MathUtils.degToRad(-30);
-        sprayCan.rotation.z = THREE.MathUtils.degToRad(2);
-        sprayCan.traverse((child) => {
+        const maxDim = Math.max(size.x, size.y, size.z, 0.0001);
+        const scale = targetSize / maxDim;
+        model.scale.setScalar(scale);
+        model.position.set(position[0], position[1], position[2]);
+        model.rotation.set(
+          THREE.MathUtils.degToRad(rotation[0]),
+          THREE.MathUtils.degToRad(rotation[1]),
+          THREE.MathUtils.degToRad(rotation[2])
+        );
+        model.traverse((child) => {
           if (child.isMesh) {
             child.castShadow = true;
             child.receiveShadow = true;
           }
         });
-        sprayCan.updateMatrixWorld(true);
-        const adjustedBox = new THREE.Box3().setFromObject(sprayCan);
-        sprayCan.position.set(0.25, tableSurfaceHeight - adjustedBox.min.y, -0.1);
-        target.add(sprayCan);
+        parent.add(model);
       },
       undefined,
       (error) => {
-        console.warn("Failed to load graffiti spray can model", error);
+        console.warn(`Failed to load model ${url}`, error);
       }
     );
+  }
+
+  addBed() {
+    this.loadModelAndPlace({
+      url: "./assets/models/sm_bed.glb",
+      position: [-4.4, 0, -0.15],
+      rotation: [0, -3, 0],
+      targetSize: 3.2
+    });
+  }
+
+  addSofa() {
+    this.loadModelAndPlace({
+      url: "./assets/models/sofa.glb",
+      position: [1.8, 0, -0.4],
+      rotation: [0, 60, 0],
+      targetSize: 2.8
+    });
+  }
+
+  addCoffeeTable() {
+    this.loadModelAndPlace({
+      url: "./assets/models/coffee_table.glb",
+      position: [1.25, 0.4, 1],
+      rotation: [0, -23, 0],
+      targetSize: 1.4
+    });
   }
 
   createStops() {
@@ -616,9 +688,14 @@ export class GraffitiStudioScene {
       }
     });
 
-    const lookX = this.currentLookAt.x + this.parallax.x * 0.3;
-    const lookY = this.currentLookAt.y + this.parallax.y * 0.2;
-    this.camera.lookAt(lookX, lookY, this.currentLookAt.z);
+
+    if (this.debugCameraMode && this.orbitControls) {
+      this.orbitControls.update();
+    } else {
+      const lookX = this.currentLookAt.x + this.parallax.x * 0.3;
+      const lookY = this.currentLookAt.y + this.parallax.y * 0.2;
+      this.camera.lookAt(lookX, lookY, this.currentLookAt.z);
+    }
 
     this.renderer.render(this.scene, this.camera);
   }
