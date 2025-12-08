@@ -661,57 +661,6 @@ body.overlay-locked {
     font-weight: 600;
 }
 
-.corner-brand {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 6;
-    width: clamp(190px, 21vw, 250px);
-    height: 110px;
-    pointer-events: none;
-}
-
-.corner-brand__paper {
-    position: absolute;
-    inset: 0;
-    border-radius: 16px 20px 18px 10px;
-    border: 1px solid rgba(54, 39, 28, 0.28);
-    background:
-        repeating-linear-gradient(180deg, rgba(255, 255, 255, 0) 0 11px, rgba(243, 214, 184, 0.35) 11px 12px),
-        linear-gradient(120deg, #fffdf4 0%, #ffeccb 45%, #f7d9ae 95%);
-    box-shadow: 0 18px 24px rgba(20, 10, 4, 0.14), 0 6px 16px rgba(17, 9, 2, 0.16);
-    transform-origin: top left;
-    transform: rotate(-0.6deg);
-    animation: paper-pop 1.2s ease forwards;
-}
-
-.corner-brand__paper::before {
-    content: "";
-    position: absolute;
-    inset: auto 12px 10px auto;
-    width: 42px;
-    height: 42px;
-    border-radius: 2px;
-    background: radial-gradient(circle at 60% 40%, rgba(255, 255, 255, 0.8), rgba(233, 200, 169, 0.2));
-    clip-path: polygon(0 0, 100% 0, 0 100%);
-    opacity: 0.45;
-}
-
-.corner-brand__label {
-    position: absolute;
-    inset: 0;
-    padding: 1.25rem 1.75rem 1.5rem 1.85rem;
-    font-family: var(--font-display);
-    font-size: clamp(0.9rem, 1.6vw, 1.1rem);
-    letter-spacing: 0.34em;
-    text-transform: uppercase;
-    color: var(--fg-primary, #1f140c);
-    animation: label-write 1.3s ease forwards;
-    opacity: 0;
-    display: flex;
-    align-items: flex-start;
-}
-
 #panel-layer {
     position: fixed;
     bottom: 0;
@@ -997,40 +946,6 @@ body.overlay-locked {
     50% {
         transform: scale(1.15);
         opacity: 0.4;
-    }
-}
-
-@keyframes paper-pop {
-    0% {
-        transform: translate(-16px, -12px) rotate(-3deg) scale(0.92);
-        opacity: 0;
-    }
-    70% {
-        transform: translate(0, 0) rotate(1deg) scale(1.02);
-        opacity: 1;
-    }
-    100% {
-        transform: translate(0, 0) rotate(0deg) scale(1);
-        opacity: 1;
-    }
-}
-
-@keyframes label-write {
-    0% {
-        opacity: 0;
-        letter-spacing: 0.3em;
-        clip-path: inset(0 100% 0 0);
-        filter: blur(6px);
-    }
-    60% {
-        opacity: 1;
-        clip-path: inset(0 5% 0 0);
-        filter: blur(0);
-    }
-    100% {
-        opacity: 1;
-        clip-path: inset(0 0 0 0);
-        letter-spacing: 0.12em;
     }
 }
 

@@ -14,11 +14,14 @@ export class GraffitiStudioScene {
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.1;
+    this.renderer.toneMappingExposure = 0.78;
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     this.scene = new THREE.Scene();
-    this.scene.background = null;
-    this.scene.fog = new THREE.FogExp2(0xf7ecde, 0.05);
+    this.scene.background = new THREE.Color(0xf2ece3);
+    this.scene.fog = new THREE.FogExp2(0xf2ece3, 0.018);
+    this.renderer.setClearColor(this.scene.background, 1);
     this.camera = new THREE.PerspectiveCamera(
       52,
       window.innerWidth / window.innerHeight,
@@ -39,8 +42,10 @@ export class GraffitiStudioScene {
     this.floatingItems = [];
     this.anchorObjects = {};
     this.seaTexture = this.createSeaTexture();
+    this.shaderUniforms = null;
 
     this.createEnvironment();
+    this.createShaderOverlays();
     this.createRoomDetails();
     this.createStops();
 
@@ -57,61 +62,154 @@ export class GraffitiStudioScene {
     this.handleResize();
     this.animate();
   }
+  createShaderOverlays() {
+    const vertexShader = /* glsl */ `
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `;
+
+    this.shaderUniforms = {
+      floor: {
+        uTime: { value: 0 },
+        uGlow: { value: new THREE.Color(0xf8c496) },
+        uBase: { value: new THREE.Color(0x2b1f18) }
+      },
+      wall: {
+        uTime: { value: 0 },
+        uTop: { value: new THREE.Color(0xf7d8bd) },
+        uBottom: { value: new THREE.Color(0x3b2a23) }
+      }
+    };
+
+    const floorMaterial = new THREE.ShaderMaterial({
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      uniforms: this.shaderUniforms.floor,
+      vertexShader,
+      fragmentShader: /* glsl */ `
+        varying vec2 vUv;
+        uniform vec3 uGlow;
+        uniform vec3 uBase;
+        void main() {
+          vec2 shifted = vUv - vec2(0.5);
+          float radial = smoothstep(0.85, 0.1, length(shifted * vec2(1.5, 1.2)));
+          float vignette = smoothstep(1.0, 0.35, length(shifted * vec2(1.2, 1.2)));
+          float grid = step(0.97, fract(vUv.x * 10.0)) * step(0.97, fract(vUv.y * 10.0));
+          vec3 color = mix(uBase, uGlow, radial) + uGlow * grid * 0.25;
+          float alpha = clamp(radial * 0.7 + vignette * 0.2 + grid * 0.15, 0.0, 0.75);
+          gl_FragColor = vec4(color, alpha);
+        }
+      `
+    });
+
+    const wallMaterial = new THREE.ShaderMaterial({
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.NormalBlending,
+      uniforms: this.shaderUniforms.wall,
+      vertexShader,
+      fragmentShader: /* glsl */ `
+        varying vec2 vUv;
+        uniform float uTime;
+        uniform vec3 uTop;
+        uniform vec3 uBottom;
+        float hash(vec2 p) {
+          return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+        }
+        float noise(vec2 p) {
+          vec2 i = floor(p);
+          vec2 f = fract(p);
+          float a = hash(i);
+          float b = hash(i + vec2(1.0, 0.0));
+          float c = hash(i + vec2(0.0, 1.0));
+          float d = hash(i + vec2(1.0, 1.0));
+          vec2 u = f * f * (3.0 - 2.0 * f);
+          return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+        }
+        void main() {
+          float gradient = smoothstep(0.0, 1.0, vUv.y);
+          float bounce = smoothstep(0.0, 0.45, 1.0 - vUv.y);
+          float glow = smoothstep(0.92, 0.4, distance(vec2(vUv.x, vUv.y * 0.75), vec2(0.48, 0.58)));
+          float shimmer = noise(vec2(vUv.x * 5.0, vUv.y * 5.0 + uTime * 0.15)) * 0.04;
+          vec3 baseColor = mix(uBottom, uTop, gradient);
+          vec3 bounceColor = mix(uBottom, uTop, 0.28);
+          vec3 color = mix(baseColor, bounceColor, bounce * 0.55);
+          color = mix(color, uTop, glow * 0.25) + shimmer;
+          float alpha = clamp(0.35 + gradient * 0.25 + bounce * 0.2 + glow * 0.15, 0.15, 0.55);
+          gl_FragColor = vec4(color, alpha);
+        }
+      `
+    });
+
+    const floorOverlay = new THREE.Mesh(new THREE.PlaneGeometry(20.2, 12.2), floorMaterial);
+    floorOverlay.rotation.x = -Math.PI / 2;
+    floorOverlay.position.y = 0.02;
+    this.scene.add(floorOverlay);
+
+    const wallOverlay = new THREE.Mesh(new THREE.PlaneGeometry(22.2, 9.7), wallMaterial);
+    wallOverlay.position.set(0, 2.45, -1.6);
+    this.scene.add(wallOverlay);
+  }
 
   createEnvironment() {
-    const floor = new THREE.Mesh(
-      new THREE.PlaneGeometry(20, 12),
-      new THREE.MeshStandardMaterial({ color: 0xdcc0a7, metalness: 0.2, roughness: 0.85 })
-    );
+    const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xdcc0a7, metalness: 0.12, roughness: 0.82 });
+    const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xf8eddf, metalness: 0.02, roughness: 0.94 });
+
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(20, 12), floorMaterial);
     floor.rotation.x = -Math.PI / 2;
     floor.receiveShadow = true;
     this.scene.add(floor);
 
-    const backWall = new THREE.Mesh(
-      new THREE.PlaneGeometry(22, 9.5),
-      new THREE.MeshStandardMaterial({ color: 0xf5e8d9, metalness: 0.03, roughness: 0.96 })
-    );
+    const backWall = new THREE.Mesh(new THREE.PlaneGeometry(22, 9.5), wallMaterial.clone());
     backWall.position.set(0, 2.4, -1.7);
+    backWall.receiveShadow = true;
     this.scene.add(backWall);
 
-    const leftWall = new THREE.Mesh(
-      new THREE.PlaneGeometry(12, 9.5),
-      new THREE.MeshStandardMaterial({ color: 0xf8eddf, metalness: 0.04, roughness: 0.95 })
-    );
+    const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(12, 9.5), wallMaterial.clone());
     leftWall.position.set(-10, 2.4, 0.2);
     leftWall.rotation.y = Math.PI / 2;
+    leftWall.receiveShadow = true;
     this.scene.add(leftWall);
 
-    const rightWall = new THREE.Mesh(
-      new THREE.PlaneGeometry(12, 9.5),
-      new THREE.MeshStandardMaterial({ color: 0xf8eddf, metalness: 0.04, roughness: 0.95 })
-    );
+    const rightWall = new THREE.Mesh(new THREE.PlaneGeometry(12, 9.5), wallMaterial.clone());
     rightWall.position.set(10, 2.4, 0.2);
     rightWall.rotation.y = -Math.PI / 2;
+    rightWall.receiveShadow = true;
     this.scene.add(rightWall);
 
     const ceiling = new THREE.Mesh(
       new THREE.PlaneGeometry(20, 12),
-      new THREE.MeshStandardMaterial({ color: 0xfaf4ea, roughness: 1 })
+      new THREE.MeshStandardMaterial({ color: 0xfaf4ea, roughness: 0.96 })
     );
     ceiling.rotation.x = Math.PI / 2;
     ceiling.position.y = 4.8;
+    ceiling.receiveShadow = false;
     this.scene.add(ceiling);
 
-    const ambient = new THREE.HemisphereLight(0xfff7eb, 0xf3d9c3, 0.78);
+    const ambient = new THREE.HemisphereLight(0xfff7eb, 0x312943, 0.65);
     this.scene.add(ambient);
 
-    const keyLight = new THREE.DirectionalLight(0xffedd3, 0.85);
-    keyLight.position.set(4, 6.2, 3.2);
-    this.scene.add(keyLight);
+    const sunLight = new THREE.DirectionalLight(0xffedd3, 0.85);
+    sunLight.castShadow = true;
+    sunLight.position.set(3.5, 7.5, 4.5);
+    sunLight.target.position.set(0, 0, -1);
+    sunLight.shadow.mapSize.set(2048, 2048);
+    sunLight.shadow.camera.near = 0.5;
+    sunLight.shadow.camera.far = 25;
+    sunLight.shadow.camera.left = -10;
+    sunLight.shadow.camera.right = 10;
+    sunLight.shadow.camera.top = 10;
+    sunLight.shadow.camera.bottom = -5;
+    this.scene.add(sunLight);
+    this.scene.add(sunLight.target);
 
-    const fillLight = new THREE.DirectionalLight(0xfdf3df, 0.6);
-    fillLight.position.set(-4, 4.5, -4.5);
+    const fillLight = new THREE.DirectionalLight(0xfdf3df, 0.3);
+    fillLight.position.set(-2, 3.8, 2.2);
     this.scene.add(fillLight);
-
-    const lampLight = new THREE.PointLight(0xffd6a5, 0.6, 12, 2);
-    lampLight.position.set(-4.2, 3.1, 1.6);
-    this.scene.add(lampLight);
   }
 
   createRoomDetails() {
@@ -499,6 +597,13 @@ export class GraffitiStudioScene {
     requestAnimationFrame(() => this.animate());
     const elapsed = this.clock.getElapsedTime();
 
+    if (this.shaderUniforms?.floor) {
+      this.shaderUniforms.floor.uTime.value = elapsed;
+    }
+    if (this.shaderUniforms?.wall) {
+      this.shaderUniforms.wall.uTime.value = elapsed;
+    }
+
     this.floatingItems.forEach((item) => {
       const { mesh, basePosition, amplitude, speed, offset } = item;
       mesh.position.y = basePosition.y + Math.sin(elapsed * speed + offset) * amplitude;
@@ -516,5 +621,126 @@ export class GraffitiStudioScene {
     this.camera.lookAt(lookX, lookY, this.currentLookAt.z);
 
     this.renderer.render(this.scene, this.camera);
+  }
+
+  addInitialAssets() {
+    // Reset camera to a natural, default view
+    this.camera.position.set(0, 2.1, 5.4);
+    this.currentLookAt.set(0, 1.4, -0.2);
+
+    // Helper for loading models with normalized scale (largest dimension -> targetSize)
+    const loadModel = (url, position, rotation = [0, 0, 0], targetSize = 1.2, parent = this.scene) => {
+      this.gltfLoader.load(
+        url,
+        (gltf) => {
+          const model = gltf.scene;
+          // Compute bounding box and normalize scale
+          const box = new THREE.Box3().setFromObject(model);
+          const size = new THREE.Vector3();
+          box.getSize(size);
+          const maxDim = Math.max(size.x, size.y, size.z);
+          let scale = 1;
+          if (maxDim > 0) {
+            scale = targetSize / maxDim;
+          }
+          model.scale.setScalar(scale);
+          model.position.set(position[0], position[1], position[2]);
+          model.rotation.set(
+            THREE.MathUtils.degToRad(rotation[0]),
+            THREE.MathUtils.degToRad(rotation[1]),
+            THREE.MathUtils.degToRad(rotation[2])
+          );
+          model.traverse((child) => {
+            if (child.isMesh) {
+              child.castShadow = true;
+              child.receiveShadow = true;
+            }
+          });
+          parent.add(model);
+        },
+        undefined,
+        (error) => {
+          console.warn(`Failed to load model ${url}`, error);
+        }
+      );
+    };
+
+    // Place carpet on the floor (centered, larger footprint)
+    loadModel(
+      './assets/models/carpet.glb',
+      [-0.6, 0.008, 0.2],
+      [0, 0, 0],
+      3.6
+    );
+
+    // Bed and bedside table, left side, partially out of view
+    loadModel(
+      './assets/models/bed.glb',
+      [-2.7, 0.18, -0.15],
+      [0, 6, 0],
+      2.6
+    );
+    loadModel(
+      './assets/models/astaire_bedside_tabledark_stain_walnut_and_grey.glb',
+      [-3.2, 0.18, 0.55],
+      [0, 8, 0],
+      1.2
+    );
+
+    // Book cabinet, a bit to the right
+    loadModel(
+      './assets/models/book_cabinet_vintage.glb',
+      [2.6, 0.18, -0.15],
+      [0, -4, 0],
+      2.6
+    );
+
+    // Floor lamp, near the bedside table
+    loadModel(
+      './assets/models/cohen_floor_lampdeep_grey_and_american_oak.glb',
+      [-3.35, 0.18, 0.95],
+      [0, 4, 0],
+      1.6
+    );
+
+    // Table lamp, on/near the book cabinet top
+    loadModel(
+      './assets/models/heik_table_lamp_short_concrete.glb',
+      [2.35, 1.0, -0.05],
+      [0, 0, 0],
+      0.6
+    );
+
+    // Chair 1 (irvington), right of carpet
+    loadModel(
+      './assets/models/irvington_carver_chair_graphite_grey.glb',
+      [0.9, 0.18, 1.05],
+      [0, 16, 0],
+      1.9
+    );
+
+    // Chair 2 (lars), left of carpet
+    loadModel(
+      './assets/models/lars_accent_chair_diego_grey.glb',
+      [-1.2, 0.18, 1.05],
+      [0, -12, 0],
+      1.8
+    );
+
+    // Book stack, on the carpet (small accent)
+    loadModel(
+      './assets/models/simple_bookstack.glb',
+      [0.1, 0.18, 0.25],
+      [0, 0, 0],
+      0.32
+    );
+
+    // Plant, near the book cabinet
+    loadModel(
+      './assets/models/wk9_trees_and_plants.glb',
+      [3.1, 0.18, 0.35],
+      [0, 0, 0],
+      1.7
+    );
   }
 }
