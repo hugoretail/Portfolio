@@ -19,7 +19,6 @@ export class GraffitiStudioScene {
     this.scene = new THREE.Scene();
     this.scene.background = null;
     this.scene.fog = new THREE.FogExp2(0xf7ecde, 0.05);
-
     this.camera = new THREE.PerspectiveCamera(
       52,
       window.innerWidth / window.innerHeight,
@@ -42,6 +41,7 @@ export class GraffitiStudioScene {
     this.seaTexture = this.createSeaTexture();
 
     this.createEnvironment();
+    this.createRoomDetails();
     this.createStops();
 
     this.handleResize = this.handleResize.bind(this);
@@ -59,26 +59,20 @@ export class GraffitiStudioScene {
   }
 
   createEnvironment() {
-    const floorGeo = new THREE.PlaneGeometry(20, 12);
-    const floorMat = new THREE.MeshStandardMaterial({
-      color: 0xdcc0a7,
-      metalness: 0.2,
-      roughness: 0.85
-    });
-    const floor = new THREE.Mesh(floorGeo, floorMat);
+    const floor = new THREE.Mesh(
+      new THREE.PlaneGeometry(20, 12),
+      new THREE.MeshStandardMaterial({ color: 0xdcc0a7, metalness: 0.2, roughness: 0.85 })
+    );
     floor.rotation.x = -Math.PI / 2;
     floor.receiveShadow = true;
     this.scene.add(floor);
 
-    const wallGeo = new THREE.PlaneGeometry(22, 9.5);
-    const wallMat = new THREE.MeshStandardMaterial({
-      color: 0xf5e8d9,
-      metalness: 0.03,
-      roughness: 0.96
-    });
-    const wall = new THREE.Mesh(wallGeo, wallMat);
-    wall.position.set(0, 2.4, -1.7);
-    this.scene.add(wall);
+    const backWall = new THREE.Mesh(
+      new THREE.PlaneGeometry(22, 9.5),
+      new THREE.MeshStandardMaterial({ color: 0xf5e8d9, metalness: 0.03, roughness: 0.96 })
+    );
+    backWall.position.set(0, 2.4, -1.7);
+    this.scene.add(backWall);
 
     const leftWall = new THREE.Mesh(
       new THREE.PlaneGeometry(12, 9.5),
@@ -111,259 +105,54 @@ export class GraffitiStudioScene {
     keyLight.position.set(4, 6.2, 3.2);
     this.scene.add(keyLight);
 
-    const windowLight = new THREE.DirectionalLight(0xfdf3df, 0.6);
-    windowLight.position.set(6, 4.5, -4.5);
-    this.scene.add(windowLight);
+    const fillLight = new THREE.DirectionalLight(0xfdf3df, 0.6);
+    fillLight.position.set(-4, 4.5, -4.5);
+    this.scene.add(fillLight);
 
-    const lampLight = new THREE.PointLight(0xffd6a5, 1, 12, 2);
+    const lampLight = new THREE.PointLight(0xffd6a5, 0.6, 12, 2);
     lampLight.position.set(-4.2, 3.1, 1.6);
     this.scene.add(lampLight);
-
-    this.createRoomDetails();
   }
 
   createRoomDetails() {
-    const baseboard = new THREE.Mesh(
-      new THREE.BoxGeometry(22, 0.3, 0.12),
-      new THREE.MeshStandardMaterial({ color: 0xe9ddcf, roughness: 0.7 })
-    );
-    baseboard.position.set(0, 0.15, -1.64);
-    this.scene.add(baseboard);
-
-    const rug = new THREE.Mesh(
-      new THREE.CircleGeometry(2.25, 48),
-      new THREE.MeshStandardMaterial({ color: 0xfce1c6, roughness: 0.95 })
-    );
-    rug.rotation.x = -Math.PI / 2;
-    rug.position.set(-1.6, 0.01, 0.95);
-    rug.scale.set(0.98, 1, 1.08);
-    this.scene.add(rug);
-
-    const sofa = new THREE.Group();
-    const sofaBase = new THREE.Mesh(
-      new THREE.BoxGeometry(4, 0.78, 1.4),
-      new THREE.MeshStandardMaterial({ color: 0xe2e3eb, roughness: 0.6 })
-    );
-    sofaBase.position.y = 0.39;
-    const sofaBack = new THREE.Mesh(
-      new THREE.BoxGeometry(4, 1.05, 0.45),
-      new THREE.MeshStandardMaterial({ color: 0xcfd0d8, roughness: 0.5 })
-    );
-    sofaBack.position.set(0, 1.02, -0.42);
-    const cushionMaterial = new THREE.MeshStandardMaterial({ color: 0xf4d9c8, roughness: 0.8 });
-    const cushionLeft = new THREE.Mesh(new THREE.BoxGeometry(1.45, 0.45, 1.2), cushionMaterial);
-    cushionLeft.position.set(-0.9, 0.88, 0.05);
-    const cushionRight = cushionLeft.clone();
-    cushionRight.position.x = 0.9;
-    sofa.add(sofaBase, sofaBack, cushionLeft, cushionRight);
-    sofa.position.set(-2.25, 0, -0.12);
-    sofa.rotation.y = THREE.MathUtils.degToRad(-6);
-    this.scene.add(sofa);
-
-    const coffeeTable = new THREE.Group();
-    const tableTop = new THREE.Mesh(
-      new THREE.BoxGeometry(1.8, 0.08, 1),
-      new THREE.MeshStandardMaterial({ color: 0xe8c9a6, roughness: 0.6 })
-    );
-    tableTop.position.y = 0.44;
-    const legMaterial = new THREE.MeshStandardMaterial({ color: 0xaf825f });
-    const tableLeg = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.44, 0.12), legMaterial);
-    tableLeg.position.set(0.65, 0.22, 0.35);
-    const leg2 = tableLeg.clone();
-    leg2.position.set(-0.65, 0.22, 0.35);
-    const leg3 = tableLeg.clone();
-    leg3.position.set(0.65, 0.22, -0.35);
-    const leg4 = tableLeg.clone();
-    leg4.position.set(-0.65, 0.22, -0.35);
-    coffeeTable.add(tableTop, tableLeg, leg2, leg3, leg4);
-    coffeeTable.position.set(-1.15, 0, 1.05);
-    coffeeTable.rotation.y = THREE.MathUtils.degToRad(-7);
-    this.scene.add(coffeeTable);
-    this.placeSprayCan(coffeeTable);
-
-    const atelierDesk = new THREE.Group();
-    const deskTop = new THREE.Mesh(
-      new THREE.BoxGeometry(2.8, 0.08, 1.4),
-      new THREE.MeshStandardMaterial({ color: 0xf3d3b0, roughness: 0.55 })
-    );
-    deskTop.position.y = 1.02;
-    const deskLegMaterial = new THREE.MeshStandardMaterial({ color: 0xc49a7c });
-    const deskLegFrontLeft = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.06, 0.06, 1.05, 16),
-      deskLegMaterial
-    );
-    deskLegFrontLeft.position.set(-1.1, 0.5, 0.55);
-    const deskLegFrontRight = deskLegFrontLeft.clone();
-    deskLegFrontRight.position.x = 1.1;
-    const deskLegBackLeft = deskLegFrontLeft.clone();
-    deskLegBackLeft.position.z = -0.55;
-    const deskLegBackRight = deskLegFrontRight.clone();
-    deskLegBackRight.position.z = -0.55;
-    const sketchPad = new THREE.Mesh(
-      new THREE.PlaneGeometry(0.9, 0.65),
-      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 })
-    );
-    sketchPad.rotation.x = -Math.PI / 2.05;
-    sketchPad.position.set(-0.2, 1.06, 0);
-    const deskLamp = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.04, 0.04, 0.9, 12),
-      new THREE.MeshStandardMaterial({ color: 0x8f7c6a })
-    );
-    deskLamp.position.set(0.9, 0.9, -0.3);
-    const lampShade = new THREE.Mesh(
-      new THREE.ConeGeometry(0.25, 0.35, 24),
-      new THREE.MeshStandardMaterial({ color: 0xfff3da, emissive: 0xfff1d0, emissiveIntensity: 0.4 })
-    );
-    lampShade.position.set(0.9, 1.35, -0.3);
-    const stool = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.35, 0.4, 0.45, 24),
-      new THREE.MeshStandardMaterial({ color: 0xd8a777 })
-    );
-    stool.position.set(0.2, 0.23, -0.82);
-    atelierDesk.add(
-      deskTop,
-      deskLegFrontLeft,
-      deskLegFrontRight,
-      deskLegBackLeft,
-      deskLegBackRight,
-      sketchPad,
-      deskLamp,
-      lampShade,
-      stool
-    );
-    atelierDesk.position.set(-4.35, 0, 0.18);
-    atelierDesk.rotation.y = THREE.MathUtils.degToRad(6);
-    this.scene.add(atelierDesk);
-    this.anchorObjects.atelier = atelierDesk;
-
-    const mural = new THREE.Group();
-    const muralFrame = new THREE.Mesh(
-      new THREE.PlaneGeometry(5.4, 3.3),
-      new THREE.MeshStandardMaterial({ color: 0xb7896b, roughness: 0.7 })
-    );
-    muralFrame.position.z = -0.03;
-    const muralPanel = new THREE.Mesh(
-      new THREE.PlaneGeometry(5, 2.9),
-      new THREE.MeshStandardMaterial({ color: 0xf9d6c3, roughness: 0.8 })
-    );
-    const muralStroke = new THREE.Mesh(
-      new THREE.PlaneGeometry(1.4, 0.2),
-      new THREE.MeshStandardMaterial({ color: 0xff715e, roughness: 0.4 })
-    );
-    muralStroke.rotation.z = THREE.MathUtils.degToRad(12);
-    muralStroke.position.set(0.8, 0.3, 0.02);
-    const muralCircle = new THREE.Mesh(
-      new THREE.CircleGeometry(0.35, 32),
-      new THREE.MeshStandardMaterial({ color: 0x2575fc })
-    );
-    muralCircle.position.set(-1, 0.9, 0.02);
-    mural.add(muralFrame, muralPanel, muralStroke, muralCircle);
-    mural.position.set(-2.35, 3.12, -1.58);
-    this.scene.add(mural);
-    this.anchorObjects.graffiti = mural;
-
-    const windowGroup = new THREE.Group();
-    const windowFrame = new THREE.Mesh(
-      new THREE.BoxGeometry(4.6, 3, 0.12),
-      new THREE.MeshStandardMaterial({ color: 0xc5b59f, roughness: 0.6 })
-    );
-    const windowView = new THREE.Mesh(
-      new THREE.PlaneGeometry(4.1, 2.5),
-      new THREE.MeshStandardMaterial({
-        map: this.seaTexture,
-        transparent: true,
-        opacity: 0.98,
-        roughness: 0.12
-      })
-    );
-    windowView.position.z = 0.12;
-    const muntinVertical = new THREE.Mesh(
-      new THREE.BoxGeometry(0.08, 2.5, 0.08),
-      new THREE.MeshStandardMaterial({ color: 0xaf9b83 })
-    );
-    const muntinHorizontal = new THREE.Mesh(
-      new THREE.BoxGeometry(4.1, 0.08, 0.08),
-      new THREE.MeshStandardMaterial({ color: 0xaf9b83 })
-    );
-    muntinVertical.position.z = 0.08;
-    muntinHorizontal.position.z = 0.08;
-    const windowSill = new THREE.Mesh(
-      new THREE.BoxGeometry(4.9, 0.2, 0.45),
-      new THREE.MeshStandardMaterial({ color: 0xd9c3a6, roughness: 0.6 })
-    );
-    windowSill.position.set(0, -1.65, 0.22);
-    windowGroup.add(windowFrame, windowView, muntinVertical, muntinHorizontal, windowSill);
-    windowGroup.position.set(1.6, 3.18, -1.4);
-    this.scene.add(windowGroup);
-
-    const techShelf = new THREE.Group();
-    const shelfMaterial = new THREE.MeshStandardMaterial({ color: 0xcaa274, roughness: 0.5 });
-    const shelfHeight = 2.4;
-    const sideGeometry = new THREE.BoxGeometry(0.12, shelfHeight, 0.38);
-    const sideLeft = new THREE.Mesh(sideGeometry, shelfMaterial);
-    sideLeft.position.set(-1, shelfHeight / 2, 0);
-    const sideRight = sideLeft.clone();
-    sideRight.position.x = 1;
-    const backPanel = new THREE.Mesh(
-      new THREE.BoxGeometry(2.1, shelfHeight, 0.02),
-      new THREE.MeshStandardMaterial({ color: 0xf1e5d6, roughness: 0.85 })
-    );
-    backPanel.position.set(0, shelfHeight / 2, -0.17);
-    techShelf.add(sideLeft, sideRight, backPanel);
-    const shelfLevels = [0.25, 1.15, 2.05];
-    shelfLevels.forEach((height, levelIndex) => {
-      const board = new THREE.Mesh(
-        new THREE.BoxGeometry(2.05, 0.08, 0.4),
-        new THREE.MeshStandardMaterial({ color: 0xe3c9a7, roughness: 0.5 })
-      );
-      board.position.y = height;
-      techShelf.add(board);
-      for (let i = 0; i < 4; i += 1) {
-        const book = new THREE.Mesh(
-          new THREE.BoxGeometry(0.25, 0.4 + Math.random() * 0.45, 0.18),
-          new THREE.MeshStandardMaterial({
-            color: new THREE.Color().setHSL(0.07 * (i + levelIndex) + 0.05, 0.45, 0.55)
-          })
-        );
-        const xJitter = THREE.MathUtils.randFloatSpread(0.12);
-        const zJitter = THREE.MathUtils.randFloatSpread(0.1);
-        const yJitter = THREE.MathUtils.randFloat(-0.05, 0.08);
-        book.position.set(-0.75 + i * 0.5 + xJitter, height + 0.34 + yJitter, (i % 2 === 0 ? -0.05 : 0.05) + zJitter);
-        book.rotation.z = THREE.MathUtils.degToRad(THREE.MathUtils.randFloatSpread(6));
-        book.rotation.y = THREE.MathUtils.degToRad(THREE.MathUtils.randFloatSpread(8));
-        techShelf.add(book);
-      }
+    const anchorMaterial = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.001,
+      depthWrite: false
     });
-    techShelf.position.set(3.2, 0, -0.15);
-    techShelf.rotation.y = THREE.MathUtils.degToRad(-17);
-    this.scene.add(techShelf);
-    this.anchorObjects.code = techShelf;
 
-    const contactPlant = new THREE.Group();
-    const plantPot = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.4, 0.55, 0.55, 24),
-      new THREE.MeshStandardMaterial({ color: 0xe2b18d })
+    const registerAnchor = (name, geometry, position, rotation) => {
+      const anchor = new THREE.Mesh(geometry, anchorMaterial.clone());
+      anchor.position.copy(position);
+      if (rotation) {
+        anchor.rotation.set(rotation.x ?? 0, rotation.y ?? 0, rotation.z ?? 0);
+      }
+      this.scene.add(anchor);
+      this.anchorObjects[name] = anchor;
+    };
+
+    registerAnchor(
+      "atelier",
+      new THREE.BoxGeometry(2.8, 1.4, 1.6),
+      new THREE.Vector3(-4.3, 0.9, 0.2)
     );
-    const plantLeaves = new THREE.Mesh(
-      new THREE.ConeGeometry(0.9, 1.6, 32),
-      new THREE.MeshStandardMaterial({ color: 0x5ea27b, roughness: 0.4 })
+    registerAnchor(
+      "graffiti",
+      new THREE.PlaneGeometry(4.8, 3),
+      new THREE.Vector3(-2.7, 3, -1.55),
+      { y: Math.PI }
     );
-    plantLeaves.position.y = 1.1;
-    const floorLampStem = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.05, 0.05, 1.6, 16),
-      new THREE.MeshStandardMaterial({ color: 0xe8d5c2 })
+    registerAnchor(
+      "code",
+      new THREE.BoxGeometry(2.2, 2.6, 0.8),
+      new THREE.Vector3(3.2, 1.4, -0.2)
     );
-    floorLampStem.position.set(-0.2, 0.85, 0.24);
-    const floorLampShade = new THREE.Mesh(
-      new THREE.ConeGeometry(0.4, 0.55, 24),
-      new THREE.MeshStandardMaterial({ color: 0xfff6dc, emissive: 0xffe9b5, emissiveIntensity: 0.3 })
+    registerAnchor(
+      "contact",
+      new THREE.CylinderGeometry(0.9, 0.2, 1.6, 12),
+      new THREE.Vector3(3.7, 0.8, 1.3)
     );
-    floorLampShade.position.set(-0.2, 1.78, 0.24);
-    contactPlant.add(plantPot, plantLeaves, floorLampStem, floorLampShade);
-    contactPlant.position.set(4.3, 0, 1.48);
-    contactPlant.rotation.y = THREE.MathUtils.degToRad(-12);
-    this.scene.add(contactPlant);
-    this.anchorObjects.contact = contactPlant;
   }
 
   createSeaTexture() {
