@@ -60,6 +60,9 @@ export class GraffitiStudioScene {
     this.addBrokenWindow();
     this.addLeaves();
     this.addSkybox();
+    this.addShelf();
+    this.addDesk();
+    this.addOfficeChair();
 
     // Debug camera mode
     this.debugCameraMode = false;
@@ -331,7 +334,7 @@ export class GraffitiStudioScene {
       url: "./assets/models/simple_bookstack.glb",
       position: [1.65, 0.6, 1.42],
       rotation: [0, 45, 0],
-      targetSize: 0.65
+      targetSize: 0.5
     });
   }
 
@@ -368,6 +371,33 @@ export class GraffitiStudioScene {
       position: [0, 0, 4],
       rotation: [0, -24, 0],
       targetSize: 25
+    });
+  }
+
+  addShelf () {
+    this.loadModelAndPlace({
+      url: "./assets/models/shelf.glb",
+      position: [-5.75, -0.03, -1.63],
+      rotation: [0, -90, 0],
+      targetSize: 2
+    });
+  }
+
+  addDesk () {
+    this.loadModelAndPlace({
+      url: "./assets/models/desk.glb",
+      position: [-2.5, 0, -1.68],
+      rotation: [0, 0, 0],
+      targetSize: 2
+    });
+  }
+
+  addOfficeChair () {
+    this.loadModelAndPlace({
+      url: "./assets/models/office_chair.glb",
+      position: [-1.3, 0.04, -0.5],
+      rotation: [0, 150, 0],
+      targetSize: 1.5
     });
   }
 
