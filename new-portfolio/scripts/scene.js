@@ -15,7 +15,7 @@ export class GraffitiStudioScene {
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 0.78;
+    this.renderer.toneMappingExposure = 1.1;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
@@ -46,7 +46,6 @@ export class GraffitiStudioScene {
     this.shaderUniforms = null;
 
     this.createEnvironment();
-    this.createShaderOverlays();
     this.createRoomDetails();
     this.createStops();
 
@@ -100,102 +99,10 @@ export class GraffitiStudioScene {
     this.handleResize();
     this.animate();
   }
-  createShaderOverlays() {
-    const vertexShader = /* glsl */ `
-      varying vec2 vUv;
-      void main() {
-        vUv = uv;
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-      }
-    `;
-
-    this.shaderUniforms = {
-      floor: {
-        uTime: { value: 0 },
-        uGlow: { value: new THREE.Color(0xf8c496) },
-        uBase: { value: new THREE.Color(0x2b1f18) }
-      },
-      wall: {
-        uTime: { value: 0 },
-        uTop: { value: new THREE.Color(0xf7d8bd) },
-        uBottom: { value: new THREE.Color(0x3b2a23) }
-      }
-    };
-
-    const floorMaterial = new THREE.ShaderMaterial({
-      transparent: true,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending,
-      uniforms: this.shaderUniforms.floor,
-      vertexShader,
-      fragmentShader: /* glsl */ `
-        varying vec2 vUv;
-        uniform vec3 uGlow;
-        uniform vec3 uBase;
-        void main() {
-          vec2 shifted = vUv - vec2(0.5);
-          float radial = smoothstep(0.85, 0.1, length(shifted * vec2(1.5, 1.2)));
-          float vignette = smoothstep(1.0, 0.35, length(shifted * vec2(1.2, 1.2)));
-          float grid = step(0.97, fract(vUv.x * 10.0)) * step(0.97, fract(vUv.y * 10.0));
-          vec3 color = mix(uBase, uGlow, radial) + uGlow * grid * 0.25;
-          float alpha = clamp(radial * 0.7 + vignette * 0.2 + grid * 0.15, 0.0, 0.75);
-          gl_FragColor = vec4(color, alpha);
-        }
-      `
-    });
-
-    const wallMaterial = new THREE.ShaderMaterial({
-      transparent: true,
-      depthWrite: false,
-      blending: THREE.NormalBlending,
-      uniforms: this.shaderUniforms.wall,
-      vertexShader,
-      fragmentShader: /* glsl */ `
-        varying vec2 vUv;
-        uniform float uTime;
-        uniform vec3 uTop;
-        uniform vec3 uBottom;
-        float hash(vec2 p) {
-          return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
-        }
-        float noise(vec2 p) {
-          vec2 i = floor(p);
-          vec2 f = fract(p);
-          float a = hash(i);
-          float b = hash(i + vec2(1.0, 0.0));
-          float c = hash(i + vec2(0.0, 1.0));
-          float d = hash(i + vec2(1.0, 1.0));
-          vec2 u = f * f * (3.0 - 2.0 * f);
-          return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
-        }
-        void main() {
-          float gradient = smoothstep(0.0, 1.0, vUv.y);
-          float bounce = smoothstep(0.0, 0.45, 1.0 - vUv.y);
-          float glow = smoothstep(0.92, 0.4, distance(vec2(vUv.x, vUv.y * 0.75), vec2(0.48, 0.58)));
-          float shimmer = noise(vec2(vUv.x * 5.0, vUv.y * 5.0 + uTime * 0.15)) * 0.04;
-          vec3 baseColor = mix(uBottom, uTop, gradient);
-          vec3 bounceColor = mix(uBottom, uTop, 0.28);
-          vec3 color = mix(baseColor, bounceColor, bounce * 0.55);
-          color = mix(color, uTop, glow * 0.25) + shimmer;
-          float alpha = clamp(0.35 + gradient * 0.25 + bounce * 0.2 + glow * 0.15, 0.15, 0.55);
-          gl_FragColor = vec4(color, alpha);
-        }
-      `
-    });
-
-    const floorOverlay = new THREE.Mesh(new THREE.PlaneGeometry(20.2, 12.2), floorMaterial);
-    floorOverlay.rotation.x = -Math.PI / 2;
-    floorOverlay.position.y = 0.02;
-    this.scene.add(floorOverlay);
-
-    const wallOverlay = new THREE.Mesh(new THREE.PlaneGeometry(22.2, 9.7), wallMaterial);
-    wallOverlay.position.set(0, 2.45, -1.6);
-    this.scene.add(wallOverlay);
-  }
 
   createEnvironment() {
-    const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xdcc0a7, metalness: 0.12, roughness: 0.82 });
-    const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xf8eddf, metalness: 0.02, roughness: 0.94 });
+    const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xdcc0a7, metalness: 0, roughness: 1 });
+    const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xf8eddf, metalness: 0, roughness: 1 });
 
     const floor = new THREE.Mesh(new THREE.PlaneGeometry(20, 12), floorMaterial);
     floor.rotation.x = -Math.PI / 2;
@@ -228,34 +135,21 @@ export class GraffitiStudioScene {
     ceiling.receiveShadow = false;
     this.scene.add(ceiling);
 
-    const ambient = new THREE.AmbientLight(0xfff1df, 0.55);
-    this.scene.add(ambient);
+    const mainLight = new THREE.DirectionalLight(0xfff2e0, 1.0);
+    mainLight.position.set(5, 5, 5);
+    mainLight.castShadow = true;
+    mainLight.shadow.mapSize.set(2048, 2048);
+    mainLight.shadow.bias = -0.0001;
+    mainLight.shadow.camera.near = 0.5;
+    mainLight.shadow.camera.far = 20;
+    mainLight.shadow.camera.left = -10;
+    mainLight.shadow.camera.right = 10;
+    mainLight.shadow.camera.top = 10;
+    mainLight.shadow.camera.bottom = -10;
+    this.scene.add(mainLight);
 
-    // Warm ceiling light that behaves like an indoor pendant
-    const ceilingLight = new THREE.PointLight(0xffd4ac, 1.25, 32, 1.9);
-    ceilingLight.position.set(0.4, 4.4, 0.3);
-    ceilingLight.castShadow = true;
-    ceilingLight.shadow.mapSize.set(2048, 2048);
-    ceilingLight.shadow.bias = -0.0006;
-    this.scene.add(ceilingLight);
-
-    // Side lamp style fill to soften shadows on seating area
-    const lampFill = new THREE.SpotLight(0xffc494, 0.75, 18, THREE.MathUtils.degToRad(55), 0.32, 1.15);
-    lampFill.position.set(-3.4, 3.1, -0.6);
-    lampFill.target.position.set(-1.4, 1.1, 0.1);
-    lampFill.castShadow = true;
-    lampFill.shadow.mapSize.set(1024, 1024);
-    lampFill.shadow.bias = -0.0004;
-    this.scene.add(lampFill);
-    this.scene.add(lampFill.target);
-
-    // Gentle front bounce mimicking wall reflections
-    const frontFill = new THREE.DirectionalLight(0xffe7cc, 0.32);
-    frontFill.position.set(1.2, 2.6, 5.8);
-    frontFill.target.position.set(1.6, 0.8, 0.2);
-    frontFill.castShadow = false;
-    this.scene.add(frontFill);
-    this.scene.add(frontFill.target);
+    const ambientLight = new THREE.AmbientLight(0xfff2e0, 0.5);
+    this.scene.add(ambientLight);
   }
 
   createRoomDetails() {
@@ -386,8 +280,8 @@ export class GraffitiStudioScene {
   addCoffeeTable() {
     this.loadModelAndPlace({
       url: "./assets/models/coffee_table.glb",
-      position: [1.25, 0.4, 1],
-      rotation: [0, -23, 0],
+      position: [1.25, 0, 1.25],
+      rotation: [0, 0, 0],
       targetSize: 1.4
     });
   }
