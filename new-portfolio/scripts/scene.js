@@ -54,6 +54,9 @@ export class GraffitiStudioScene {
     this.addBed();
     this.addSofa();
     this.addCoffeeTable();
+    this.addReadingChair();
+    this.addSimpleBookstack();
+    this.addCanonRetroCamera();
 
     // Debug camera mode
     this.debugCameraMode = false;
@@ -283,6 +286,33 @@ export class GraffitiStudioScene {
       position: [1.25, 0, 1.25],
       rotation: [0, 0, 0],
       targetSize: 1.4
+    });
+  }
+
+  addReadingChair() {
+    this.loadModelAndPlace({
+      url: "./assets/models/chair.glb",
+      position: [-2.5, 0, 0.3],
+      rotation: [0, 150, 0],
+      targetSize: 1.35
+    });
+  }
+
+  addSimpleBookstack () {
+    this.loadModelAndPlace({
+      url: "./assets/models/simple_bookstack.glb",
+      position: [1.65, 0.6, 1.42],
+      rotation: [0, 45, 0],
+      targetSize: 0.65
+    });
+  }
+
+  addCanonRetroCamera () {
+    this.loadModelAndPlace({
+      url: "./assets/models/canon_retro_camera.glb",
+      position: [0.95, 0.6, 1.65],
+      rotation: [0, -32, 0],
+      targetSize: 0.25
     });
   }
 
