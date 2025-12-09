@@ -63,6 +63,8 @@ export class GraffitiStudioScene {
     this.addShelf();
     this.addDesk();
     this.addOfficeChair();
+    this.addCarpet();
+    this.addChaussons();
 
     // Debug camera mode
     this.debugCameraMode = false;
@@ -398,6 +400,24 @@ export class GraffitiStudioScene {
       position: [-1.3, 0.04, -0.5],
       rotation: [0, 150, 0],
       targetSize: 1.5
+    });
+  }
+
+  addCarpet () {
+    this.loadModelAndPlace({
+      url: "./assets/models/carpet.glb",
+      position: [-4.5, 0.03, 0.18],
+      rotation: [0, 0, 0],
+      targetSize: 2.5
+    });
+  }
+
+  addChaussons() {
+    this.loadModelAndPlace({
+      url: "./assets/models/chaussons.glb",
+      position: [-5.25, 0.05, 0.32],
+      rotation: [0, 79, 0],
+      targetSize: 0.5
     });
   }
 
