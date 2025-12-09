@@ -57,7 +57,9 @@ export class GraffitiStudioScene {
     this.addReadingChair();
     this.addSimpleBookstack();
     this.addCanonRetroCamera();
-    this.addBrookMediaUnit();
+    this.addBrokenWindow();
+    this.addLeaves();
+    this.addSkybox();
 
     // Debug camera mode
     this.debugCameraMode = false;
@@ -109,23 +111,47 @@ export class GraffitiStudioScene {
     const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xf8eddf, metalness: 0, roughness: 1 });
 
     const floor = new THREE.Mesh(new THREE.PlaneGeometry(20, 12), floorMaterial);
+    floor.position.set(0,0, 4.25);
     floor.rotation.x = -Math.PI / 2;
     floor.receiveShadow = true;
     this.scene.add(floor);
 
-    const backWall = new THREE.Mesh(new THREE.PlaneGeometry(22, 9.5), wallMaterial.clone());
+    // Create back wall with a hole for the window
+    const wallWidth = 22, wallHeight = 9.5;
+    // Adjust these to match your window asset's actual size and position
+    const windowWidth = 1.4, windowHeight = 1.8; // vertical rectangle
+    const windowCenterX = -7, windowCenterY = 0.7; // match window position
+    // Wall shape
+    const wallShape = new THREE.Shape();
+    wallShape.moveTo(-wallWidth/2, -wallHeight/2);
+    wallShape.lineTo(wallWidth/2, -wallHeight/2);
+    wallShape.lineTo(wallWidth/2, wallHeight/2);
+    wallShape.lineTo(-wallWidth/2, wallHeight/2);
+    wallShape.lineTo(-wallWidth/2, -wallHeight/2);
+    // Window hole
+    // Window hole (vertical rectangle)
+    const hole = new THREE.Path();
+    hole.moveTo(windowCenterX - windowWidth/2, windowCenterY - windowHeight/2);
+    hole.lineTo(windowCenterX + windowWidth/2, windowCenterY - windowHeight/2);
+    hole.lineTo(windowCenterX + windowWidth/2, windowCenterY + windowHeight/2);
+    hole.lineTo(windowCenterX - windowWidth/2, windowCenterY + windowHeight/2);
+    hole.lineTo(windowCenterX - windowWidth/2, windowCenterY - windowHeight/2);
+    wallShape.holes.push(hole);
+    // Geometry with hole
+    const wallGeometry = new THREE.ShapeGeometry(wallShape);
+    const backWall = new THREE.Mesh(wallGeometry, wallMaterial.clone());
     backWall.position.set(0, 2.4, -1.7);
     backWall.receiveShadow = true;
     this.scene.add(backWall);
 
     const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(12, 9.5), wallMaterial.clone());
-    leftWall.position.set(-10, 2.4, 0.2);
+    leftWall.position.set(-10, 2.4, 4.25);
     leftWall.rotation.y = Math.PI / 2;
     leftWall.receiveShadow = true;
     this.scene.add(leftWall);
 
     const rightWall = new THREE.Mesh(new THREE.PlaneGeometry(12, 9.5), wallMaterial.clone());
-    rightWall.position.set(10, 2.4, 0.2);
+    rightWall.position.set(10, 2.4, 4.25);
     rightWall.rotation.y = -Math.PI / 2;
     rightWall.receiveShadow = true;
     this.scene.add(rightWall);
@@ -136,6 +162,7 @@ export class GraffitiStudioScene {
     );
     ceiling.rotation.x = Math.PI / 2;
     ceiling.position.y = 4.8;
+    ceiling.position.z = 4.25;
     ceiling.receiveShadow = false;
     this.scene.add(ceiling);
 
@@ -265,9 +292,9 @@ export class GraffitiStudioScene {
 
   addBed() {
     this.loadModelAndPlace({
-      url: "./assets/models/sm_bed.glb",
-      position: [-4.4, 0, -0.15],
-      rotation: [0, -3, 0],
+      url: "./assets/models/bed.glb",
+      position: [-7, -0.1, -0.3],
+      rotation: [0, 180, 0],
       targetSize: 3.2
     });
   }
@@ -314,6 +341,33 @@ export class GraffitiStudioScene {
       position: [0.95, 0.6, 1.65],
       rotation: [0, -32, 0],
       targetSize: 0.25
+    });
+  }
+
+  addBrokenWindow () {
+    this.loadModelAndPlace({
+      url: "./assets/models/broken_window.glb",
+      position: [-7, 3, -1.65],
+      rotation: [0, 0, 0],
+      targetSize: 2
+    });
+  }
+
+  addLeaves () {
+    this.loadModelAndPlace({
+      url: "./assets/models/leaves.glb",
+      position: [-8, 0.5, -2.3],
+      rotation: [90, 0, 0],
+      targetSize: 10
+    });
+  }
+
+  addSkybox() {
+    this.loadModelAndPlace({
+      url: "./assets/models/skybox_autumn_forest.glb",
+      position: [0, 0, 4],
+      rotation: [0, -24, 0],
+      targetSize: 25
     });
   }
 
@@ -623,126 +677,5 @@ export class GraffitiStudioScene {
     }
 
     this.renderer.render(this.scene, this.camera);
-  }
-
-  addInitialAssets() {
-    // Reset camera to a natural, default view
-    this.camera.position.set(0, 2.1, 5.4);
-    this.currentLookAt.set(0, 1.4, -0.2);
-
-    // Helper for loading models with normalized scale (largest dimension -> targetSize)
-    const loadModel = (url, position, rotation = [0, 0, 0], targetSize = 1.2, parent = this.scene) => {
-      this.gltfLoader.load(
-        url,
-        (gltf) => {
-          const model = gltf.scene;
-          // Compute bounding box and normalize scale
-          const box = new THREE.Box3().setFromObject(model);
-          const size = new THREE.Vector3();
-          box.getSize(size);
-          const maxDim = Math.max(size.x, size.y, size.z);
-          let scale = 1;
-          if (maxDim > 0) {
-            scale = targetSize / maxDim;
-          }
-          model.scale.setScalar(scale);
-          model.position.set(position[0], position[1], position[2]);
-          model.rotation.set(
-            THREE.MathUtils.degToRad(rotation[0]),
-            THREE.MathUtils.degToRad(rotation[1]),
-            THREE.MathUtils.degToRad(rotation[2])
-          );
-          model.traverse((child) => {
-            if (child.isMesh) {
-              child.castShadow = true;
-              child.receiveShadow = true;
-            }
-          });
-          parent.add(model);
-        },
-        undefined,
-        (error) => {
-          console.warn(`Failed to load model ${url}`, error);
-        }
-      );
-    };
-
-    // Place carpet on the floor (centered, larger footprint)
-    loadModel(
-      './assets/models/carpet.glb',
-      [-0.6, 0.008, 0.2],
-      [0, 0, 0],
-      3.6
-    );
-
-    // Bed and bedside table, left side, partially out of view
-    loadModel(
-      './assets/models/bed.glb',
-      [-2.7, 0.18, -0.15],
-      [0, 6, 0],
-      2.6
-    );
-    loadModel(
-      './assets/models/astaire_bedside_tabledark_stain_walnut_and_grey.glb',
-      [-3.2, 0.18, 0.55],
-      [0, 8, 0],
-      1.2
-    );
-
-    // Book cabinet, a bit to the right
-    loadModel(
-      './assets/models/book_cabinet_vintage.glb',
-      [2.6, 0.18, -0.15],
-      [0, -4, 0],
-      2.6
-    );
-
-    // Floor lamp, near the bedside table
-    loadModel(
-      './assets/models/cohen_floor_lampdeep_grey_and_american_oak.glb',
-      [-3.35, 0.18, 0.95],
-      [0, 4, 0],
-      1.6
-    );
-
-    // Table lamp, on/near the book cabinet top
-    loadModel(
-      './assets/models/heik_table_lamp_short_concrete.glb',
-      [2.35, 1.0, -0.05],
-      [0, 0, 0],
-      0.6
-    );
-
-    // Chair 1 (irvington), right of carpet
-    loadModel(
-      './assets/models/irvington_carver_chair_graphite_grey.glb',
-      [0.9, 0.18, 1.05],
-      [0, 16, 0],
-      1.9
-    );
-
-    // Chair 2 (lars), left of carpet
-    loadModel(
-      './assets/models/lars_accent_chair_diego_grey.glb',
-      [-1.2, 0.18, 1.05],
-      [0, -12, 0],
-      1.8
-    );
-
-    // Book stack, on the carpet (small accent)
-    loadModel(
-      './assets/models/simple_bookstack.glb',
-      [0.1, 0.18, 0.25],
-      [0, 0, 0],
-      0.32
-    );
-
-    // Plant, near the book cabinet
-    loadModel(
-      './assets/models/wk9_trees_and_plants.glb',
-      [3.1, 0.18, 0.35],
-      [0, 0, 0],
-      1.7
-    );
   }
 }
