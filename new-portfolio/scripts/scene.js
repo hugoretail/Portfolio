@@ -57,6 +57,7 @@ export class GraffitiStudioScene {
     this.addReadingChair();
     this.addSimpleBookstack();
     this.addCanonRetroCamera();
+    this.addBrookMediaUnit();
 
     // Debug camera mode
     this.debugCameraMode = false;
@@ -292,9 +293,9 @@ export class GraffitiStudioScene {
   addReadingChair() {
     this.loadModelAndPlace({
       url: "./assets/models/chair.glb",
-      position: [-2.5, 0, 0.3],
-      rotation: [0, 150, 0],
-      targetSize: 1.35
+      position: [2.5, 0, 1.75],
+      rotation: [0, -45, 0],
+      targetSize: 1.15
     });
   }
 
