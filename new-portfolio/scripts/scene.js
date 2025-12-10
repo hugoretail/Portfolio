@@ -65,6 +65,12 @@ export class GraffitiStudioScene {
     this.addOfficeChair();
     this.addCarpet();
     this.addChaussons();
+    this.addGlasses();
+    this.addBonsai();
+    this.addHousePalmPlant();
+    this.addPaintingLandscape();
+    this.addDesktopComputer();
+    this.addMouseKeyboardPad();
 
     // Debug camera mode
     this.debugCameraMode = false;
@@ -166,7 +172,7 @@ export class GraffitiStudioScene {
       new THREE.MeshStandardMaterial({ color: 0xfaf4ea, roughness: 0.96 })
     );
     ceiling.rotation.x = Math.PI / 2;
-    ceiling.position.y = 4.8;
+    ceiling.position.y = 4.1;
     ceiling.position.z = 4.25;
     ceiling.receiveShadow = false;
     this.scene.add(ceiling);
@@ -415,9 +421,63 @@ export class GraffitiStudioScene {
   addChaussons() {
     this.loadModelAndPlace({
       url: "./assets/models/chaussons.glb",
-      position: [-5.25, 0.0, 0.32],
+      position: [-5.25, 0.03, 0.32],
       rotation: [0, 79, 0],
       targetSize: 0.5
+    });
+  }
+
+  addGlasses() {
+    this.loadModelAndPlace({
+      url: "./assets/models/glasses2.glb",
+      position: [-5.3, 0.7, -1.3],
+      rotation: [0, -105, 0],
+      targetSize: 0.25
+    });
+  }
+
+  addBonsai() {
+    this.loadModelAndPlace({
+      url: "./assets/models/bonsai2.glb",
+      position: [-3.25, 0.95, -0.9],
+      rotation: [0, 92, 0],
+      targetSize: 1
+    });
+  }
+
+  addHousePalmPlant() {
+    this.loadModelAndPlace({
+      url: "./assets/models/house_palm_plant.glb",
+      position: [3.5, 0, -1],
+      rotation: [0, 60, 0],
+      targetSize: 2
+    });
+  }
+
+  addPaintingLandscape() {
+    this.loadModelAndPlace({
+      url: "./assets/models/painting_landscape.glb",
+      position: [-1.8, 1.6, -1.69],
+      rotation: [0, 0, 0],
+      targetSize: 1
+    });
+  }
+
+  addDesktopComputer() {
+    this.loadModelAndPlace({
+      url: "./assets/models/desktop_computer.glb",
+      position: [-0.85, 1.45, -1.3],
+      rotation: [0, -25, 0],
+      targetSize: 1
+    });
+  }
+
+  addMouseKeyboardPad() {
+    this.loadModelAndPlace({
+      url: "./assets/models/mouse_pad_keyboard_pad.glb",
+      position: [-0.91, 1.08, -1.2],
+      rotation: [0, -25, 0],
+      targetSize: 1
     });
   }
 

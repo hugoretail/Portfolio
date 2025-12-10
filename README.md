@@ -14,7 +14,4 @@ https://github.com/jordan-breton/jordan-breton.com
 https://polyhaven.com/models
 
 TO ADD:
-https://sketchfab.com/search?q=dr+martens+&type=models
 https://sketchfab.com/hiteshsahu/collections/electronics-d125030fa9e74dc6ba84e54798fb0f32
-https://sketchfab.com/search?q=bonsai&type=models
-https://sketchfab.com/3d-models/ray-ban-glasses-subject-visualization-07c114707de144c58a4808841ce203ba
