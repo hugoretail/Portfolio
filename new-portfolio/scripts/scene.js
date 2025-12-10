@@ -415,7 +415,7 @@ export class GraffitiStudioScene {
   addChaussons() {
     this.loadModelAndPlace({
       url: "./assets/models/chaussons.glb",
-      position: [-5.25, 0.05, 0.32],
+      position: [-5.25, 0.0, 0.32],
       rotation: [0, 79, 0],
       targetSize: 0.5
     });
