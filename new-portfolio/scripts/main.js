@@ -40,7 +40,6 @@ function releaseOverlayLock() {
 
 function init() {
   setupOverlay();
-  stylizeOverlayDecor();
   setupPanelToggle();
   if (!hasWebGLSupport()) {
     fallback.hidden = false;
@@ -49,6 +48,7 @@ function init() {
     return;
   }
 
+  // Only stylize decor after overlay is gone for faster load
   graffitiScene = new GraffitiStudioScene({
     canvas,
     stops: roomStops,
@@ -60,20 +60,19 @@ function init() {
 function setupOverlay() {
   if (!overlay) return;
   overlay.addEventListener("click", () => {
-    enterWorkshop();
+    enterWorkshop(true);
   });
   enterButton?.addEventListener("click", (event) => {
     event.stopPropagation();
-    enterWorkshop();
+    enterWorkshop(true);
   });
 }
 
 function stylizeOverlayDecor() {
   if (!overlay) return;
-  requestAnimationFrame(() => {
-    scatterOverlayFlowers();
-    enrichOverlayLeaves();
-  });
+  scatterOverlayFlowers();
+  enrichOverlayLeaves();
+  // Overlay stroke animation removed
 }
 
 function scatterOverlayFlowers() {
@@ -134,13 +133,18 @@ function enrichOverlayLeaves() {
   });
 }
 
-function enterWorkshop() {
+function enterWorkshop(immediate) {
   if (overlayDismissed || !overlay) return;
   overlayDismissed = true;
 
   const removeOverlay = () => {
     overlay.remove();
     releaseOverlayLock();
+    stylizeOverlayDecor();
+    // Overlay stroke animation fully removed
+    // If any SVG or DOM for stroke remains in HTML, remove it here:
+    const strokeSVG = document.querySelector('.overlay__stroke');
+    if (strokeSVG) strokeSVG.remove();
   };
 
   if (!graffitiScene) {
@@ -149,12 +153,18 @@ function enterWorkshop() {
   }
 
   hidePanels();
-  gsap.to(overlay, {
-    autoAlpha: 0,
-    duration: 0.9,
-    ease: "power3.out",
-    onComplete: removeOverlay
-  });
+  if (immediate) {
+    overlay.style.opacity = 0;
+    overlay.style.pointerEvents = "none";
+    setTimeout(removeOverlay, 80);
+  } else {
+    gsap.to(overlay, {
+      autoAlpha: 0,
+      duration: 0.9,
+      ease: "power3.out",
+      onComplete: removeOverlay
+    });
+  }
 }
 
 function setupPanelToggle() {

@@ -71,6 +71,11 @@ export class GraffitiStudioScene {
     this.addPaintingLandscape();
     this.addDesktopComputer();
     this.addMouseKeyboardPad();
+    this.addJBL();
+    this.addBMWM3GTR();
+    this.addSpeakers();
+    this.addBedLamp();
+    this.addDeskLamp();
 
     // Debug camera mode
     this.debugCameraMode = false;
@@ -466,8 +471,8 @@ export class GraffitiStudioScene {
   addDesktopComputer() {
     this.loadModelAndPlace({
       url: "./assets/models/desktop_computer.glb",
-      position: [-0.85, 1.45, -1.3],
-      rotation: [0, -25, 0],
+      position: [-0.81, 1.45, -1.19],
+      rotation: [0, -10, 0],
       targetSize: 1
     });
   }
@@ -475,9 +480,54 @@ export class GraffitiStudioScene {
   addMouseKeyboardPad() {
     this.loadModelAndPlace({
       url: "./assets/models/mouse_pad_keyboard_pad.glb",
-      position: [-0.91, 1.08, -1.2],
+      position: [-0.91, 1.08, -1.12],
       rotation: [0, -25, 0],
       targetSize: 1
+    });
+  }
+  
+  addJBL() {
+    this.loadModelAndPlace({
+      url: "./assets/models/big_enceinte_jbl.glb",
+      position: [-2.91,0.5, -1.2],
+      rotation: [0, 25, 0],
+      targetSize: 1
+    });
+  }
+
+  addBMWM3GTR() {
+    this.loadModelAndPlace({
+      url: "./assets/models/bmw_m3_gtr.glb",
+      position: [-2.15, 1.215, -1],
+      rotation: [0, 135, 0],
+      targetSize: 0.5
+    });
+  }
+
+  addSpeakers() {
+    this.loadModelAndPlace({
+      url: "./assets/models/speakers.glb",
+      position: [-1.15, 1.1, -1.58],
+      rotation: [0, 265, 0],
+      targetSize: 1
+    });
+  }
+
+  addBedLamp() {
+    this.loadModelAndPlace({
+      url: "./assets/models/bed_lamp.glb",
+      position: [-5.65, 1.13, -1.4],
+      rotation: [0, 0, 0],
+      targetSize: 0.8
+    });
+  }
+
+  addDeskLamp() {
+    this.loadModelAndPlace({
+      url: "./assets/models/desk_lamp.glb",
+      position: [-2, 1.15, -1.45],
+      rotation: [0, -45, 0],
+      targetSize: 0.6
     });
   }
 
