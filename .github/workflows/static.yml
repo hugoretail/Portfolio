@@ -38,8 +38,8 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload only the new-portfolio folder
-          path: './new-portfolio'
+         # Upload only the new-portfolio folder
+         path: './new-portfolio'
           
       - name: Deploy to GitHub Pages
         id: deployment
