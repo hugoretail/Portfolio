@@ -76,6 +76,7 @@ export class GraffitiStudioScene {
     this.addSpeakers();
     this.addBedLamp();
     this.addDeskLamp();
+    this.addComputerTower();
 
     // Debug camera mode
     this.debugCameraMode = false;
@@ -527,6 +528,15 @@ export class GraffitiStudioScene {
       url: "./assets/models/desk_lamp.glb",
       position: [-2, 1.15, -1.45],
       rotation: [0, -45, 0],
+      targetSize: 0.6
+    });
+  }
+
+  addComputerTower() {
+    this.loadModelAndPlace({
+      url: "./assets/models/computer_tower.glb",
+      position: [-0.564, 0.165, -1.25],
+      rotation: [0, 0, 0],
       targetSize: 0.6
     });
   }
