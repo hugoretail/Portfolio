@@ -45,7 +45,16 @@ export class GraffitiStudioScene {
     this.seaTexture = this.createSeaTexture();
     this.shaderUniforms = null;
 
+    // Animation mixers for animated GLTFs (e.g., clock)
+    this.mixers = [];
+
     this.createEnvironment();
+    // Apply detailed PBR textures to floor and walls
+    this.applyFloorTextures();
+    // Apply detailed PBR textures to walls (color/normal/roughness/AO)
+    this.applyWallTextures();
+    // Apply roof/ceiling textures
+    this.applyCeilingTextures();
     this.createRoomDetails();
     this.createStops();
 
@@ -62,8 +71,9 @@ export class GraffitiStudioScene {
     this.addSkybox();
     this.addShelf();
     this.addDesk();
-    this.addOfficeChair();
     this.addCarpet();
+    this.addOfficeChair();
+    this.addTexturedCarpet();
     this.addChaussons();
     this.addGlasses();
     this.addBonsai();
@@ -77,6 +87,8 @@ export class GraffitiStudioScene {
     this.addBedLamp();
     this.addDeskLamp();
     this.addComputerTower();
+    this.addTexturedCarpet();
+    this.addClock();
 
     // Debug camera mode
     this.debugCameraMode = false;
@@ -132,6 +144,8 @@ export class GraffitiStudioScene {
     floor.rotation.x = -Math.PI / 2;
     floor.receiveShadow = true;
     this.scene.add(floor);
+    // Keep a reference to the floor for texturing
+    this.floor = floor;
 
     // Create back wall with a hole for the window
     const wallWidth = 22, wallHeight = 9.5;
@@ -161,13 +175,13 @@ export class GraffitiStudioScene {
     backWall.receiveShadow = true;
     this.scene.add(backWall);
 
-    const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(12, 9.5), wallMaterial.clone());
+    const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(12, 9.5, 1, 1), wallMaterial.clone());
     leftWall.position.set(-10, 2.4, 4.25);
     leftWall.rotation.y = Math.PI / 2;
     leftWall.receiveShadow = true;
     this.scene.add(leftWall);
 
-    const rightWall = new THREE.Mesh(new THREE.PlaneGeometry(12, 9.5), wallMaterial.clone());
+    const rightWall = new THREE.Mesh(new THREE.PlaneGeometry(12, 9.5, 1, 1), wallMaterial.clone());
     rightWall.position.set(10, 2.4, 4.25);
     rightWall.rotation.y = -Math.PI / 2;
     rightWall.receiveShadow = true;
@@ -182,6 +196,8 @@ export class GraffitiStudioScene {
     ceiling.position.z = 4.25;
     ceiling.receiveShadow = false;
     this.scene.add(ceiling);
+    // Store reference for PBR texturing
+    this.ceiling = ceiling;
 
     const mainLight = new THREE.DirectionalLight(0xfff2e0, 1.0);
     mainLight.position.set(5, 5, 5);
@@ -198,6 +214,279 @@ export class GraffitiStudioScene {
 
     const ambientLight = new THREE.AmbientLight(0xfff2e0, 0.5);
     this.scene.add(ambientLight);
+
+    // Keep references and apply PBR textures to walls
+    this.walls = { back: backWall, left: leftWall, right: rightWall };
+  }
+
+  // Load and apply PBR textures to the floor
+  applyFloorTextures() {
+    if (!this.floor) return;
+    const loader = new THREE.TextureLoader();
+    const basePath = './assets/images/floor';
+    const pbr = {
+      color: `${basePath}/WoodFloor051_2K-JPG_Color.jpg`,
+      normal: `${basePath}/WoodFloor051_2K-JPG_NormalGL.jpg`,
+      roughness: `${basePath}/WoodFloor051_2K-JPG_Roughness.jpg`,
+      ao: `${basePath}/WoodFloor051_2K-JPG_AmbientOcclusion.jpg`
+    };
+
+    const maxAniso = this.renderer?.capabilities?.getMaxAnisotropy?.() ?? 8;
+    // Tiling across the 20x12 area; adjust to taste
+    const repeatX = 3; // along room width
+    const repeatY = 1.75; // along room depth
+
+    const setupTex = (tex, isColor = false) => {
+      tex.wrapS = THREE.RepeatWrapping;
+      tex.wrapT = THREE.RepeatWrapping;
+      tex.repeat.set(repeatX, repeatY);
+      tex.anisotropy = Math.min(maxAniso, 16);
+      if (isColor) tex.colorSpace = THREE.SRGBColorSpace;
+      tex.needsUpdate = true;
+    };
+
+    // Ensure uv2 exists for AO
+    const geom = this.floor.geometry;
+    if (geom && geom.attributes?.uv && !geom.attributes.uv2) {
+      geom.setAttribute('uv2', new THREE.BufferAttribute(geom.attributes.uv.array, 2));
+    }
+
+    const material = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      metalness: 0.0,
+      roughness: 0.78
+    });
+
+    // Load maps
+    loader.load(pbr.color, (map) => {
+      setupTex(map, true);
+      material.map = map;
+      material.needsUpdate = true;
+    }, undefined, () => console.warn('Floor color map not found at', pbr.color));
+
+    loader.load(pbr.normal, (map) => {
+      setupTex(map);
+      material.normalMap = map;
+      material.normalScale = new THREE.Vector2(0.8, 0.8);
+      material.needsUpdate = true;
+    }, undefined, () => console.warn('Floor normal map not found at', pbr.normal));
+
+    loader.load(pbr.roughness, (map) => {
+      setupTex(map);
+      material.roughnessMap = map;
+      material.needsUpdate = true;
+    }, undefined, () => console.warn('Floor roughness map not found at', pbr.roughness));
+
+    loader.load(pbr.ao, (map) => {
+      setupTex(map);
+      material.aoMap = map;
+      material.aoMapIntensity = 0.6;
+      material.needsUpdate = true;
+    }, undefined, () => console.warn('Floor AO map not found at', pbr.ao));
+
+    this.floor.material = material;
+  }
+
+  // Load and apply detailed PBR textures to all walls
+  applyWallTextures() {
+    if (!this.walls) return;
+    const loader = new THREE.TextureLoader();
+    const basePath = './assets/images/wall';
+
+    // Update these names to match your files in assets/images/wall
+    // Common suffixes from AmbientCG/PolyHaven: Color/Diffuse, NormalGL, Roughness, AmbientOcclusion
+    const pbr = {
+      color: `${basePath}/Plaster002_2K-JPG_Color.jpg`,           // e.g., Plaster004_2K_Color.jpg
+      normal: `${basePath}/Plaster002_2K-JPG_NormalGL.jpg`,       // e.g., Plaster004_2K_NormalGL.jpg
+      roughness: `${basePath}/Plaster002_2K-JPG_Roughness.jpg`,   // e.g., Plaster004_2K_Roughness.jpg
+      // ao: `${basePath}/Planks023A_2K-JPG_AmbientOcclusion.jpg`
+    };
+
+    // Per-wall tiling (reduce repeats on back/middle wall)
+    const repeats = {
+      back: { x: 0.2, y: 0.2 },   // fewer repeats for wide back wall
+      left: { x: 0.15, y: 0.15 },   // detailed side walls
+      right: { x: 0.15, y: 0.15 }
+    };
+
+    const maxAniso = this.renderer?.capabilities?.getMaxAnisotropy?.() ?? 8;
+
+    // Ensure uv2 exists for AO on each wall geometry
+    const ensureUV2 = (geom) => {
+      if (geom && geom.attributes && geom.attributes.uv && !geom.attributes.uv2) {
+        geom.setAttribute('uv2', new THREE.BufferAttribute(geom.attributes.uv.array, 2));
+      }
+    };
+
+    Object.values(this.walls).forEach((mesh) => ensureUV2(mesh.geometry));
+
+    // Create fresh materials per wall so we can tweak individually later if needed
+    const makeMat = () => new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      metalness: 0.0,
+      roughness: 0.75
+    });
+
+    this.walls.back.material = makeMat();
+    this.walls.left.material = makeMat();
+    this.walls.right.material = makeMat();
+
+    const materials = {
+      back: this.walls.back.material,
+      left: this.walls.left.material,
+      right: this.walls.right.material
+    };
+
+    const setupTiling = (tex, isColor = false) => {
+      tex.wrapS = THREE.RepeatWrapping;
+      tex.wrapT = THREE.RepeatWrapping;
+      tex.anisotropy = Math.min(maxAniso, 16);
+      if (isColor) tex.colorSpace = THREE.SRGBColorSpace;
+      tex.needsUpdate = true;
+    };
+
+    // COLOR (clone per wall for independent tiling)
+    loader.load(
+      pbr.color,
+      (tex) => {
+        Object.entries(materials).forEach(([key, mat]) => {
+          const t = tex.clone();
+          setupTiling(t, true);
+          t.repeat.set(repeats[key].x, repeats[key].y);
+          mat.map = t;
+          mat.needsUpdate = true;
+        });
+      },
+      undefined,
+      () => {
+        console.warn('Wall color map not found at', pbr.color);
+      }
+    );
+
+    // NORMAL (clone per wall)
+    loader.load(
+      pbr.normal,
+      (tex) => {
+        Object.entries(materials).forEach(([key, mat]) => {
+          const t = tex.clone();
+          setupTiling(t);
+          t.repeat.set(repeats[key].x, repeats[key].y);
+          mat.normalMap = t;
+          mat.normalScale = new THREE.Vector2(1.0, 1.0);
+          mat.needsUpdate = true;
+        });
+      },
+      undefined,
+      () => {
+        console.warn('Wall normal map not found at', pbr.normal);
+      }
+    );
+
+    // ROUGHNESS (clone per wall)
+    loader.load(
+      pbr.roughness,
+      (tex) => {
+        Object.entries(materials).forEach(([key, mat]) => {
+          const t = tex.clone();
+          setupTiling(t);
+          t.repeat.set(repeats[key].x, repeats[key].y);
+          mat.roughnessMap = t;
+          mat.needsUpdate = true;
+        });
+      },
+      undefined,
+      () => {
+        console.warn('Wall roughness map not found at', pbr.roughness);
+      }
+    );
+
+    // AO (clone per wall)
+    loader.load(
+      pbr.ao,
+      (tex) => {
+        Object.entries(materials).forEach(([key, mat]) => {
+          const t = tex.clone();
+          setupTiling(t);
+          t.repeat.set(repeats[key].x, repeats[key].y);
+          mat.aoMap = t;
+          mat.aoMapIntensity = 0.9;
+          mat.needsUpdate = true;
+        });
+      },
+      undefined,
+      () => {
+        console.warn('Wall AO map not found at', pbr.ao);
+      }
+    );
+
+    // Optional: Displacement requires dense geometry; disabled for stability with ShapeGeometry + window hole
+    // loader.load(pbr.height, (tex) => { ... });
+  }
+
+  // Load and apply PBR textures to the ceiling
+  applyCeilingTextures() {
+    if (!this.ceiling) return;
+    const loader = new THREE.TextureLoader();
+    const basePath = './assets/images/ceiling';
+    const pbr = {
+      color: `${basePath}/WoodFloor036_2K-JPG_Color.jpg`,
+      normal: `${basePath}/WoodFloor036_2K-JPG_NormalGL.jpg`,
+      roughness: `${basePath}/WoodFloor036_2K-JPG_Roughness.jpg`,
+      ao: `${basePath}/WoodFloor036_2K-JPG_Roughness.jpg`
+    };
+
+    const maxAniso = this.renderer?.capabilities?.getMaxAnisotropy?.() ?? 8;
+    const repeatX = 2.5; // along room width
+    const repeatY = 1.5; // along room depth
+
+    const setupTex = (tex, isColor = false) => {
+      tex.wrapS = THREE.RepeatWrapping;
+      tex.wrapT = THREE.RepeatWrapping;
+      tex.repeat.set(repeatX, repeatY);
+      tex.anisotropy = Math.min(maxAniso, 16);
+      if (isColor) tex.colorSpace = THREE.SRGBColorSpace;
+      tex.needsUpdate = true;
+    };
+
+    // Ensure uv2 exists for AO
+    const geom = this.ceiling.geometry;
+    if (geom && geom.attributes?.uv && !geom.attributes.uv2) {
+      geom.setAttribute('uv2', new THREE.BufferAttribute(geom.attributes.uv.array, 2));
+    }
+
+    const material = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      metalness: 0.0,
+      roughness: 0.85
+    });
+
+    loader.load(pbr.color, (map) => {
+      setupTex(map, true);
+      material.map = map;
+      material.needsUpdate = true;
+    }, undefined, () => console.warn('Ceiling color map not found at', pbr.color));
+
+    loader.load(pbr.normal, (map) => {
+      setupTex(map);
+      material.normalMap = map;
+      material.normalScale = new THREE.Vector2(0.8, 0.8);
+      material.needsUpdate = true;
+    }, undefined, () => console.warn('Ceiling normal map not found at', pbr.normal));
+
+    loader.load(pbr.roughness, (map) => {
+      setupTex(map);
+      material.roughnessMap = map;
+      material.needsUpdate = true;
+    }, undefined, () => console.warn('Ceiling roughness map not found at', pbr.roughness));
+
+    loader.load(pbr.ao, (map) => {
+      setupTex(map);
+      material.aoMap = map;
+      material.aoMapIntensity = 0.7;
+      material.needsUpdate = true;
+    }, undefined, () => console.warn('Ceiling AO map not found at', pbr.ao));
+
+    this.ceiling.material = material;
   }
 
   createRoomDetails() {
@@ -275,7 +564,7 @@ export class GraffitiStudioScene {
     return texture;
   }
 
-  loadModelAndPlace({ url, position, rotation = [0, 0, 0], targetSize = 1.5, parent = this.scene }) {
+  loadModelAndPlace({ url, position, rotation = [0, 0, 0], targetSize = 1.5, parent = this.scene, playAnimations = false }) {
     this.gltfLoader.load(
       url,
       (gltf) => {
@@ -293,12 +582,41 @@ export class GraffitiStudioScene {
           THREE.MathUtils.degToRad(rotation[2])
         );
         model.traverse((child) => {
-          if (child.isMesh) {
-            child.castShadow = true;
-            child.receiveShadow = true;
+          if (!child.isMesh) return;
+          child.castShadow = true;
+          child.receiveShadow = true;
+
+          const m = child.material;
+          if (m) {
+            if (m.map && m.map.colorSpace !== THREE.SRGBColorSpace) {
+              m.map.colorSpace = THREE.SRGBColorSpace;
+              m.map.needsUpdate = true;
+            }
+            const isStd = m.isMeshStandardMaterial || m.isMeshPhysicalMaterial;
+            if (!isStd) {
+              const safe = new THREE.MeshStandardMaterial({
+                color: (m.color ? m.color.clone() : new THREE.Color(0xffffff)),
+                map: m.map || null,
+                normalMap: m.normalMap || null,
+                roughnessMap: m.roughnessMap || null,
+                metalnessMap: m.metalnessMap || null,
+                emissive: (m.emissive ? m.emissive.clone() : new THREE.Color(0x000000)),
+                emissiveMap: m.emissiveMap || null,
+                roughness: (typeof m.roughness === 'number' ? m.roughness : 0.8),
+                metalness: (typeof m.metalness === 'number' ? m.metalness : 0.0)
+              });
+              child.material = safe;
+            }
           }
         });
         parent.add(model);
+
+        // Play GLTF animations if present and requested
+        if (playAnimations && gltf.animations && gltf.animations.length > 0) {
+          const mixer = new THREE.AnimationMixer(model);
+          gltf.animations.forEach((clip) => mixer.clipAction(clip).play());
+          this.mixers.push(mixer);
+        }
       },
       undefined,
       (error) => {
@@ -409,7 +727,7 @@ export class GraffitiStudioScene {
   addOfficeChair () {
     this.loadModelAndPlace({
       url: "./assets/models/office_chair.glb",
-      position: [-1.3, 0.04, -0.5],
+      position: [-1.3, 0.07, -0.5],
       rotation: [0, 150, 0],
       targetSize: 1.5
     });
@@ -422,6 +740,114 @@ export class GraffitiStudioScene {
       rotation: [0, 0, 0],
       targetSize: 2.5
     });
+  }
+
+  addTexturedCarpet() {
+    const loader = new THREE.TextureLoader();
+    const basePath = './assets/images/carpet';
+    const pbr = {
+      color: `${basePath}/Carpet016_1K-JPG_Color.jpg`,
+      normal: `${basePath}/Carpet016_1K-JPG_NormalGL.jpg`,
+      roughness: `${basePath}/Carpet016_1K-JPG_Roughness.jpg`,
+      ao: `${basePath}/Carpet016_1K-JPG_AmbientOcclusion.jpg`
+      // height: `${basePath}/Carpet016_1K-JPG_Displacement.jpg` // optional
+    };
+
+    const width = 3.0;
+    const height = 2.2;
+    const cornerRadius = 0.25;
+    const thickness = 0.02;
+    const repeatX = 1.8;
+    const repeatY = 1.2;
+
+    const makeRoundedRectShape = (w, h, r) => {
+      const hw = w / 2;
+      const hh = h / 2;
+      const s = new THREE.Shape();
+      s.moveTo(-hw + r, -hh);
+      s.lineTo(hw - r, -hh);
+      s.quadraticCurveTo(hw, -hh, hw, -hh + r);
+      s.lineTo(hw, hh - r);
+      s.quadraticCurveTo(hw, hh, hw - r, hh);
+      s.lineTo(-hw + r, hh);
+      s.quadraticCurveTo(-hw, hh, -hw, hh - r);
+      s.lineTo(-hw, -hh + r);
+      s.quadraticCurveTo(-hw, -hh, -hw + r, -hh);
+      return s;
+    };
+    const extrudeSettings = {
+      depth: thickness,
+      bevelEnabled: true,
+      bevelThickness: Math.min(thickness * 0.5, 0.008),
+      bevelSize: 0.035,
+      bevelSegments: 3,
+      steps: 1
+    };
+
+    loader.load(
+      pbr.color,
+      (albedo) => {
+        albedo.colorSpace = THREE.SRGBColorSpace;
+        albedo.wrapS = THREE.RepeatWrapping;
+        albedo.wrapT = THREE.RepeatWrapping;
+        albedo.repeat.set(repeatX, repeatY);
+
+        const topMat = new THREE.MeshStandardMaterial({ map: albedo, roughness: 1.0, metalness: 0.0 });
+        const sideMat = new THREE.MeshStandardMaterial({ color: 0x8b7d6b, roughness: 1.0, metalness: 0.0 });
+
+        // Load optional maps (best-effort)
+        loader.load(
+          pbr.normal,
+          (nm) => {
+            nm.wrapS = THREE.RepeatWrapping;
+            nm.wrapT = THREE.RepeatWrapping;
+            nm.repeat.set(repeatX, repeatY);
+            topMat.normalMap = nm;
+          }
+        );
+        loader.load(
+          pbr.roughness,
+          (rm) => {
+            rm.wrapS = THREE.RepeatWrapping;
+            rm.wrapT = THREE.RepeatWrapping;
+            rm.repeat.set(repeatX, repeatY);
+            topMat.roughnessMap = rm;
+          }
+        );
+        loader.load(
+          pbr.ao,
+          (aomap) => {
+            aomap.wrapS = THREE.RepeatWrapping;
+            aomap.wrapT = THREE.RepeatWrapping;
+            aomap.repeat.set(repeatX, repeatY);
+            topMat.aoMap = aomap;
+            topMat.aoMapIntensity = 0.7;
+          }
+        );
+
+        const shape = makeRoundedRectShape(width, height, cornerRadius);
+        const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+        geometry.setAttribute('uv2', new THREE.BufferAttribute(geometry.attributes.uv.array, 2));
+        const carpet = new THREE.Mesh(geometry, [sideMat, topMat]);
+        carpet.rotation.x = -Math.PI / 2;
+        carpet.position.set(-1.7, thickness * 0.5 - 0.01, -0.55);
+        carpet.receiveShadow = true;
+        this.scene.add(carpet);
+      },
+      undefined,
+      () => {
+        // Final fallback: no textures, rounded extruded mat
+        const topMat = new THREE.MeshStandardMaterial({ color: 0x8b7d6b, roughness: 1.0, metalness: 0.0 });
+        const sideMat = new THREE.MeshStandardMaterial({ color: 0x7a6e5f, roughness: 1.0, metalness: 0.0 });
+        const shape = makeRoundedRectShape(width, height, cornerRadius);
+        const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+        const carpet = new THREE.Mesh(geometry, [sideMat, topMat]);
+        carpet.rotation.x = -Math.PI / 2;
+        carpet.position.set(-1.8, thickness * 0.5 + 0.01, -1.0);
+        carpet.receiveShadow = true;
+        this.scene.add(carpet);
+      }
+    );
   }
 
   addChaussons() {
@@ -490,7 +916,7 @@ export class GraffitiStudioScene {
   addJBL() {
     this.loadModelAndPlace({
       url: "./assets/models/big_enceinte_jbl.glb",
-      position: [-2.91,0.5, -1.2],
+      position: [-2.91,0.53, -1.2],
       rotation: [0, 25, 0],
       targetSize: 1
     });
@@ -538,6 +964,16 @@ export class GraffitiStudioScene {
       position: [-0.564, 0.165, -1.25],
       rotation: [0, 0, 0],
       targetSize: 0.6
+    });
+  }
+
+  addClock() {
+    this.loadModelAndPlace({
+      url: "./assets/models/clock.glb",
+      position: [3, 3, -1.4],
+      rotation: [0, 0, 0],
+      targetSize: 0.6,
+      playAnimations: true
     });
   }
 
@@ -678,9 +1114,31 @@ export class GraffitiStudioScene {
           model.scale.setScalar(scale);
         }
         model.traverse((child) => {
-          if (child.isMesh) {
-            child.castShadow = true;
-            child.receiveShadow = true;
+          if (!child.isMesh) return;
+          child.castShadow = true;
+          child.receiveShadow = true;
+
+          const m = child.material;
+          if (m) {
+            if (m.map && m.map.colorSpace !== THREE.SRGBColorSpace) {
+              m.map.colorSpace = THREE.SRGBColorSpace;
+              m.map.needsUpdate = true;
+            }
+            const isStd = m.isMeshStandardMaterial || m.isMeshPhysicalMaterial;
+            if (!isStd) {
+              const safe = new THREE.MeshStandardMaterial({
+                color: (m.color ? m.color.clone() : new THREE.Color(0xffffff)),
+                map: m.map || null,
+                normalMap: m.normalMap || null,
+                roughnessMap: m.roughnessMap || null,
+                metalnessMap: m.metalnessMap || null,
+                emissive: (m.emissive ? m.emissive.clone() : new THREE.Color(0x000000)),
+                emissiveMap: m.emissiveMap || null,
+                roughness: (typeof m.roughness === 'number' ? m.roughness : 0.8),
+                metalness: (typeof m.metalness === 'number' ? m.metalness : 0.0)
+              });
+              child.material = safe;
+            }
           }
         });
         proxy.add(model);
@@ -818,6 +1276,22 @@ export class GraffitiStudioScene {
     requestAnimationFrame(() => this.animate());
     const elapsed = this.clock.getElapsedTime();
 
+    // Update animation mixers (for animated GLTFs like the clock)
+    if (this.mixers && this.mixers.length) {
+      // Use a static delta, not affected by getElapsedTime()
+      const delta = (typeof this._lastAnimTime === 'number')
+        ? (performance.now() - this._lastAnimTime) / 1000
+        : 1/60;
+      this._lastAnimTime = performance.now();
+      this.mixers.forEach((mixer, i) => {
+        mixer.update(delta);
+        // Debug: log the time of the first clock animation
+        if (i === 0 && mixer._actions && mixer._actions.length) {
+          // Uncomment for debug: console.log('Mixer time', mixer.time);
+        }
+      });
+    }
+
     if (this.shaderUniforms?.floor) {
       this.shaderUniforms.floor.uTime.value = elapsed;
     }
@@ -836,7 +1310,6 @@ export class GraffitiStudioScene {
         mesh.rotation.x += 0.002;
       }
     });
-
 
     if (this.debugCameraMode && this.orbitControls) {
       this.orbitControls.update();
