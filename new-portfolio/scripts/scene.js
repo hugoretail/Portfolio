@@ -37,6 +37,15 @@ export class GraffitiStudioScene {
     this.raycaster = new THREE.Raycaster();
     this.clock = new THREE.Clock();
     this.gltfLoader = new GLTFLoader();
+    // Silence unsupported KHR_materials_pbrSpecularGlossiness by ignoring it
+    if (typeof GLTFLoader.register === 'function') {
+      try {
+        GLTFLoader.register(() => ({
+          name: 'KHR_materials_pbrSpecularGlossiness',
+          beforeRoot() { /* no-op: ignore extension */ }
+        }));
+      } catch (_) { /* safe ignore */ }
+    }
 
     this.stopInstances = new Map();
     this.interactiveMeshes = [];
@@ -90,6 +99,9 @@ export class GraffitiStudioScene {
     this.addTexturedCarpet();
     this.addClock();
 
+    // Switch the lighting mood to an evening look
+    this.applyEveningLighting();
+
     // Debug camera mode
     this.debugCameraMode = false;
     this.orbitControls = null;
@@ -133,6 +145,89 @@ export class GraffitiStudioScene {
 
     this.handleResize();
     this.animate();
+  }
+
+  // Adjust the scene to an evening/sunset mood with soft exterior light through the window
+  applyEveningLighting() {
+    // Brighter exposure for a lively summer 9pm sunset
+    this.renderer.toneMappingExposure = 1.3;
+
+    // Dusk background/fog
+    const eveningBg = new THREE.Color(0x263040);
+    this.scene.background = eveningBg;
+    if (this.scene.fog) this.scene.fog.color = eveningBg.clone();
+    this.renderer.setClearColor(this.scene.background, 1);
+
+    // Warm sunset directional (soft sun grazing from the window side)
+    if (this.mainLight) {
+      this.mainLight.color.set(0xffbe8a);
+      this.mainLight.intensity = 1.35;
+      this.mainLight.position.set(-7.5, 3.2, -6.0);
+      this.mainLight.shadow.bias = -0.00015;
+      this.mainLight.shadow.radius = 3;
+    }
+
+    // Slightly brighter, neutral-cool ambient fill
+    if (this.ambientLight) {
+      this.ambientLight.color.set(0x2a3342);
+      this.ambientLight.intensity = 0.42;
+    }
+
+    // Subtle sky/ground tint
+    const hemi = new THREE.HemisphereLight(0x4a5f80, 0x0d1016, 0.55);
+    this.scene.add(hemi);
+    this.hemiLight = hemi;
+
+    // Soft exterior light cone entering through the window
+    // Position is just outside the back wall window at x≈-7, z< -1.7
+    const windowSpot = new THREE.SpotLight(0xffc58f, 3.8, 24, Math.PI / 4, 0.6, 1.2);
+    windowSpot.position.set(-7.0, 2.0, -3.2);
+    windowSpot.castShadow = true;
+    windowSpot.shadow.mapSize.set(2048, 2048);
+    windowSpot.shadow.bias = -0.0002;
+    windowSpot.shadow.radius = 3;
+    const windowTarget = new THREE.Object3D();
+    windowTarget.position.set(-3.6, 1.6, 0.6);
+    this.scene.add(windowTarget);
+    windowSpot.target = windowTarget;
+    this.scene.add(windowSpot);
+    this.windowSpot = windowSpot;
+
+    // Subtle inside glow near the window top edge
+    const windowGlow = new THREE.PointLight(0xffc58f, 0.9, 4.0, 2);
+    windowGlow.position.set(-6.8, 2.1, -1.9);
+    this.scene.add(windowGlow);
+    this.windowGlow = windowGlow;
+
+    // Helper to add a warm lamp spotlight with a target
+    const addLamp = (pos, targetPos) => {
+      const spot = new THREE.SpotLight(0xffc38a, 1.8, 8.0, Math.PI / 4, 0.6, 1.5);
+      spot.position.set(pos[0], pos[1], pos[2]);
+      spot.castShadow = true;
+      spot.shadow.mapSize.set(1024, 1024);
+      const target = new THREE.Object3D();
+      target.position.set(targetPos[0], targetPos[1], targetPos[2]);
+      this.scene.add(target);
+      spot.target = target;
+      this.scene.add(spot);
+
+      // Small glow near bulb
+      const glow = new THREE.PointLight(0xffc38a, 0.7, 1.5, 2);
+      glow.position.set(pos[0], pos[1] - 0.02, pos[2]);
+      glow.castShadow = false;
+      this.scene.add(glow);
+    };
+
+    // Desk lamp and bed lamp approximate positions/targets
+    addLamp([-2.0, 1.35, -1.45], [-1.5, 0.95, -1.2]);
+    addLamp([-5.65, 1.35, -1.4], [-5.3, 0.8, -1.1]);
+
+    // Gentle interior fill to lift darkest shadows without flattening
+    const interiorFill = new THREE.PointLight(0xffe0c4, 0.25, 10, 2);
+    interiorFill.position.set(-1.5, 1.8, -0.2);
+    interiorFill.castShadow = false;
+    this.scene.add(interiorFill);
+    this.interiorFill = interiorFill;
   }
 
   createEnvironment() {
@@ -211,9 +306,11 @@ export class GraffitiStudioScene {
     mainLight.shadow.camera.top = 10;
     mainLight.shadow.camera.bottom = -10;
     this.scene.add(mainLight);
+    this.mainLight = mainLight;
 
     const ambientLight = new THREE.AmbientLight(0xfff2e0, 0.5);
     this.scene.add(ambientLight);
+    this.ambientLight = ambientLight;
 
     // Keep references and apply PBR textures to walls
     this.walls = { back: backWall, left: leftWall, right: rightWall };
@@ -400,24 +497,26 @@ export class GraffitiStudioScene {
       }
     );
 
-    // AO (clone per wall)
-    loader.load(
-      pbr.ao,
-      (tex) => {
-        Object.entries(materials).forEach(([key, mat]) => {
-          const t = tex.clone();
-          setupTiling(t);
-          t.repeat.set(repeats[key].x, repeats[key].y);
-          mat.aoMap = t;
-          mat.aoMapIntensity = 0.9;
-          mat.needsUpdate = true;
-        });
-      },
-      undefined,
-      () => {
-        console.warn('Wall AO map not found at', pbr.ao);
-      }
-    );
+    // AO (clone per wall) — only if provided
+    if (pbr.ao) {
+      loader.load(
+        pbr.ao,
+        (tex) => {
+          Object.entries(materials).forEach(([key, mat]) => {
+            const t = tex.clone();
+            setupTiling(t);
+            t.repeat.set(repeats[key].x, repeats[key].y);
+            mat.aoMap = t;
+            mat.aoMapIntensity = 0.9;
+            mat.needsUpdate = true;
+          });
+        },
+        undefined,
+        () => {
+          console.warn('Wall AO map not found at', pbr.ao);
+        }
+      );
+    }
 
     // Optional: Displacement requires dense geometry; disabled for stability with ShapeGeometry + window hole
     // loader.load(pbr.height, (tex) => { ... });
@@ -970,7 +1069,7 @@ export class GraffitiStudioScene {
   addClock() {
     this.loadModelAndPlace({
       url: "./assets/models/clock.glb",
-      position: [3, 3, -1.4],
+      position: [3, 3, -1.669],
       rotation: [0, 0, 0],
       targetSize: 0.6,
       playAnimations: true
