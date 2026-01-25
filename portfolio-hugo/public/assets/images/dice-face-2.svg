@@ -1,6 +1,35 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <filter id="grain" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.78" numOctaves="3" stitchTiles="stitch"/>
+      <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.3 0"/>
+    </filter>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="1.15"/>
+    </filter>
+    <radialGradient id="pip" cx="45%" cy="40%" r="70%">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.82"/>
+      <stop offset="0.55" stop-color="#f1f1f1" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#0a0a0a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
   <rect width="512" height="512" rx="42" fill="#0b0b0b"/>
-  <path d="M70 120 C180 40, 320 90, 440 50" stroke="#19ff7a" stroke-width="22" stroke-linecap="round" fill="none" opacity="0.8"/>
-  <path d="M80 380 C200 470, 320 390, 450 430" stroke="#FF3BD4" stroke-width="26" stroke-linecap="round" fill="none" opacity="0.9"/>
-  <text x="50%" y="85%" text-anchor="middle" font-family="Montserrat, system-ui" font-size="44" fill="#00D1FF">FRESQUE</text>
+
+  <!-- tag strokes + drips (very discreet) -->
+  <g opacity="0.22" filter="url(#soft)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M78 150 C140 90, 210 120, 270 92 C330 66, 400 70, 460 56" stroke="#f6f6f6" stroke-width="14"/>
+    <path d="M92 360 C160 420, 236 380, 300 412 C372 448, 430 430, 492 456" stroke="#f6f6f6" stroke-width="10" opacity="0.65"/>
+    <path d="M170 90 C186 140, 170 168, 180 210 C188 242, 210 258, 198 312" stroke="#ff0000" stroke-width="10" opacity="0.28"/>
+  </g>
+
+  <rect width="512" height="512" rx="42" filter="url(#grain)" opacity="0.85"/>
+
+  <!-- pips -->
+  <g>
+    <circle cx="176" cy="176" r="25" fill="#0a0a0a" opacity="0.75" stroke="#ffffff" stroke-opacity="0.18" stroke-width="2"/>
+    <circle cx="176" cy="176" r="25" fill="url(#pip)"/>
+    <circle cx="336" cy="336" r="25" fill="#0a0a0a" opacity="0.75" stroke="#ffffff" stroke-opacity="0.18" stroke-width="2"/>
+    <circle cx="336" cy="336" r="25" fill="url(#pip)"/>
+  </g>
 </svg>

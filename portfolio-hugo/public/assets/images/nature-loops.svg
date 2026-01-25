@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <defs>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="0.6"/>
+    </filter>
+  </defs>
+  <rect width="1600" height="1000" fill="none"/>
+
+  <!-- One continuous vine-like line system (no obvious tiling) -->
+  <g fill="none" stroke="#19ff7a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.6" filter="url(#soft)">
+    <path d="M-120 820 C 120 640, 260 680, 420 820 S 720 1020, 980 860 S 1320 640, 1760 820"/>
+    <path d="M-140 140 C 140 40, 360 140, 520 260 S 860 520, 1120 300 S 1420 20, 1760 160"/>
+    <path d="M-160 520 C 80 420, 220 480, 360 560 S 620 740, 860 620 S 1200 420, 1760 520"/>
+  </g>
+
+  <!-- Leaf clusters attached to the lines -->
+  <g opacity="0.42" fill="none" stroke="#0a7f3b" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M420 820 C 446 796, 484 792, 512 782 C 496 812, 476 834, 446 852 C 434 860, 424 852, 420 820Z"/>
+    <path d="M980 860 C 1006 836, 1046 832, 1074 820 C 1058 852, 1036 874, 1006 892 C 994 900, 986 892, 980 860Z"/>
+    <path d="M520 260 C 546 236, 586 232, 614 220 C 598 252, 576 274, 546 292 C 534 300, 526 292, 520 260Z"/>
+    <path d="M1120 300 C 1146 276, 1186 272, 1214 260 C 1198 292, 1176 314, 1146 332 C 1134 340, 1126 332, 1120 300Z"/>
+    <path d="M360 560 C 386 536, 426 532, 454 520 C 438 552, 416 574, 386 592 C 374 600, 366 592, 360 560Z"/>
+    <path d="M860 620 C 886 596, 926 592, 954 580 C 938 612, 916 634, 886 652 C 874 660, 866 652, 860 620Z"/>
+
+    <!-- tiny extra leaf veins / twigs -->
+    <path d="M452 836 C 468 828, 486 822, 500 812" opacity="0.55"/>
+    <path d="M1008 876 C 1026 868, 1044 860, 1058 850" opacity="0.55"/>
+    <path d="M548 282 C 566 274, 584 266, 598 256" opacity="0.55"/>
+    <path d="M1148 322 C 1166 314, 1184 306, 1198 296" opacity="0.55"/>
+  </g>
+</svg>

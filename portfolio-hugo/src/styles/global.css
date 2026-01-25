@@ -35,7 +35,14 @@ body {
 }
 
 .bg-graffiti {
-	background-image: url('/assets/images/graffiti-texture.svg');
+	background-image: url('/assets/images/graffiti-wall.svg');
+	background-size: cover;
+	background-position: center;
+}
+
+.bg-nature {
+	background-image: url('/assets/images/nature-loops.svg');
+	background-repeat: no-repeat;
 	background-size: cover;
 	background-position: center;
 }
@@ -52,9 +59,24 @@ body {
 .noise-overlay {
 	position: absolute;
 	inset: 0;
-	background: radial-gradient(circle at 10% 10%, rgba(255, 59, 212, 0.11), transparent 35%),
-		radial-gradient(circle at 90% 20%, rgba(0, 209, 255, 0.1), transparent 40%),
-		radial-gradient(circle at 60% 90%, rgba(255, 230, 0, 0.08), transparent 45%);
-	mix-blend-mode: screen;
+	background:
+		repeating-linear-gradient(0deg, rgba(246, 246, 246, 0.04) 0 1px, transparent 1px 7px),
+		repeating-linear-gradient(90deg, rgba(246, 246, 246, 0.03) 0 1px, transparent 1px 11px),
+		radial-gradient(circle at 12% 18%, rgba(255, 59, 212, 0.045), transparent 46%),
+		radial-gradient(circle at 88% 22%, rgba(0, 209, 255, 0.035), transparent 50%),
+		radial-gradient(circle at 58% 88%, rgba(255, 230, 0, 0.03), transparent 56%);
+	opacity: 0.9;
+	mix-blend-mode: overlay;
+	pointer-events: none;
+}
+
+.paper-grain {
+	position: absolute;
+	inset: 0;
+	background:
+		radial-gradient(circle at 30% 20%, rgba(0, 0, 0, 0.35), transparent 48%),
+		radial-gradient(circle at 70% 85%, rgba(0, 0, 0, 0.25), transparent 55%),
+		repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.08) 0 1px, transparent 1px 9px);
+	opacity: 0.28;
 	pointer-events: none;
 }

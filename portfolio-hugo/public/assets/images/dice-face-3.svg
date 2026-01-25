@@ -1,7 +1,37 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <filter id="grain" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.82" numOctaves="3" stitchTiles="stitch"/>
+      <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.28 0"/>
+    </filter>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="1.2"/>
+    </filter>
+    <radialGradient id="pip" cx="45%" cy="40%" r="70%">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.82"/>
+      <stop offset="0.55" stop-color="#f1f1f1" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#0a0a0a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
   <rect width="512" height="512" rx="42" fill="#0b0b0b"/>
-  <circle cx="160" cy="180" r="90" fill="#00D1FF" opacity="0.18"/>
-  <circle cx="340" cy="300" r="120" fill="#FFE600" opacity="0.16"/>
-  <path d="M120 300 L220 220 L280 320 L400 180" stroke="#FF3BD4" stroke-width="20" stroke-linecap="round" fill="none"/>
-  <text x="50%" y="85%" text-anchor="middle" font-family="Montserrat, system-ui" font-size="44" fill="#19ff7a">BOOM BAP</text>
+
+  <!-- abstract spray + a couple of tag-ish strokes -->
+  <g opacity="0.22" filter="url(#soft)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M86 222 C160 130, 240 150, 300 120 C360 92, 420 102, 488 76" stroke="#f6f6f6" stroke-width="14"/>
+    <path d="M92 306 C150 360, 220 332, 274 360 C334 392, 404 390, 492 432" stroke="#f6f6f6" stroke-width="10" opacity="0.7"/>
+    <path d="M362 92 C378 140, 362 168, 372 214 C380 246, 404 270, 390 330" stroke="#ff0000" stroke-width="10" opacity="0.25"/>
+  </g>
+
+  <rect width="512" height="512" rx="42" filter="url(#grain)" opacity="0.86"/>
+
+  <!-- pips -->
+  <g>
+    <circle cx="176" cy="176" r="24" fill="#0a0a0a" opacity="0.75" stroke="#ffffff" stroke-opacity="0.18" stroke-width="2"/>
+    <circle cx="176" cy="176" r="24" fill="url(#pip)"/>
+    <circle cx="256" cy="256" r="26" fill="#0a0a0a" opacity="0.75" stroke="#ffffff" stroke-opacity="0.18" stroke-width="2"/>
+    <circle cx="256" cy="256" r="26" fill="url(#pip)"/>
+    <circle cx="336" cy="336" r="24" fill="#0a0a0a" opacity="0.75" stroke="#ffffff" stroke-opacity="0.18" stroke-width="2"/>
+    <circle cx="336" cy="336" r="24" fill="url(#pip)"/>
+  </g>
 </svg>

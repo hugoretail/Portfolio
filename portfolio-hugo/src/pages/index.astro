@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import SignatureTool from '../components/SignatureTool.svelte';
+import SignatureAuto from '../components/SignatureAuto.svelte';
 import Dice3D from '../components/Dice3D.svelte';
 import ExplorerButton from '../components/ExplorerButton.svelte';
 import QRCode from '../components/QRCode.svelte';
@@ -9,12 +9,8 @@ import QRCode from '../components/QRCode.svelte';
 <BaseLayout title="Hugo">
 	<main class="relative min-h-screen overflow-hidden">
 		<div class="absolute inset-0 bg-graffiti opacity-20" aria-hidden="true"></div>
-		<div class="absolute -right-24 top-16 w-[520px] opacity-50 md:opacity-60" aria-hidden="true">
-			<img src="/assets/images/leaves.svg" alt="" loading="lazy" />
-		</div>
-		<div class="absolute -left-40 bottom-10 w-[560px] rotate-6 opacity-35" aria-hidden="true">
-			<img src="/assets/images/leaves.svg" alt="" loading="lazy" />
-		</div>
+		<div class="absolute inset-0 bg-nature opacity-[0.10]" aria-hidden="true"></div>
+		<div class="paper-grain" aria-hidden="true"></div>
 		<div class="noise-overlay" aria-hidden="true"></div>
 
 		<section class="relative z-10 mx-auto max-w-6xl px-4 py-10 md:py-16">
@@ -32,9 +28,26 @@ import QRCode from '../components/QRCode.svelte';
 			</header>
 
 			<div class="mt-10 grid gap-8 lg:grid-cols-2">
-				<SignatureTool client:load />
+				<SignatureAuto client:load src="/assets/images/signature.svg" />
 				<Dice3D client:load />
 			</div>
+
+			<section class="mt-10 brutal-border bg-black/35 p-5">
+				<div class="flex flex-wrap items-baseline justify-between gap-3">
+					<div class="font-display text-2xl tracking-wide">Street poétique</div>
+					<div class="font-black uppercase tracking-widest text-xs text-[color:var(--muted)]">micro-manifeste</div>
+				</div>
+				<p class="mt-3 font-hand text-3xl leading-snug text-[color:var(--fg)]">
+					Béton dans les poumons.
+					<span class="mx-2 text-[color:var(--red-thread)]">/</span>
+					Feuilles fines dans le bruit.
+					<span class="mx-2 text-[color:var(--red-thread)]">/</span>
+					Tags discrets, impact net.
+				</p>
+				<p class="mt-2 max-w-3xl font-hand text-2xl text-[color:var(--muted)]">
+					On avance en traces: une ligne, un geste, une pièce.
+				</p>
+			</section>
 
 			<div class="mt-12 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
 				<div class="brutal-border max-w-2xl bg-black/40 p-4">
