@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="42" fill="#0b0b0b"/>
+  <circle cx="160" cy="180" r="90" fill="#00D1FF" opacity="0.18"/>
+  <circle cx="340" cy="300" r="120" fill="#FFE600" opacity="0.16"/>
+  <path d="M120 300 L220 220 L280 320 L400 180" stroke="#FF3BD4" stroke-width="20" stroke-linecap="round" fill="none"/>
+  <text x="50%" y="85%" text-anchor="middle" font-family="Montserrat, system-ui" font-size="44" fill="#19ff7a">BOOM BAP</text>
+</svg>

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="42" fill="#0b0b0b"/>
+  <path d="M110 390 C160 260, 230 210, 320 160 C390 120, 420 130, 450 120" stroke="#19ff7a" stroke-width="18" stroke-linecap="round" fill="none" opacity="0.75"/>
+  <path d="M80 120 C140 200, 210 170, 290 220 C350 260, 420 340, 460 420" stroke="#FF3BD4" stroke-width="26" stroke-linecap="round" fill="none" opacity="0.85"/>
+  <text x="50%" y="85%" text-anchor="middle" font-family="Montserrat, system-ui" font-size="44" fill="#FFE600">LIVE</text>
+</svg>

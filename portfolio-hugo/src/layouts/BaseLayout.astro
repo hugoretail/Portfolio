@@ -1,0 +1,48 @@
+---
+import '../styles/global.css';
+import RedThread from '../components/RedThread.svelte';
+
+type Props = {
+  title?: string;
+  description?: string;
+};
+
+const {
+  title = 'Hugo',
+  description = 'Portfolio brutaliste — graffiti, hip-hop, IA, littérature, musique.'
+} = Astro.props;
+---
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@800;900&family=Patrick+Hand&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="preload" as="image" href="/assets/images/graffiti-texture.svg" />
+    <link rel="preload" as="image" href="/assets/images/leaves.svg" />
+    <link rel="preload" as="image" href="/assets/images/dice-face-1.svg" />
+    <link rel="preload" as="image" href="/assets/images/dice-face-2.svg" />
+    <link rel="preload" as="image" href="/assets/images/dice-face-3.svg" />
+    <link rel="preload" as="image" href="/assets/images/dice-face-4.svg" />
+    <link rel="preload" as="image" href="/assets/images/dice-face-5.svg" />
+    <link rel="preload" as="image" href="/assets/images/dice-face-6.svg" />
+  </head>
+  <body class="min-h-screen bg-[color:var(--bg)] text-[color:var(--fg)]">
+    <RedThread client:load />
+
+    <div class="relative">
+      <slot />
+    </div>
+  </body>
+</html>

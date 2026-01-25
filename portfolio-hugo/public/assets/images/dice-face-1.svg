@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="42" fill="#0b0b0b"/>
+  <circle cx="256" cy="256" r="140" fill="#FF3BD4" opacity="0.22"/>
+  <path d="M90 330 C180 250, 260 400, 420 250" stroke="#00D1FF" stroke-width="28" stroke-linecap="round" fill="none"/>
+  <text x="50%" y="85%" text-anchor="middle" font-family="Montserrat, system-ui" font-size="48" fill="#FFE600">IA</text>
+</svg>

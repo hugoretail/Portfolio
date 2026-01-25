@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="600" viewBox="0 0 900 600">
+  <defs>
+    <linearGradient id="leaf" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#19ff7a" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#0a7f3b" stop-opacity="0.9"/>
+    </linearGradient>
+  </defs>
+  <g fill="none" stroke="url(#leaf)" stroke-width="6" stroke-linecap="round" opacity="0.55">
+    <path d="M120,520 C160,360 300,280 420,240 C520,206 660,180 760,90"/>
+    <path d="M220,560 C260,420 360,340 520,300 C650,268 760,210 840,140"/>
+  </g>
+  <g opacity="0.5">
+    <path d="M160,420 C240,330 330,290 420,250 C395,340 330,420 250,470 C210,494 180,468 160,420Z" fill="url(#leaf)"/>
+    <path d="M520,340 C600,260 720,220 820,190 C780,290 700,380 600,430 C550,455 525,420 520,340Z" fill="url(#leaf)"/>
+    <path d="M360,220 C430,150 560,120 650,100 C620,190 550,260 460,300 C410,324 370,290 360,220Z" fill="url(#leaf)"/>
+  </g>
+</svg>

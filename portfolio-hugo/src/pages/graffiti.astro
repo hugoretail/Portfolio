@@ -1,0 +1,105 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteNav from '../components/SiteNav.astro';
+---
+
+<BaseLayout title="Hugo — Graffiti" description="Galerie graffiti et fresques.">
+  <div class="relative min-h-screen overflow-hidden">
+    <div class="absolute inset-0 bg-graffiti opacity-25" aria-hidden="true"></div>
+    <div class="noise-overlay" aria-hidden="true"></div>
+
+    <SiteNav />
+
+    <main class="relative z-10 mx-auto max-w-6xl px-4 py-10">
+      <header class="mb-8">
+        <h1 class="font-display text-6xl md:text-7xl">Graffiti</h1>
+        <p class="mt-3 max-w-2xl font-hand text-2xl text-[color:var(--muted)]">
+          Des lettres qui claquent. Des couleurs qui respirent. Le mur comme carnet.
+        </p>
+      </header>
+
+      <section class="grid gap-6 md:grid-cols-3">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <a
+            href="#"
+            class="drip brutal-border group relative block overflow-hidden bg-black/40"
+            aria-label={`Aperçu fresque ${i + 1}`}
+          >
+            <img
+              src={`/assets/images/dice-face-${(i % 6) + 1}.svg`}
+              alt="Motif graffiti"
+              loading="lazy"
+              class="h-64 w-full object-cover opacity-90 transition-transform duration-300 group-hover:scale-[1.02]"
+            />
+            <div class="absolute inset-0 opacity-0 transition-opacity duration-200 group-hover:opacity-100" aria-hidden="true">
+              <div class="absolute inset-0 bg-[color:var(--electric-blue)]/10"></div>
+              <div class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/60 to-transparent"></div>
+            </div>
+            <div class="absolute bottom-3 left-3 text-xs font-black uppercase tracking-widest text-[color:var(--acid-yellow)]">
+              Fresque {i + 1}
+            </div>
+          </a>
+        ))}
+      </section>
+
+      <div class="mt-10 brutal-border max-w-3xl bg-black/30 p-4">
+        <div class="font-display text-2xl tracking-wide">Projet phare</div>
+        <p class="mt-2 font-hand text-2xl text-[color:var(--muted)]">
+          « Fil rouge » — une série de fresques liant nature & béton.
+        </p>
+        <a
+          class="mt-3 inline-block text-sm font-black uppercase tracking-widest underline"
+          href="#"
+          aria-label="Voir le projet Fil rouge"
+        >
+          Voir le projet
+        </a>
+      </div>
+    </main>
+  </div>
+
+  <style>
+    .drip::after {
+      content: '';
+      position: absolute;
+      left: -10%;
+      top: 0;
+      width: 120%;
+      height: 30px;
+      background: radial-gradient(circle at 20% 50%, rgba(255, 59, 212, 0.65), transparent 42%),
+        radial-gradient(circle at 60% 50%, rgba(0, 209, 255, 0.55), transparent 45%),
+        radial-gradient(circle at 85% 50%, rgba(255, 230, 0, 0.55), transparent 48%);
+      transform: translateY(-120%);
+      transition: transform 240ms ease;
+      filter: blur(0.2px);
+      pointer-events: none;
+    }
+
+    .drip:hover::after {
+      transform: translateY(0%);
+    }
+
+    .drip::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        90deg,
+        rgba(255, 0, 0, 0.0) 0,
+        rgba(255, 0, 0, 0.0) 10px,
+        rgba(255, 0, 0, 0.06) 10px,
+        rgba(255, 0, 0, 0.06) 12px
+      );
+      opacity: 0;
+      transition: opacity 200ms ease;
+      pointer-events: none;
+    }
+
+    .drip:hover::before {
+      opacity: 1;
+    }
+  </style>
+</BaseLayout>

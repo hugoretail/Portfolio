@@ -1,0 +1,20 @@
+---
+const links = [
+  { href: '/', label: 'Accueil' },
+  { href: '/graffiti', label: 'Graffiti' },
+  { href: '/hiphop', label: 'Hip-Hop' },
+  { href: '/ia', label: 'IA/NLP' },
+  { href: '/litterature', label: 'Littérature' }
+];
+---
+<nav class="relative z-10 mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-4 pt-6">
+  {links.map((l) => (
+    <a
+      href={l.href}
+      class="brutal-border inline-flex bg-black/30 px-3 py-2 text-xs font-black uppercase tracking-widest hover:bg-black/50"
+      aria-label={l.label}
+    >
+      {l.label}
+    </a>
+  ))}
+</nav>

@@ -1,0 +1,42 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteNav from '../components/SiteNav.astro';
+import CassettePlayer from '../components/CassettePlayer.svelte';
+import QRCode from '../components/QRCode.svelte';
+---
+
+<BaseLayout title="Hugo — Hip-Hop" description="Boom bap, loops, playlist.">
+  <div class="relative min-h-screen overflow-hidden">
+    <div class="absolute inset-0 bg-black" aria-hidden="true"></div>
+    <div class="absolute inset-0 bg-graffiti opacity-15" aria-hidden="true"></div>
+    <div class="absolute -left-28 top-12 w-[540px] opacity-40" aria-hidden="true">
+      <img src="/assets/images/leaves.svg" alt="" loading="lazy" />
+    </div>
+    <div class="noise-overlay" aria-hidden="true"></div>
+
+    <SiteNav />
+
+    <main class="relative z-10 mx-auto max-w-6xl px-4 py-10">
+      <header class="mb-8">
+        <h1 class="font-display text-6xl md:text-7xl">Hip-Hop</h1>
+        <p class="mt-3 max-w-2xl font-hand text-2xl text-[color:var(--muted)]">
+          Boom bap 90–2000. Des kicks secs. Des samples qui sentent la poussière.
+        </p>
+      </header>
+
+      <div class="grid gap-8 lg:grid-cols-[1.4fr_0.6fr]">
+        <CassettePlayer client:load />
+
+        <div class="brutal-border bg-white/90 p-4 text-black">
+          <div class="text-sm font-black uppercase tracking-widest">QR playlist</div>
+          <p class="mt-2 font-hand text-xl">
+            Scanne → playlist Boom Bap.
+          </p>
+          <div class="mt-4">
+            <QRCode client:load url="LIEN_SPOTIFY_PLAYLIST" />
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</BaseLayout>

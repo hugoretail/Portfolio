@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+:root {
+	--bg: #0b0b0b;
+	--fg: #f6f6f6;
+	--muted: #b9b9b9;
+	--hot-pink: #ff3bd4;
+	--electric-blue: #00d1ff;
+	--acid-yellow: #ffe600;
+	--leaf: #19ff7a;
+	--moss: #0a7f3b;
+	--red-thread: #ff0000;
+}
+
+html,
+body {
+	height: 100%;
+	background: var(--bg);
+	color: var(--fg);
+}
+
+::selection {
+	background: var(--acid-yellow);
+	color: #000;
+}
+
+.brutal-border {
+	border: 2px solid var(--fg);
+	box-shadow: 6px 6px 0 0 rgba(246, 246, 246, 0.14);
+}
+
+.brutal-border-red {
+	border: 2px solid var(--red-thread);
+	box-shadow: 6px 6px 0 0 rgba(255, 0, 0, 0.18);
+}
+
+.bg-graffiti {
+	background-image: url('/assets/images/graffiti-texture.svg');
+	background-size: cover;
+	background-position: center;
+}
+
+.font-display {
+	font-family: 'Bebas Neue', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+	letter-spacing: 0.02em;
+}
+
+.font-hand {
+	font-family: 'Patrick Hand', ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+.noise-overlay {
+	position: absolute;
+	inset: 0;
+	background: radial-gradient(circle at 10% 10%, rgba(255, 59, 212, 0.11), transparent 35%),
+		radial-gradient(circle at 90% 20%, rgba(0, 209, 255, 0.1), transparent 40%),
+		radial-gradient(circle at 60% 90%, rgba(255, 230, 0, 0.08), transparent 45%);
+	mix-blend-mode: screen;
+	pointer-events: none;
+}
