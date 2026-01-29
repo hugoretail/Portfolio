@@ -20,6 +20,7 @@
   let container: HTMLDivElement | null = null;
   let labelEl: HTMLDivElement | null = null;
   let buttonEl: HTMLButtonElement | null = null;
+  let boundsEl: HTMLDivElement | null = null;
 
   let renderer: THREE.WebGLRenderer | null = null;
   let scene: THREE.Scene | null = null;
@@ -37,6 +38,7 @@
   // Heavier feel: less bounce, more damping.
   const restitution = 0.56;
   const damping = 0.965;
+  const angularDamping = 0.955;
 
   let dragging = false;
   let dragPointerId: number | null = null;
@@ -51,6 +53,9 @@
   let lastT = 0;
   let prefersReducedMotion = false;
 
+  let angularVel = new THREE.Vector3(0, 0, 0); // rad/s
+  let throwSpeed0 = 0;
+
   let pendingLabel: string | null = null;
   let resultReady = false;
   let resultShown = false;
@@ -61,15 +66,33 @@
   let resizeObserver: ResizeObserver | null = null;
   let intersectionObserver: IntersectionObserver | null = null;
 
-  const orientations: Array<[number, number, number]> = [
-    // These eulers are "good enough" for landing a face forward.
-    [0, 0, 0],
-    [0, Math.PI / 2, 0],
-    [0, Math.PI, 0],
-    [0, -Math.PI / 2, 0],
-    [-Math.PI / 2, 0, 0],
-    [Math.PI / 2, 0, 0]
+  // BoxGeometry material order: +X, -X, +Y, -Y, +Z, -Z
+  const faceNormals = [
+    new THREE.Vector3(1, 0, 0),
+    new THREE.Vector3(-1, 0, 0),
+    new THREE.Vector3(0, 1, 0),
+    new THREE.Vector3(0, -1, 0),
+    new THREE.Vector3(0, 0, 1),
+    new THREE.Vector3(0, 0, -1)
   ];
+
+  function faceIndexFromOrientation() {
+    if (!cube || !camera) return 0;
+    // "Result" = face most towards the camera (what the user actually sees).
+    const dir = new THREE.Vector3().subVectors(camera.position, cube.position).normalize();
+
+    let bestIdx = 0;
+    let bestDot = -Infinity;
+    for (let i = 0; i < faceNormals.length; i++) {
+      const n = faceNormals[i].clone().applyQuaternion(cube.quaternion);
+      const d = n.dot(dir);
+      if (d > bestDot) {
+        bestDot = d;
+        bestIdx = i;
+      }
+    }
+    return bestIdx;
+  }
 
   function renderOnce() {
     if (!renderer || !scene || !camera) return;
@@ -145,25 +168,59 @@
     if (pos.x <= padding) {
       pos.x = padding;
       vel.x = Math.abs(vel.x) * restitution;
+      angularVel.add(new THREE.Vector3((Math.random() - 0.5) * 0.8, 0.9, (Math.random() - 0.5) * 0.35));
     } else if (pos.x >= maxX) {
       pos.x = maxX;
       vel.x = -Math.abs(vel.x) * restitution;
+      angularVel.add(new THREE.Vector3((Math.random() - 0.5) * 0.8, -0.9, (Math.random() - 0.5) * 0.35));
     }
 
     if (pos.y <= padding) {
       pos.y = padding;
       vel.y = Math.abs(vel.y) * restitution;
+      angularVel.add(new THREE.Vector3(0.9, (Math.random() - 0.5) * 0.8, (Math.random() - 0.5) * 0.35));
     } else if (pos.y >= maxY) {
       pos.y = maxY;
       vel.y = -Math.abs(vel.y) * restitution;
+      angularVel.add(new THREE.Vector3(-0.9, (Math.random() - 0.5) * 0.8, (Math.random() - 0.5) * 0.35));
     }
 
     // Stop when it calms down.
     const speed = Math.hypot(vel.x, vel.y);
+
+    // Spin while moving. Near stop, ease into the chosen face.
+    if (cube && isVisible) {
+      isAnimating = true;
+      ensureLoop();
+
+      const ad = Math.pow(angularDamping, dt * 60);
+      angularVel.multiplyScalar(ad);
+
+      // Link tumble intensity to throw speed (natural taper as speed drops).
+      const base = 0.55; // rad/s
+      const s0 = Math.max(1, throwSpeed0 || speed);
+      const speedRatio = clamp(speed / s0, 0, 1);
+      const desiredMag = base + (14.5 * Math.pow(speedRatio, 0.85));
+      const curMag = angularVel.length();
+      if (curMag > 0.0001) {
+        const mag = curMag + (desiredMag - curMag) * (1 - Math.pow(0.02, dt));
+        angularVel.multiplyScalar(mag / curMag);
+      }
+
+      const spinSpeed = angularVel.length();
+      if (spinSpeed > 0.0001) {
+        const axis = angularVel.clone().normalize();
+        const angle = spinSpeed * dt;
+        const dq = new THREE.Quaternion().setFromAxisAngle(axis, angle);
+        cube.quaternion.multiply(dq);
+      }
+
+      // No forced snapping: the result is derived from where the dice ends.
+    }
+
     if (speed < 12) {
-      vel.x = 0;
-      vel.y = 0;
-      maybeRevealResult();
+      // Let it “land” into a stable pose before revealing.
+      settleLanding();
       return;
     }
 
@@ -251,6 +308,73 @@
     return !dragging && vel.x === 0 && vel.y === 0;
   }
 
+  function nearestStableQuaternion(q: THREE.Quaternion) {
+    // Snap to the closest axis-aligned cube orientation (multiples of 90deg).
+    // This removes micro-tilt and makes the stop feel “landed”.
+    const angles = [0, Math.PI / 2, Math.PI, (3 * Math.PI) / 2];
+    let best = new THREE.Quaternion();
+    let bestDot = -1;
+    for (const ax of angles) {
+      for (const ay of angles) {
+        for (const az of angles) {
+          const cand = new THREE.Quaternion().setFromEuler(new THREE.Euler(ax, ay, az, 'XYZ'));
+          const d = Math.abs(cand.dot(q));
+          if (d > bestDot) {
+            bestDot = d;
+            best = cand;
+          }
+        }
+      }
+    }
+    return best;
+  }
+
+  function settleLanding() {
+    if (!cube) return;
+
+    // Cancel any ongoing tweens that could fight the settle.
+    gsap.killTweensOf(cube.rotation);
+    gsap.killTweensOf(cube.position);
+
+    // Freeze the “physics” state.
+    vel.x = 0;
+    vel.y = 0;
+    angularVel.set(0, 0, 0);
+    throwSpeed0 = 0;
+
+    isAnimating = true;
+    ensureLoop();
+
+    const from = cube.quaternion.clone();
+    const to = nearestStableQuaternion(from);
+    const q = from.clone();
+
+    const proxy = { t: 0 };
+    gsap.to(proxy, {
+      t: 1,
+      duration: 0.26,
+      ease: 'power3.out',
+      onUpdate: () => {
+        q.copy(from).slerp(to, proxy.t);
+        cube!.quaternion.copy(q);
+        // tiny “plant” compression
+        cube!.position.y = (1 - proxy.t) * 0.05;
+        ensureLoop();
+      },
+      onComplete: () => {
+        cube!.quaternion.copy(to);
+        cube!.position.y = 0;
+
+        isAnimating = false;
+        if (!isVisible) stopLoop();
+        else renderOnce();
+
+        resultReady = true;
+        maybeRevealResult();
+      }
+    });
+  }
+
   function triggerAura() {
     if (!auraEl) return;
     const now = performance.now();
@@ -307,8 +431,11 @@
 
   function maybeRevealResult() {
     if (!resultReady || resultShown) return;
-    if (!pendingLabel) return;
     if (!atRest()) return;
+    if (!cube) return;
+
+    const idx = faceIndexFromOrientation();
+    pendingLabel = sides[idx]?.label ?? '...';
     resultShown = true;
     setResultText(pendingLabel);
     triggerAura();
@@ -317,10 +444,7 @@
   function roll() {
     if (!cube || !isVisible) return;
 
-    const idx = Math.floor(Math.random() * Math.min(6, sides.length));
-    const [rx, ry, rz] = orientations[idx];
-
-    pendingLabel = sides[idx]?.label ?? '...';
+    pendingLabel = null;
     resultReady = false;
     resultShown = false;
     setResultText('—');
@@ -330,6 +454,10 @@
 
     const spins = 2 + Math.floor(Math.random() * 2);
 
+    const rx = cube.rotation.x + Math.PI * 2 * spins + (Math.random() - 0.5) * 0.8;
+    const ry = cube.rotation.y + Math.PI * 2 * (spins + 1) + (Math.random() - 0.5) * 0.8;
+    const rz = cube.rotation.z + Math.PI * 2 * (spins - 1) + (Math.random() - 0.5) * 0.6;
+
     gsap.killTweensOf(cube.rotation);
     gsap.killTweensOf(cube.position);
 
@@ -337,12 +465,8 @@
       defaults: { ease: 'power3.out' },
       onUpdate: ensureLoop,
       onComplete: () => {
-        isAnimating = false;
-        if (!isVisible) stopLoop();
-        else renderOnce();
-
-        resultReady = true;
-        maybeRevealResult();
+        // Stabilize into a “landed” orientation, then reveal.
+        settleLanding();
       }
     });
 
@@ -360,9 +484,9 @@
       cube.rotation,
       {
         duration: 0.95,
-        x: rx + Math.PI * 2 * spins,
-        y: ry + Math.PI * 2 * spins,
-        z: rz + Math.PI * 2 * (spins - 1)
+        x: rx,
+        y: ry,
+        z: rz
       },
       0
     );
@@ -442,17 +566,52 @@
     // Throw: clamp velocity for “heavy” feel.
     vel.x = clamp(throwVel.x * 0.85, -980, 980);
     vel.y = clamp(throwVel.y * 0.85, -980, 980);
+
+    // Reset label; final result is derived from the settled orientation.
+    pendingLabel = null;
+    resultReady = false;
+    resultShown = false;
+    setResultText('—');
+
+    if (cube) {
+      gsap.killTweensOf(cube.rotation);
+      gsap.killTweensOf(cube.position);
+    }
+
+    const vmag = Math.hypot(vel.x, vel.y);
+    throwSpeed0 = Math.max(1, vmag);
+
+    // Initial tumble is derived from throw direction + speed.
+    const spin = clamp(2.2 + vmag * 0.016, 3.5, 16.5);
+    const ax = clamp((vel.y / 900) + 0.18 + (Math.random() - 0.5) * 0.22, -1, 1);
+    const ay = clamp((-vel.x / 900) + 0.42 + (Math.random() - 0.5) * 0.22, -1, 1);
+    const az = (Math.random() - 0.5) * 0.18;
+    const axis = new THREE.Vector3(ax, ay, az);
+    if (axis.lengthSq() < 0.0001) axis.set(0.2, 1, 0.1);
+    axis.normalize();
+    angularVel.copy(axis.multiplyScalar(spin));
+
+    isAnimating = true;
     startPhysics();
-    roll();
   }
 
   onMount(() => {
     prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false;
 
     computeDiceSize();
-    // Start bottom-left.
-    pos.x = padding;
-    pos.y = Math.max(padding, window.innerHeight - diceSize - padding);
+    // Spawn in the bottom-right of the "Dé 3D" frame, then roam freely.
+    requestAnimationFrame(() => {
+      computeDiceSize();
+      const rect = boundsEl?.getBoundingClientRect();
+      if (rect) {
+        pos.x = rect.right - diceSize - padding;
+        pos.y = rect.bottom - diceSize - padding;
+      } else {
+        pos.x = window.innerWidth - diceSize - padding;
+        pos.y = Math.max(padding, window.innerHeight - diceSize - padding);
+      }
+      keepInBounds();
+    });
 
     setupThree();
 
@@ -536,8 +695,8 @@
     </div>
   </div>
 
-  <!-- keeps layout space in embedded contexts -->
-  <div class="brutal-border relative h-[320px] w-full bg-black/10" aria-hidden="true">
+  <!-- keeps layout space in embedded contexts (also used as spawn reference) -->
+  <div bind:this={boundsEl} class="brutal-border relative h-[320px] w-full bg-black/10" aria-hidden="true">
     <div class="pointer-events-none absolute inset-0 bg-graffiti opacity-10" aria-hidden="true"></div>
     <div class="pointer-events-none absolute bottom-3 left-3 rounded bg-black/60 px-2 py-1 text-xs font-black uppercase tracking-wide">
       Le dé flotte dans l'écran.

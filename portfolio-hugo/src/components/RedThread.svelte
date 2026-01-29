@@ -125,7 +125,8 @@
       const dy = y - lastScrollY;
       lastScrollY = y;
       // boost: scroll makes it move faster temporarily
-      boost = Math.min(5200, boost + Math.min(5200, Math.abs(dy) * 22));
+      // Keep it subtle: scroll should *nudge* the drift, not rocket it.
+      boost = Math.min(260, boost + Math.min(260, Math.abs(dy) * 1.2));
       requestTick();
     };
     const onResize = () => requestTick();
@@ -148,11 +149,11 @@
 
       if (!prefersReducedMotion) {
         // gentle base drift + scroll-driven boost
-        const base = 26; // px/s
+        const base = 9; // px/s
         const cur = base + boost;
         drift += cur * dt;
         // decay boost quickly so scroll "pushes" the motion
-        boost *= Math.pow(0.07, dt);
+        boost *= Math.pow(0.12, dt);
       }
 
       motionY = (window.scrollY || 0) + drift;
@@ -200,11 +201,33 @@
         <feDropShadow dx="1" dy="2" stdDeviation="1.6" flood-color="#000" flood-opacity="0.55" />
       </filter>
 
+      <filter id="threadGrain" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3" result="n" />
+        <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.14 0" result="a" />
+        <feComposite in="a" in2="SourceGraphic" operator="in" result="grain" />
+        <feBlend in="SourceGraphic" in2="grain" mode="overlay" />
+      </filter>
+
+      <linearGradient id="threadShade" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#7a0000" stop-opacity="0.18" />
+        <stop offset="0.55" stop-color="#ff2a2a" stop-opacity="0.12" />
+        <stop offset="1" stop-color="#ffb3b3" stop-opacity="0.10" />
+      </linearGradient>
+
+      <filter id="threadFiber" x="-40%" y="-40%" width="180%" height="180%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="0.55" numOctaves="3" seed="9" result="t" />
+        <feDisplacementMap in="SourceGraphic" in2="t" scale="2.2" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+
       <!-- Rope-ish stripes (subtle torsion) -->
       <pattern id="ropeStripe" patternUnits="userSpaceOnUse" width="32" height="32" patternTransform="rotate(25)">
         <rect width="32" height="32" fill="#ff0000" />
-        <path d="M-8 8 L 40 8" stroke="#d40000" stroke-width="10" opacity="0.45" />
-        <path d="M-8 20 L 40 20" stroke="#ff3a3a" stroke-width="6" opacity="0.18" />
+        <path d="M-8 7 L 40 7" stroke="#b80000" stroke-width="9" opacity="0.42" />
+        <path d="M-8 19 L 40 19" stroke="#ff2a2a" stroke-width="6" opacity="0.16" />
+        <path d="M-8 13 L 40 13" stroke="#ff6b6b" stroke-width="2" opacity="0.18" />
+        <!-- micro fibers / variations -->
+        <path d="M-8 2 L 40 2" stroke="#8e0000" stroke-width="1" opacity="0.18" stroke-dasharray="2 6" />
+        <path d="M-8 28 L 40 28" stroke="#ffb0b0" stroke-width="1" opacity="0.12" stroke-dasharray="3 7" />
       </pattern>
     </defs>
 
@@ -232,16 +255,28 @@
       stroke-dasharray="32 0"
     />
 
+    <!-- subtle inner shading / variation to avoid flat red -->
+    <path
+      d="M 40 0 C 40 0, 40 1000, 40 1000"
+      fill="none"
+      stroke="url(#threadShade)"
+      stroke-width="5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      opacity="0.22"
+      filter="url(#threadFiber)"
+    />
+
     <path
       bind:this={pathHighlightEl}
       d="M 40 0 C 40 0, 40 1000, 40 1000"
       fill="none"
-      stroke="#ff9a9a"
-      stroke-width="2"
+      stroke="#ffd0d0"
+      stroke-width="1.6"
       stroke-linecap="round"
       stroke-linejoin="round"
-      opacity="0.35"
-      stroke-dasharray="16 8"
+      opacity="0.16"
+      filter="url(#threadGrain)"
     />
 
     <!-- knots (subtle) -->
