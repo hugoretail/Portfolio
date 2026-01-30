@@ -99,7 +99,7 @@
 <div class="relative z-10 w-full">
   <div class="mb-2 flex items-center gap-3">
     <div class="font-display text-xl tracking-wide">Signature</div>
-    <div class="font-hand text-lg text-[color:var(--muted)]">(auto)</div>
+    <div class="font-hand text-lg text-[color:var(--muted)]">Kamen</div>
   </div>
 
   <div
@@ -115,8 +115,6 @@
 
     <div bind:this={host} class="relative h-full w-full" aria-label="Signature animée"></div>
 
-    <div class="pointer-events-none absolute bottom-2 left-2 font-hand text-lg text-[color:var(--muted)]">
-      Remplace {src} par ta vraie signature.
-    </div>
+
   </div>
 </div>

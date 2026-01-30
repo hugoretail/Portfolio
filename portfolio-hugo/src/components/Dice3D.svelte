@@ -689,7 +689,6 @@
 <div class="relative z-10 w-full">
   <div class="mb-2 flex items-center gap-3">
     <div class="font-display text-xl tracking-wide">Dé 3D</div>
-    <div class="font-hand text-lg text-[color:var(--muted)]">(drag = lancer · clic = tourner)</div>
     <div bind:this={labelEl} class="ml-auto text-right text-sm font-black uppercase tracking-wide text-[color:var(--acid-yellow)]">
       —
     </div>
@@ -699,7 +698,7 @@
   <div bind:this={boundsEl} class="brutal-border relative h-[320px] w-full bg-black/10" aria-hidden="true">
     <div class="pointer-events-none absolute inset-0 bg-graffiti opacity-10" aria-hidden="true"></div>
     <div class="pointer-events-none absolute bottom-3 left-3 rounded bg-black/60 px-2 py-1 text-xs font-black uppercase tracking-wide">
-      Le dé flotte dans l'écran.
+      Laissez vous tenter !
     </div>
   </div>
 

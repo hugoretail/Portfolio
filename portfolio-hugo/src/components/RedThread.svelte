@@ -2,9 +2,14 @@
   import { onDestroy, onMount } from 'svelte';
   import gsap from 'gsap';
 
+  export let href = '/frise';
+
   let pathEl: SVGPathElement | null = null;
   let pathShadowEl: SVGPathElement | null = null;
   let pathHighlightEl: SVGPathElement | null = null;
+  let pathDarkEl: SVGPathElement | null = null;
+  let pathLightEl: SVGPathElement | null = null;
+  let hitEl: SVGPathElement | null = null;
   let svgEl: SVGSVGElement | null = null;
 
   let rafId: number | null = null;
@@ -19,24 +24,6 @@
   let lastScrollY = 0;
 
   const pointCount = 9;
-
-  const knotCount = 6;
-  const knotPhases = Array.from({ length: knotCount }, (_, i) => 0.8 + i * 0.77);
-  const knotWiggles = Array.from({ length: knotCount }, () => (Math.random() - 0.5) * 12);
-  const knotSizes = Array.from({ length: knotCount }, () => 2.8 + Math.random() * 1.8);
-
-  let knotShadowEls: SVGCircleElement[] = [];
-  let knotEls: SVGCircleElement[] = [];
-
-  function storeRef<T extends Element>(node: T, params: [T[], number]) {
-    const [arr, index] = params;
-    arr[index] = node;
-    return {
-      destroy() {
-        if (arr[index] === node) arr[index] = undefined as any;
-      }
-    };
-  }
 
   function buildPath(height: number, scrollY: number, width: number) {
     // Anchor the thread near the left, but keep it in-bounds on small screens.
@@ -83,31 +70,18 @@
     pathEl.setAttribute('d', d);
     pathShadowEl?.setAttribute('d', d);
     pathHighlightEl?.setAttribute('d', d);
+    pathDarkEl?.setAttribute('d', d);
+    pathLightEl?.setAttribute('d', d);
+    hitEl?.setAttribute('d', d);
 
     // Fake rope twist: slide the stripe pattern as you scroll.
     const twist = (motionY * 0.25) % 32;
     pathEl.style.strokeDashoffset = String(-twist);
     pathHighlightEl && (pathHighlightEl.style.strokeDashoffset = String(-twist * 0.6));
 
-    // Knots + micro snags
-    const xCenter = Math.max(18, Math.min(width * 0.12, 68));
-    const amplitude = Math.min(22, 6 + (motionY % 700) / 55);
-
-    for (let i = 0; i < knotCount; i++) {
-      const t = (0.09 + (i / knotCount) * 0.88 + Math.sin(motionY * 0.00035 + knotPhases[i]) * 0.015) % 1;
-      const y = t * height;
-      const wobble = Math.sin(t * Math.PI * 2 + motionY * 0.01) * amplitude;
-      const x = xCenter + wobble + knotWiggles[i];
-
-      const r = knotSizes[i];
-      knotShadowEls[i]?.setAttribute('cx', x.toFixed(2));
-      knotShadowEls[i]?.setAttribute('cy', y.toFixed(2));
-      knotShadowEls[i]?.setAttribute('r', (r + 1.6).toFixed(2));
-
-      knotEls[i]?.setAttribute('cx', x.toFixed(2));
-      knotEls[i]?.setAttribute('cy', y.toFixed(2));
-      knotEls[i]?.setAttribute('r', (r + 0.4).toFixed(2));
-    }
+    // Slide paint patches at a different rate so the thread looks “alive”.
+    pathDarkEl && (pathDarkEl.style.strokeDashoffset = String(-(twist * 0.85 + 9)));
+    pathLightEl && (pathLightEl.style.strokeDashoffset = String(-(twist * 0.55 - 14)));
   }
 
   function requestTick() {
@@ -186,15 +160,28 @@
     if (rafId != null) cancelAnimationFrame(rafId);
     if (animRaf != null) cancelAnimationFrame(animRaf);
   });
+
+  function goTimeline() {
+    if (!href) return;
+    if (typeof window === 'undefined') return;
+    if (window.location.pathname === href) return;
+    window.location.assign(href);
+  }
+
+  function onHitKeydown(e: KeyboardEvent) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      goTimeline();
+    }
+  }
 </script>
 
-<div class="pointer-events-none fixed inset-0 z-0">
+<div class="fixed inset-0 z-0">
   <svg
     bind:this={svgEl}
     class="h-full w-full"
     viewBox="0 0 100 100"
     preserveAspectRatio="none"
-    aria-hidden="true"
   >
     <defs>
       <filter id="threadShadow" x="-30%" y="-30%" width="160%" height="160%">
@@ -219,17 +206,65 @@
         <feDisplacementMap in="SourceGraphic" in2="t" scale="2.2" xChannelSelector="R" yChannelSelector="G" />
       </filter>
 
+      <!-- Masked paint patches for tonal variation (no circles, just texture) -->
+      <filter id="patchDark" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="2" seed="31" result="t" />
+        <!-- Use turbulence as alpha mask -->
+        <feColorMatrix in="t" type="matrix" values="
+          0 0 0 0 0
+          0 0 0 0 0
+          0 0 0 0 0
+          1 0 0 0 0" result="m" />
+        <feComponentTransfer in="m" result="mask">
+          <feFuncA type="gamma" amplitude="1" exponent="1.35" offset="-0.18" />
+        </feComponentTransfer>
+        <feComposite in="SourceGraphic" in2="mask" operator="in" />
+      </filter>
+
+      <filter id="patchLight" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="0.016" numOctaves="2" seed="57" result="t" />
+        <feColorMatrix in="t" type="matrix" values="
+          0 0 0 0 0
+          0 0 0 0 0
+          0 0 0 0 0
+          1 0 0 0 0" result="m" />
+        <feComponentTransfer in="m" result="mask">
+          <feFuncA type="gamma" amplitude="1" exponent="1.15" offset="-0.10" />
+        </feComponentTransfer>
+        <feComposite in="SourceGraphic" in2="mask" operator="in" />
+      </filter>
+
       <!-- Rope-ish stripes (subtle torsion) -->
       <pattern id="ropeStripe" patternUnits="userSpaceOnUse" width="32" height="32" patternTransform="rotate(25)">
-        <rect width="32" height="32" fill="#ff0000" />
-        <path d="M-8 7 L 40 7" stroke="#b80000" stroke-width="9" opacity="0.42" />
-        <path d="M-8 19 L 40 19" stroke="#ff2a2a" stroke-width="6" opacity="0.16" />
-        <path d="M-8 13 L 40 13" stroke="#ff6b6b" stroke-width="2" opacity="0.18" />
-        <!-- micro fibers / variations -->
-        <path d="M-8 2 L 40 2" stroke="#8e0000" stroke-width="1" opacity="0.18" stroke-dasharray="2 6" />
-        <path d="M-8 28 L 40 28" stroke="#ffb0b0" stroke-width="1" opacity="0.12" stroke-dasharray="3 7" />
+        <rect width="32" height="32" fill="#ee0000" />
+        <!-- core twist -->
+        <path d="M-8 7 L 40 7" stroke="#9e0000" stroke-width="10" opacity="0.38" />
+        <path d="M-8 18 L 40 18" stroke="#ff3a3a" stroke-width="7" opacity="0.16" />
+        <path d="M-8 13 L 40 13" stroke="#ff8a8a" stroke-width="2" opacity="0.14" />
+        <!-- micro fibers / irregular ink passes -->
+        <path d="M-8 3 L 40 3" stroke="#6e0000" stroke-width="1" opacity="0.18" stroke-dasharray="2 7" />
+        <path d="M-8 28 L 40 28" stroke="#ffc2c2" stroke-width="1" opacity="0.10" stroke-dasharray="3 9" />
+        <path d="M-8 23 L 40 23" stroke="#b50000" stroke-width="1" opacity="0.12" stroke-dasharray="1 5" />
       </pattern>
     </defs>
+
+    <!-- Invisible hit area (only on stroke) -->
+    <path
+      bind:this={hitEl}
+      d="M 40 0 C 40 0, 40 1000, 40 1000"
+      fill="none"
+      stroke="transparent"
+      stroke-width="26"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      pointer-events="stroke"
+      tabindex="0"
+      role="link"
+      aria-label="Ouvrir la frise chronologique"
+      style="cursor: pointer;"
+      on:click={goTimeline}
+      on:keydown={onHitKeydown}
+    />
 
     <path
       bind:this={pathShadowEl}
@@ -240,6 +275,7 @@
       stroke-linecap="round"
       stroke-linejoin="round"
       opacity="0.35"
+      pointer-events="none"
     />
 
     <path
@@ -253,6 +289,37 @@
       opacity="0.9"
       filter="url(#threadShadow)"
       stroke-dasharray="32 0"
+      pointer-events="none"
+    />
+
+    <!-- darker patches (paint density) -->
+    <path
+      bind:this={pathDarkEl}
+      d="M 40 0 C 40 0, 40 1000, 40 1000"
+      fill="none"
+      stroke="#7a0000"
+      stroke-width="7"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      opacity="0.18"
+      filter="url(#patchDark)"
+      stroke-dasharray="46 10"
+      pointer-events="none"
+    />
+
+    <!-- lighter patches (catching light) -->
+    <path
+      bind:this={pathLightEl}
+      d="M 40 0 C 40 0, 40 1000, 40 1000"
+      fill="none"
+      stroke="#ffb3b3"
+      stroke-width="6"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      opacity="0.14"
+      filter="url(#patchLight)"
+      stroke-dasharray="54 14"
+      pointer-events="none"
     />
 
     <!-- subtle inner shading / variation to avoid flat red -->
@@ -277,31 +344,7 @@
       stroke-linejoin="round"
       opacity="0.16"
       filter="url(#threadGrain)"
+      pointer-events="none"
     />
-
-    <!-- knots (subtle) -->
-    <g opacity="0.9" aria-hidden="true">
-      {#each Array(knotCount) as _, i}
-        <circle
-          use:storeRef={ [knotShadowEls, i] }
-          cx="40"
-          cy="40"
-          r="4"
-          fill="#000000"
-          opacity="0.28"
-        />
-      {/each}
-
-      {#each Array(knotCount) as _, i}
-        <circle
-          use:storeRef={ [knotEls, i] }
-          cx="40"
-          cy="40"
-          r="3"
-          fill="#ff1a1a"
-          opacity="0.55"
-        />
-      {/each}
-    </g>
   </svg>
 </div>

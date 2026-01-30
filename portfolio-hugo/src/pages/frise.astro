@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import TimelineFrise from '../components/TimelineFrise.svelte';
+---
+
+<BaseLayout title="Frise — Hugo Retail" description="Frise chronologique" showThread={false}>
+	<main class="relative min-h-screen overflow-hidden">
+		<div class="absolute inset-0 bg-graffiti opacity-[0.18]" aria-hidden="true"></div>
+		<div class="absolute inset-0 bg-nature opacity-[0.10]" aria-hidden="true"></div>
+		<div class="paper-grain" aria-hidden="true"></div>
+		<div class="noise-overlay" aria-hidden="true"></div>
+
+		<section class="relative z-10">
+			<TimelineFrise client:load />
+		</section>
+	</main>
+</BaseLayout>
