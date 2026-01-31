@@ -29,14 +29,14 @@
 
   function pickPalette(mode: 'fire' | 'mono') {
     if (mode === 'mono') {
-      return ['rgba(246,246,246,0.20)', 'rgba(246,246,246,0.12)', 'rgba(185,185,185,0.14)'];
+      return ['rgba(246,246,246,0.30)', 'rgba(246,246,246,0.18)', 'rgba(185,185,185,0.22)'];
     }
     return [
-      'rgba(255,0,0,0.18)',
-      'rgba(255,59,212,0.10)',
-      'rgba(0,209,255,0.10)',
-      'rgba(255,230,0,0.08)',
-      'rgba(246,246,246,0.10)'
+      'rgba(255,0,0,0.28)',
+      'rgba(255,59,212,0.16)',
+      'rgba(0,209,255,0.16)',
+      'rgba(255,230,0,0.12)',
+      'rgba(246,246,246,0.16)'
     ];
   }
 
@@ -163,6 +163,52 @@
     );
   }
 
+  function makeCalligraphySwash(rand: () => number, start: { x: number; y: number }, W: number, H: number) {
+    // One or two elegant cubic swashes (more "calligraphy" than geometry).
+    const sx = clamp(start.x, 80, W - 80);
+    const sy = clamp(start.y, 80, H - 80);
+
+    const len = 320 + rand() * 420;
+    const tilt = (rand() - 0.5) * 0.75;
+    const ex = clamp(sx + Math.cos(tilt) * len, 60, W - 60);
+    const ey = clamp(sy + Math.sin(tilt) * len * 0.35, 60, H - 60);
+
+    const amp = 90 + rand() * 140;
+    const c1x = clamp(sx + len * 0.18, 40, W - 40);
+    const c1y = clamp(sy - amp, 40, H - 40);
+    const c2x = clamp(sx + len * 0.62, 40, W - 40);
+    const c2y = clamp(sy + amp * (0.65 + rand() * 0.35), 40, H - 40);
+
+    let d = `M ${sx.toFixed(2)} ${sy.toFixed(2)} C ${c1x.toFixed(2)} ${c1y.toFixed(2)}, ${c2x.toFixed(2)} ${c2y.toFixed(2)}, ${ex.toFixed(2)} ${ey.toFixed(2)}`;
+
+    if (rand() < 0.55) {
+      // Add a second trailing flourish.
+      const ex2 = clamp(ex + (rand() - 0.5) * 260, 60, W - 60);
+      const ey2 = clamp(ey + (rand() - 0.5) * 180, 60, H - 60);
+      const c3x = clamp(ex + (rand() - 0.5) * 240, 40, W - 40);
+      const c3y = clamp(ey + (rand() - 0.5) * 240, 40, H - 40);
+      const c4x = clamp(ex2 + (rand() - 0.5) * 240, 40, W - 40);
+      const c4y = clamp(ey2 + (rand() - 0.5) * 240, 40, H - 40);
+      d += ` C ${c3x.toFixed(2)} ${c3y.toFixed(2)}, ${c4x.toFixed(2)} ${c4y.toFixed(2)}, ${ex2.toFixed(2)} ${ey2.toFixed(2)}`;
+    }
+
+    return d;
+  }
+
+  function makeFlourishLoop(rand: () => number, start: { x: number; y: number }, W: number, H: number) {
+    // A small loop / infinity-ish flourish.
+    const cx = clamp(start.x, 120, W - 120);
+    const cy = clamp(start.y, 120, H - 120);
+    const rx = 80 + rand() * 140;
+    const ry = 40 + rand() * 90;
+    const j = () => (rand() - 0.5) * 10;
+    return (
+      `M ${(cx - rx + j()).toFixed(2)} ${(cy + j()).toFixed(2)} ` +
+      `C ${(cx - rx * 0.2 + j()).toFixed(2)} ${(cy - ry + j()).toFixed(2)}, ${(cx - rx * 0.2 + j()).toFixed(2)} ${(cy + ry + j()).toFixed(2)}, ${(cx + j()).toFixed(2)} ${(cy + j()).toFixed(2)} ` +
+      `C ${(cx + rx * 0.2 + j()).toFixed(2)} ${(cy - ry + j()).toFixed(2)}, ${(cx + rx * 0.2 + j()).toFixed(2)} ${(cy + ry + j()).toFixed(2)}, ${(cx + rx + j()).toFixed(2)} ${(cy + j()).toFixed(2)}`
+    );
+  }
+
   function generateSvg(seed = 1337) {
     const rand = mulberry32(seed);
     const colors = pickPalette(tint);
@@ -176,24 +222,76 @@
       d: string;
       stroke: string;
       w: number;
+      w0: number;
+      w1: number;
+      w2: number;
       alpha: number;
       i: number;
       dur: number;
       phase: number;
+      cap: 'round' | 'butt' | 'square';
+      join: 'round' | 'bevel' | 'miter';
+      miter: number;
+      gap: number;
+      filter: '' | 'soft' | 'softer';
+      ghosts: Array<{ dx: number; dy: number; wMul: number; aMul: number; phaseJitter: number }>;
     }> = [];
 
     const anchors = pickAnchors(rand, count, W, H);
-    const kindsCount = 12;
+    const kindsCount = 14;
     for (let i = 0; i < count; i++) {
       // fully random motif choice (prevents repeated patterns)
       const kind = Math.floor(rand() * kindsCount);
       const stroke = colors[Math.floor(rand() * colors.length)];
-      const w = clamp(1.6 + rand() * 1.8 + (kind === 1 ? 0.6 : 0), 1.6, 3.6);
-      const alpha = 0.5 + rand() * 0.42;
+      // Wider width range + occasional very thick marker strokes.
+      const wBase = 1.4 + rand() * 2.6 + (kind === 1 ? 0.6 : 0);
+      const w = clamp(wBase + (rand() < 0.14 ? 1.3 + rand() * 1.8 : 0), 1.2, 5.2);
+      const alpha = 0.42 + rand() * 0.42;
 
       // Calm + consistent: single shared duration. De-sync via phase only.
       const dur = cycleSec;
       const phase = rand() * dur;
+
+      // Stroke feel randomness: caps/joins/miter + broken ink segments.
+      const cap = ((): 'round' | 'butt' | 'square' => {
+        const r = rand();
+        if (r < 0.62) return 'round';
+        if (r < 0.82) return 'square';
+        return 'butt';
+      })();
+
+      const join = ((): 'round' | 'bevel' | 'miter' => {
+        const r = rand();
+        if (r < 0.50) return 'round';
+        if (r < 0.82) return 'bevel';
+        return 'miter';
+      })();
+
+      const miter = clamp(2 + rand() * 8, 2, 10);
+
+      // Keep the draw animation intact by always using a dash of 1000.
+      // Add an optional gap to create "broken" ink / interrupted strokes.
+      const gap = rand() < 0.26 ? Math.floor(30 + rand() * 220) : 0;
+
+      // Occasional subtle blur to simulate ink bleed (keep rare for perf).
+      const filter: '' | 'soft' | 'softer' = rand() < 0.10 ? (rand() < 0.65 ? 'soft' : 'softer') : '';
+
+      // Brush ghosts: 0-2 low-opacity duplicates with slight offset.
+      const ghosts: Array<{ dx: number; dy: number; wMul: number; aMul: number; phaseJitter: number }> = [];
+      if (rand() < 0.34) {
+        const n = rand() < 0.50 ? 1 : 2;
+        for (let g = 0; g < n; g++) {
+          const dir = rand() * Math.PI * 2;
+          const mag = 0.6 + rand() * 2.2;
+          ghosts.push({
+            dx: Math.cos(dir) * mag,
+            dy: Math.sin(dir) * mag,
+            wMul: 0.75 + rand() * 0.55,
+            aMul: 0.22 + rand() * 0.26,
+            phaseJitter: (rand() - 0.5) * (dur * 0.08)
+          });
+        }
+      }
 
       let d = '';
 
@@ -346,39 +444,80 @@
         const w1 = 16 + rand() * 26;
         d = `M ${x.toFixed(2)} ${(y - h * 0.5).toFixed(2)} L ${x.toFixed(2)} ${(y + h * 0.5).toFixed(2)} ` +
           `M ${(x - w1).toFixed(2)} ${(y + h * 0.5).toFixed(2)} L ${(x + w1).toFixed(2)} ${(y + h * 0.5).toFixed(2)}`;
-      } else {
+      } else if (kind === 11) {
         // knot + cross (tiny local signature)
         const x = zx;
         const y = zy;
         const r = 18 + rand() * 28;
-        const a = rand() * Math.PI * 2;
-        const x1 = clamp(x + Math.cos(a) * r, 40, W - 40);
-        const y1 = clamp(y + Math.sin(a) * r, 40, H - 40);
-        const x2 = clamp(x - Math.cos(a) * r, 40, W - 40);
-        const y2 = clamp(y - Math.sin(a) * r, 40, H - 40);
+        const aa = rand() * Math.PI * 2;
+        const x1 = clamp(x + Math.cos(aa) * r, 40, W - 40);
+        const y1 = clamp(y + Math.sin(aa) * r, 40, H - 40);
+        const x2 = clamp(x - Math.cos(aa) * r, 40, W - 40);
+        const y2 = clamp(y - Math.sin(aa) * r, 40, H - 40);
         d = `M ${x1.toFixed(2)} ${y1.toFixed(2)} L ${x2.toFixed(2)} ${y2.toFixed(2)} ` +
           `M ${x1.toFixed(2)} ${y2.toFixed(2)} L ${x2.toFixed(2)} ${y1.toFixed(2)}`;
+      } else if (kind === 12) {
+        // calligraphy swash
+        d = makeCalligraphySwash(rand, { x: zx, y: zy }, W, H);
+      } else {
+        // elegant flourish / loop
+        d = makeFlourishLoop(rand, { x: zx, y: zy }, W, H);
       }
 
       if (!d) continue;
-      strokes.push({ d, stroke, w, alpha, i, dur, phase });
+      // Animate thickness over time for some strokes (during draw/hold/erase).
+      const wiggle = rand() < 0.62;
+      const w0 = wiggle ? clamp(w * (0.65 + rand() * 0.18), 1.0, 6.2) : w;
+      const w1 = wiggle ? clamp(w * (1.10 + rand() * 0.45), 1.0, 7.0) : w;
+      const w2 = wiggle ? clamp(w * (0.80 + rand() * 0.25), 1.0, 6.2) : w;
+
+      strokes.push({ d, stroke, w, w0, w1, w2, alpha, i, dur, phase, cap, join, miter, gap, filter, ghosts });
     }
 
     const paths = strokes
       .map((s) => {
-        return `
+        const dashArray = s.gap > 0 ? `1000 ${s.gap}` : `1000`;
+        const base = `
           <path
             class=\"stroke\"
-            style=\"--i:${s.i};--dur:${s.dur.toFixed(2)}s;--phase:${s.phase.toFixed(2)}s\"
+            style=\"--i:${s.i};--dur:${s.dur.toFixed(2)}s;--phase:${s.phase.toFixed(2)}s;--w0:${s.w0.toFixed(2)}px;--w1:${s.w1.toFixed(2)}px;--w2:${s.w2.toFixed(2)}px\"
             d=\"${s.d}\"
             pathLength=\"1000\"
+            stroke-dasharray=\"${dashArray}\"
             fill=\"none\"
             stroke=\"${s.stroke}\"
-            stroke-width=\"${s.w}\"
-            stroke-linecap=\"round\"
-            stroke-linejoin=\"round\"
-            stroke-opacity=\"${s.alpha}\"
+            stroke-linecap=\"${s.cap}\"
+            stroke-linejoin=\"${s.join}\"
+            stroke-miterlimit=\"${s.miter.toFixed(1)}\"
+            stroke-opacity=\"${s.alpha.toFixed(3)}\"${s.filter ? `\n            filter=\"url(#${s.filter})\"` : ''}
           />`;
+
+        const ghosts = s.ghosts
+          .map((g, gi) => {
+            const ph = (s.phase + g.phaseJitter + s.dur * 10) % s.dur;
+            const gw = s.w * g.wMul;
+            const gw0 = clamp(gw * 0.85, 0.8, 6.0);
+            const gw1 = clamp(gw * 1.10, 0.8, 6.8);
+            const gw2 = clamp(gw * 0.95, 0.8, 6.2);
+            return `
+          <path
+            class=\"stroke stroke-ghost\"
+            style=\"--i:${s.i}-${gi};--dur:${s.dur.toFixed(2)}s;--phase:${ph.toFixed(2)}s;--w0:${gw0.toFixed(2)}px;--w1:${gw1.toFixed(2)}px;--w2:${gw2.toFixed(2)}px\"
+            d=\"${s.d}\"
+            pathLength=\"1000\"
+            stroke-dasharray=\"${Math.floor(s.gap * 0.6) > 0 ? `1000 ${Math.floor(s.gap * 0.6)}` : '1000'}\"
+            fill=\"none\"
+            stroke=\"${s.stroke}\"
+            stroke-linecap=\"${s.cap}\"
+            stroke-linejoin=\"${s.join}\"
+            stroke-miterlimit=\"${s.miter.toFixed(1)}\"
+            stroke-opacity=\"${(s.alpha * g.aMul).toFixed(3)}\"
+            transform=\"translate(${g.dx.toFixed(2)} ${g.dy.toFixed(2)})\"${s.filter ? `\n            filter=\"url(#${s.filter})\"` : ''}
+          />`;
+          })
+          .join('');
+
+        return base + ghosts;
       })
       .join('\n');
 
@@ -386,6 +525,14 @@
     const cycleMs = Math.ceil(cycleSec * 1000);
     const svg = `
       <svg class=\"bg\" viewBox=\"0 0 1000 600\" preserveAspectRatio=\"none\" aria-hidden=\"true\">
+        <defs>
+          <filter id=\"soft\" x=\"-10%\" y=\"-10%\" width=\"120%\" height=\"120%\" color-interpolation-filters=\"sRGB\">
+            <feGaussianBlur stdDeviation=\"0.55\" />
+          </filter>
+          <filter id=\"softer\" x=\"-10%\" y=\"-10%\" width=\"120%\" height=\"120%\" color-interpolation-filters=\"sRGB\">
+            <feGaussianBlur stdDeviation=\"1.05\" />
+          </filter>
+        </defs>
         <rect width=\"1000\" height=\"600\" fill=\"transparent\" />
         ${paths}
       </svg>
@@ -459,18 +606,26 @@
   }
 
   :global(svg.bg .stroke) {
-    stroke-dasharray: var(--dash);
     stroke-dashoffset: var(--dash);
-    animation: drawErase var(--dur, 7.6s) cubic-bezier(0.3, 0, 0.2, 1) infinite;
+    stroke-width: var(--w1, 3px);
+    animation:
+      drawErase var(--dur, 7.6s) cubic-bezier(0.3, 0, 0.2, 1) infinite,
+      widthWiggle var(--dur, 7.6s) cubic-bezier(0.3, 0, 0.2, 1) infinite;
     /* Phase (negative delay) keeps all strokes aligned on shared cycle boundaries */
-    animation-delay: calc(-1 * var(--phase, 0s));
+    animation-delay: calc(-1 * var(--phase, 0s)), calc(-1 * var(--phase, 0s));
     will-change: stroke-dashoffset;
+  }
+
+  :global(svg.bg .stroke.stroke-ghost) {
+    /* keep ghosts subtle even when base strokes are strong */
+    opacity: 0.85;
   }
 
   @media (prefers-reduced-motion: reduce) {
     :global(svg.bg .stroke) {
       animation: none;
       stroke-dashoffset: 0;
+      stroke-width: var(--w1, 3px);
     }
   }
 
@@ -492,8 +647,23 @@
     }
   }
 
+  @keyframes widthWiggle {
+    0% {
+      stroke-width: var(--w0, var(--w1, 3px));
+    }
+    40% {
+      stroke-width: var(--w1, 3px);
+    }
+    60% {
+      stroke-width: var(--w1, 3px);
+    }
+    100% {
+      stroke-width: var(--w2, var(--w1, 3px));
+    }
+  }
+
   .wrap {
-    opacity: 0.9;
+    opacity: 0.96;
     mix-blend-mode: normal;
   }
 
@@ -523,7 +693,7 @@
   .host :global(svg.bg) {
     width: 100%;
     height: 100%;
-    opacity: 0.62;
+    opacity: 0.74;
   }
 
   .vignette {
