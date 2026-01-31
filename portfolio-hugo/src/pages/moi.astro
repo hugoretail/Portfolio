@@ -2,615 +2,800 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 
 const pathname = Astro.url?.pathname ?? '/';
-type NavItem = { href: string; label: string };
+type NavItem = { href: string; label: string; tag?: string };
+
 const nav: NavItem[] = [
-	{ href: '/', label: 'Accueil' },
-	{ href: '/moi', label: 'Moi' },
-	{ href: '/graffiti', label: 'Graffiti' },
-	{ href: '/hiphop', label: 'Hiphop' },
-	{ href: '/ia', label: 'IA / NLP' },
-	{ href: '/litterature', label: 'Littérature' },
-	{ href: '/frise', label: 'Frise' }
+	{ href: '/', label: 'Accueil', tag: '00' },
+	{ href: '/moi', label: 'Moi', tag: '01' },
+	{ href: '/graffiti', label: 'Graffiti', tag: 'A' },
+	{ href: '/hiphop', label: 'Hiphop', tag: 'B' },
+	{ href: '/ia', label: 'IA / NLP', tag: 'C' },
+	{ href: '/litterature', label: 'Littérature', tag: 'D' },
+	{ href: '/frise', label: 'Frise', tag: 'E' }
+];
+
+const tracks: Array<{ id: string; label: string; href: string; note: string }> = [
+	{ id: 'A', label: 'GRAFFITI', href: '/graffiti', note: 'mur / rythme / précision' },
+	{ id: 'B', label: 'HIP-HOP', href: '/hiphop', note: 'coupe / boucle / texture' },
+	{ id: 'C', label: 'IA / NLP', href: '/ia', note: 'contrainte / montage / outil' },
+	{ id: 'D', label: 'LITTÉRATURE', href: '/litterature', note: 'souffle / phrase / cadre' },
+	{ id: 'E', label: 'FRISE', href: '/frise', note: 'timeline / trace / parcours' }
 ];
 
 function isActive(href: string) {
 	if (href === '/') return pathname === '/';
 	return pathname.startsWith(href);
 }
-
-const navPositions: Array<{ x: number; y: number; r: number }> = [
-	{ x: 12, y: 22, r: -3.2 },
-	{ x: 78, y: 18, r: 2.2 },
-	{ x: 20, y: 56, r: 1.5 },
-	{ x: 70, y: 52, r: -2.3 },
-	{ x: 45, y: 78, r: 3.1 },
-	{ x: 8, y: 82, r: -1.3 },
-	{ x: 88, y: 72, r: 1.1 }
-];
-
-const navNodes = nav.map((item, idx) => ({
-	...item,
-	...navPositions[idx % navPositions.length]
-}));
-
-type Piece = {
-	id: string;
-	label: string;
-	kind: 'bio' | 'focus' | 'phrase' | 'exit' | 'stamp';
-	x: number;
-	y: number;
-	r: number;
-};
-
-const pieces: Piece[] = [
-	{ id: 'bio', label: 'DESCRIPTION', kind: 'bio', x: 44, y: 34, r: -1.8 },
-	{ id: 'focus', label: 'FOCUS', kind: 'focus', x: 62, y: 62, r: 1.4 },
-	{ id: 'phrase', label: 'PHRASE', kind: 'phrase', x: 30, y: 70, r: -2.2 },
-	{ id: 'exit', label: 'SORTIES', kind: 'exit', x: 86, y: 40, r: 2.9 },
-	{ id: 'stamp', label: 'DOSSIER', kind: 'stamp', x: 16, y: 10, r: -6.0 }
-];
 ---
 
 <BaseLayout title="Moi — Hugo Retail" description="À propos" showHeaderNav={false}>
-	<main id="moiPage" class="moi-page relative min-h-screen overflow-hidden">
-		<div class="pointer-events-none absolute inset-0 bg-graffiti opacity-[0.10]" aria-hidden="true"></div>
-		<div class="pointer-events-none absolute inset-0 bg-nature opacity-[0.05]" aria-hidden="true"></div>
+	<main id="moiCassette" class="moi-cassette">
+		<div class="moi-bg" aria-hidden="true"></div>
 		<div class="paper-grain" aria-hidden="true"></div>
 		<div class="noise-overlay" aria-hidden="true"></div>
-		<div class="moi-strata" aria-hidden="true"></div>
 
-		<!-- Typography shards (bigger / more disrespectful) -->
-		<div class="pointer-events-none absolute left-[-10vw] top-[4vh] rotate-[-10deg] font-display text-[24vw] leading-none text-[color:var(--fg)] opacity-[0.05]" aria-hidden="true">
-			MOI
-		</div>
-		<div class="pointer-events-none absolute right-[-14vw] top-[38vh] rotate-[14deg] font-display text-[20vw] leading-none text-[color:var(--red-thread)] opacity-[0.06]" aria-hidden="true">
-			HUGO
-		</div>
-		<div class="pointer-events-none absolute left-[8vw] bottom-[-6vh] rotate-[6deg] font-display text-[16vw] leading-none text-[color:var(--acid-yellow)] opacity-[0.05]" aria-hidden="true">
-			RETAIL
-		</div>
-
-		<!-- Minimal header: not a bar, more like a tool overlay -->
-		<header class="relative z-30 mx-auto max-w-6xl px-4 pt-6">
-			<div class="flex flex-wrap items-center justify-between gap-3">
-				<div class="moi-title">
-					<div class="moi-kicker">PAGE / IDENTITÉ</div>
-					<div class="moi-h1">MOI</div>
-				</div>
-				<div class="flex items-center gap-2">
-					<button id="glitchBtn" class="moi-btn" type="button" aria-pressed="false" title="Mode glitch (touche G)">GLITCH</button>
-					<a class="moi-btn" href="/">RETOUR</a>
-				</div>
+		<header class="moi-top" aria-label="En-tête">
+			<div class="moi-brand">
+				<div class="kicker">SIDE A</div>
+				<h1 class="title">MOI</h1>
+				<div class="sub">Hugo Retail — cassette d’identité</div>
 			</div>
-			<p class="mt-3 max-w-3xl font-hand text-2xl leading-snug text-[color:var(--fg)] md:text-3xl">
-				Je fais de la matière.
-				<span class="mx-2 text-[color:var(--red-thread)]">/</span>
-				Je l’organise.
-				<span class="mx-2 text-[color:var(--acid-yellow)]">/</span>
-				Je laisse du souffle.
-			</p>
+			<nav class="moi-mini-nav" aria-label="Navigation rapide">
+				{nav.map((item) => (
+					<a class:list={["mini", isActive(item.href) ? "is-active" : ""]} href={item.href}>
+						<span class="miniTag" aria-hidden="true">{item.tag}</span>
+						{item.label}
+					</a>
+				))}
+			</nav>
 		</header>
 
-		<!-- Scattered board (broken layout) -->
-		<section class="relative z-20 mx-auto max-w-6xl px-4 pb-24 pt-8">
-			<div id="moiBoard" class="moi-board" role="region" aria-label="Tableau (navigation + notes)">
-				<svg id="moiWires" class="moi-wires" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-					<defs>
-						<filter id="wireGlow" x="-40%" y="-40%" width="180%" height="180%">
-							<feDropShadow dx="0" dy="0" stdDeviation="1.4" flood-color="#ff0000" flood-opacity="0.45" />
-							<feDropShadow dx="0" dy="0" stdDeviation="0.7" flood-color="#ffffff" flood-opacity="0.14" />
-						</filter>
-					</defs>
-					<g id="wirePaths" filter="url(#wireGlow)" />
-				</svg>
-
-				<!-- NAV nodes (scattered) -->
-				<nav class="moi-nav" aria-label="Navigation">
-					{navNodes.map((item) => (
-						<a
-							data-node={item.href}
-							href={item.href}
-							class:list={[
-								'node node--nav',
-								isActive(item.href) ? 'node--active' : ''
-							]}
-							style={`--x:${item.x}; --y:${item.y}; --r:${item.r}deg;`}
-						>
-							<span class="node__label">{item.label}</span>
-							<span class="node__sub">clic</span>
-						</a>
-					))}
-				</nav>
-
-				<!-- Content pieces -->
-				{pieces.map((p) => (
-					<section data-piece={p.id} data-node={p.id} class:list={[`node node--${p.kind}`]} style={`--x:${p.x}; --y:${p.y}; --r:${p.r}deg;`}>
-						<div class="node__header">
-							<div class="node__kicker">{p.label}</div>
-							<div class="node__chips" aria-hidden="true">
-								<span class="chip">STICK</span>
-								<span class="chip">TRACE</span>
+		<section class="deck" aria-label="Deck cassette">
+			<div class="deckGrid">
+				<!-- CASSETTE -->
+				<section class="cassette" aria-label="Cassette">
+					<div class="cassetteShell" aria-hidden="true">
+						<div class="screws"></div>
+						<div class="window">
+							<div class="tape"></div>
+							<div class="reel reelL"><div class="hub"></div></div>
+							<div class="reel reelR"><div class="hub"></div></div>
+						</div>
+						<div class="label">
+							<div class="labelRow">
+								<div class="labelTitle">IDENTITÉ</div>
+								<div class="labelCode">HR-01</div>
+							</div>
+							<div class="labelText">
+								Je fabrique des images, des systèmes et des gestes.
+								<span class="sep">/</span>
+								Brutaliste, mais vivant.
+							</div>
+							<div class="labelMeta">
+								<span class="pill">NO COPY</span>
+								<span class="pill">RAW</span>
+								<span class="pill">FIELD</span>
+								<span class="pill">TOOLS</span>
 							</div>
 						</div>
+					</div>
 
-						{p.kind === 'bio' ? (
+					<!-- TRACKLIST in the cassette area (not a normal menu) -->
+					<div class="tracklist" aria-label="Pistes">
+						<div class="trackHeader">
+							<div class="k">TRACKLIST</div>
+							<div class="led" id="recLed" aria-hidden="true"></div>
+						</div>
+						<ol class="tracks">
+							{tracks.map((t) => (
+								<li>
+									<a class="track" href={t.href} data-track={t.id}>
+										<span class="trkId">{t.id}</span>
+										<span class="trkName">{t.label}</span>
+										<span class="trkNote">{t.note}</span>
+									</a>
+								</li>
+							))}
+						</ol>
+					</div>
+
+					<!-- CONTROLS -->
+					<div class="controls" aria-label="Contrôles">
+						<button id="btnPlay" class="btn btnPlay" type="button" aria-pressed="false">
+							PLAY
+						</button>
+						<button id="btnStop" class="btn" type="button">STOP</button>
+						<button id="btnRec" class="btn btnRec" type="button" aria-pressed="false">REC</button>
+						<a class="btn btnEject" href="/" title="Eject / retour">EJECT</a>
+
+						<label class="knob" for="speed">
+							<span class="knobLabel">SPEED</span>
+							<input id="speed" type="range" min="0" max="100" value="52" />
+						</label>
+						<div class="help" aria-hidden="true">Space=play · R=rec · 1..5=tracks</div>
+					</div>
+				</section>
+
+				<!-- LINER NOTES -->
+				<section class="notes" aria-label="Liner notes">
+					<div class="notesTop">
+						<div class="stamp">INSERT</div>
+						<div class="notesKicker">DESCRIPTION (à remplir)</div>
+					</div>
+					<div class="notesBody">
+						<p class="bio" id="bioText">
+							Ici tu poses ton texte.
+							<span class="sep">/</span>
+							Court.
+							<span class="sep">/</span>
+							Tranchant.
+							<span class="sep">/</span>
+							Vrai.
+						</p>
+						<div class="cols">
 							<div>
-								<p class="node__text">
-									Ici tu écris ta bio.
-									<span class="sep">/</span>
-									Ce que tu sais faire.
-									<span class="sep">/</span>
-									Ce que tu refuses.
-									<span class="sep">/</span>
-									Ce que tu veux.
-								</p>
-								<p class="node__micro">Astuce: fais 6 lignes max. Pas d’excuse. Pas de blabla.</p>
-								<div class="node__tags">
-									<span class="tag">graffiti</span>
-									<span class="tag">hip-hop</span>
-									<span class="tag">IA/NLP</span>
-									<span class="tag">littérature</span>
+								<div class="h">Focus</div>
+								<ul class="list">
+									<li><b>Rue</b> → composition</li>
+									<li><b>Son</b> → découpe</li>
+									<li><b>Langage</b> → structure</li>
+									<li><b>Interfaces</b> → rythme</li>
+								</ul>
+							</div>
+							<div>
+								<div class="h">Tags</div>
+								<div class="tags">
+									<span class="tag">spray</span>
+									<span class="tag">stylo</span>
+									<span class="tag">code</span>
+									<span class="tag">3D</span>
+									<span class="tag">NLP</span>
 								</div>
 							</div>
-						) : null}
-
-						{p.kind === 'focus' ? (
-							<ul class="node__list">
-								<li><b>Graffiti</b> — structure + souffle</li>
-								<li><b>Hip-hop</b> — coupe + boucle + texture</li>
-								<li><b>IA/NLP</b> — contrainte + montage + outil</li>
-								<li><b>Code</b> — interface + rythme + obsession</li>
-							</ul>
-						) : null}
-
-						{p.kind === 'phrase' ? (
-							<div>
-								<p class="node__quote">« Je prends le chaos. Je le cadre. Je garde le souffle. »</p>
-								<div class="node__micro">(à remplacer quand tu veux)</div>
+						</div>
+						<div class="credits">
+							<div class="h">Credits</div>
+							<div class="mono">
+								REC = mode “brut”.
+								<br />PLAY = vie.
+								<br />STOP = silence.
 							</div>
-						) : null}
-
-						{p.kind === 'exit' ? (
-							<div class="node__exits">
-								<a class="exit" href="/frise">FRISE →</a>
-								<a class="exit" href="/graffiti">GRAFFITI →</a>
-								<a class="exit" href="/ia">IA / NLP →</a>
-								<a class="exit" href="/hiphop">HIP-HOP →</a>
-							</div>
-						) : null}
-
-						{p.kind === 'stamp' ? (
-							<div class="node__stamp">
-								<div class="stamp__big">DOSSIER</div>
-								<div class="stamp__small">/ identité / matières / outils /</div>
-							</div>
-						) : null}
-					</section>
-				))}
+						</div>
+					</div>
+				</section>
 			</div>
 		</section>
 	</main>
 
 	<script is:inline>
 		(() => {
+			const page = document.getElementById('moiCassette');
+			const btnPlay = document.getElementById('btnPlay');
+			const btnStop = document.getElementById('btnStop');
+			const btnRec = document.getElementById('btnRec');
+			const speed = document.getElementById('speed');
+			const recLed = document.getElementById('recLed');
+			const bioText = document.getElementById('bioText');
+			if (!page) return;
+
 			const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false;
-			const page = document.getElementById('moiPage');
-			const board = document.getElementById('moiBoard');
-			const wiresSvg = document.getElementById('moiWires');
-			const wireGroup = document.getElementById('wirePaths');
-			const glitchBtn = document.getElementById('glitchBtn');
-			if (!page || !board || !wiresSvg || !wireGroup) return;
+			const STORAGE = 'moi.cassette.v1';
 
-			const nodes = Array.from(board.querySelectorAll('[data-node]'));
-			const getCenter = (el) => {
-				const r = el.getBoundingClientRect();
-				return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+			const readState = () => {
+				try {
+					return JSON.parse(window.localStorage.getItem(STORAGE) || '{}');
+				} catch {
+					return {};
+				}
+			};
+			const writeState = (s) => {
+				try {
+					window.localStorage.setItem(STORAGE, JSON.stringify(s));
+				} catch {
+					// ignore
+				}
 			};
 
-			const edges = [
-				['bio', '/graffiti'],
-				['bio', '/ia'],
-				['bio', '/hiphop'],
-				['bio', '/litterature'],
-				['bio', '/frise'],
-				['focus', '/graffiti'],
-				['phrase', '/litterature'],
-				['exit', '/frise']
-			];
+			const state = { playing: false, rec: false, speed: 52, ...readState() };
+			if (prefersReducedMotion) state.playing = false;
+			if (speed) speed.value = String(state.speed ?? 52);
 
-			const byKey = new Map();
-			nodes.forEach((el) => byKey.set(el.getAttribute('data-node'), el));
+			const apply = () => {
+				page.classList.toggle('is-playing', !!state.playing);
+				page.classList.toggle('is-rec', !!state.rec);
+				page.style.setProperty('--spd', String((state.speed ?? 52) / 100));
+				btnPlay?.setAttribute('aria-pressed', state.playing ? 'true' : 'false');
+				btnRec?.setAttribute('aria-pressed', state.rec ? 'true' : 'false');
+				recLed?.classList.toggle('on', !!state.rec);
 
-			let raf = null;
-			const render = () => {
-				raf = null;
-				const boardRect = board.getBoundingClientRect();
-				const w = Math.max(1, boardRect.width);
-				const h = Math.max(1, boardRect.height);
-				wiresSvg.setAttribute('viewBox', `0 0 ${w} ${h}`);
-				while (wireGroup.firstChild) wireGroup.removeChild(wireGroup.firstChild);
-
-				edges.forEach(([a, b], i) => {
-					const elA = byKey.get(a);
-					const elB = byKey.get(b);
-					if (!elA || !elB) return;
-					const ca = getCenter(elA);
-					const cb = getCenter(elB);
-					const ax = ca.x - boardRect.left;
-					const ay = ca.y - boardRect.top;
-					const bx = cb.x - boardRect.left;
-					const by = cb.y - boardRect.top;
-
-					const dx = bx - ax;
-					const dy = by - ay;
-					const bend = Math.min(240, Math.max(70, Math.hypot(dx, dy) * 0.25));
-					const c1x = ax + dx * 0.25;
-					const c1y = ay + dy * 0.25 - bend;
-					const c2x = ax + dx * 0.75;
-					const c2y = ay + dy * 0.75 + bend * 0.45;
-
-					const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-					p.setAttribute('d', `M ${ax.toFixed(2)} ${ay.toFixed(2)} C ${c1x.toFixed(2)} ${c1y.toFixed(2)}, ${c2x.toFixed(2)} ${c2y.toFixed(2)}, ${bx.toFixed(2)} ${by.toFixed(2)}`);
-					p.setAttribute('fill', 'none');
-					p.setAttribute('stroke', i % 3 === 0 ? 'rgba(255,0,0,0.55)' : 'rgba(255,0,0,0.28)');
-					p.setAttribute('stroke-width', i % 4 === 0 ? '2.2' : '1.4');
-					p.setAttribute('stroke-linecap', 'round');
-					p.setAttribute('stroke-linejoin', 'round');
-					p.setAttribute('stroke-dasharray', i % 2 === 0 ? '10 9' : '0');
-					wireGroup.appendChild(p);
-				});
+				if (bioText) {
+					bioText.textContent = state.rec
+						? 'Je fais. Je coupe. Je colle. Je recommence. / Pas de filtre. / Pas de discours.'
+						: 'Ici tu poses ton texte. / Court. / Tranchant. / Vrai.';
+				}
 			};
 
-			const requestRender = () => {
-				if (raf != null) return;
-				raf = window.requestAnimationFrame(render);
-			};
+			const save = () => writeState({ playing: state.playing, rec: state.rec, speed: state.speed });
 
-			const setScrollVar = () => {
+			const playToggle = () => {
 				if (prefersReducedMotion) return;
-				const s = Math.max(-40, Math.min(140, (window.scrollY || 0) * 0.08));
-				board.style.setProperty('--scroll', String(s));
+				state.playing = !state.playing;
+				apply();
+				save();
+			};
+			const stop = () => {
+				state.playing = false;
+				apply();
+				save();
+			};
+			const recToggle = () => {
+				state.rec = !state.rec;
+				apply();
+				save();
 			};
 
-			const setGlitch = (on) => {
-				page.classList.toggle('moi-glitch', on);
-				if (glitchBtn) glitchBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
-			};
-
-			let glitchOn = false;
-			glitchBtn?.addEventListener('click', () => {
-				glitchOn = !glitchOn;
-				setGlitch(glitchOn);
+			btnPlay?.addEventListener('click', playToggle);
+			btnStop?.addEventListener('click', stop);
+			btnRec?.addEventListener('click', recToggle);
+			speed?.addEventListener('input', (e) => {
+				state.speed = Number(e.target?.value ?? 52);
+				apply();
+				save();
 			});
 
-			window.addEventListener('resize', requestRender);
-			window.addEventListener('scroll', () => {
-				setScrollVar();
-				requestRender();
-			}, { passive: true });
-
 			window.addEventListener('keydown', (e) => {
-				if (e.key.toLowerCase() === 'g') {
-					glitchOn = !glitchOn;
-					setGlitch(glitchOn);
+				if (e.key === ' ' || e.code === 'Space') {
+					e.preventDefault();
+					playToggle();
+					return;
+				}
+				if (e.key.toLowerCase() === 'r') {
+					recToggle();
+					return;
+				}
+				if (e.key.toLowerCase() === 's') {
+					stop();
+					return;
+				}
+				// quick track jump 1..5
+				const idx = Number(e.key) - 1;
+				if (idx >= 0 && idx < 5) {
+					const href = ['\/graffiti','\/hiphop','\/ia','\/litterature','\/frise'][idx];
+					window.location.assign(href);
 				}
 			});
 
-			setScrollVar();
-			requestRender();
+			apply();
 		})();
 	</script>
 
 	<style>
-		.moi-page {
-			--paper: rgba(0, 0, 0, 0.55);
-			--paper2: rgba(0, 0, 0, 0.42);
+		.moi-cassette {
+			--bg: var(--bg);
+			--fg: var(--fg);
+			--muted: var(--muted);
+			--red: var(--red-thread);
+			--acid: var(--acid-yellow);
+			--spd: 0.52;
+			min-height: 100vh;
+			position: relative;
+			padding-bottom: 64px;
+			overflow: hidden;
 		}
 
-		.moi-strata {
+		.moi-bg {
 			position: absolute;
 			inset: 0;
 			pointer-events: none;
 			background:
-				linear-gradient(180deg, rgba(255, 0, 0, 0.08), transparent 26%),
-				linear-gradient(180deg, transparent 40%, rgba(255, 230, 0, 0.05) 65%, transparent 92%),
-				repeating-linear-gradient(0deg, rgba(246, 246, 246, 0.03) 0 1px, transparent 1px 14px);
-			opacity: 0.85;
+				repeating-linear-gradient(90deg, rgba(246, 246, 246, 0.03) 0 1px, transparent 1px 160px),
+				repeating-linear-gradient(0deg, rgba(255, 0, 0, 0.025) 0 1px, transparent 1px 22px),
+				radial-gradient(circle at 16% 24%, rgba(255, 0, 0, 0.10), transparent 46%),
+				radial-gradient(circle at 78% 72%, rgba(255, 230, 0, 0.06), transparent 54%);
+			opacity: 0.9;
 			mix-blend-mode: overlay;
 		}
 
-		.moi-title {
-			line-height: 1;
-		}
-
-		.moi-kicker {
-			font-size: 10px;
-			letter-spacing: 0.35em;
-			text-transform: uppercase;
-			font-weight: 900;
-			color: var(--muted);
-		}
-
-		.moi-h1 {
-			font-family: var(--font-display, 'Bebas Neue', system-ui, sans-serif);
-			font-weight: 900;
-			letter-spacing: 0.02em;
-			font-size: clamp(44px, 8vw, 90px);
-			text-shadow: 14px 14px 0 rgba(255, 0, 0, 0.12);
-		}
-
-		.moi-btn {
-			display: inline-flex;
-			align-items: center;
-			justify-content: center;
-			gap: 8px;
-			padding: 10px 12px;
-			font-weight: 900;
-			font-size: 11px;
-			letter-spacing: 0.22em;
-			text-transform: uppercase;
-			background: rgba(0, 0, 0, 0.55);
-			border: 2px solid var(--fg);
-			box-shadow: 6px 6px 0 rgba(246, 246, 246, 0.12);
-		}
-
-		.moi-btn:hover {
-			background: rgba(0, 0, 0, 0.78);
-		}
-
-		.moi-board {
+		.moi-top {
 			position: relative;
-			min-height: min(1200px, 150vh);
-			border: 2px dashed rgba(246, 246, 246, 0.18);
-			background:
-				repeating-linear-gradient(90deg, rgba(246, 246, 246, 0.03) 0 1px, transparent 1px 120px),
-				repeating-linear-gradient(0deg, rgba(255, 0, 0, 0.028) 0 1px, transparent 1px 90px);
+			z-index: 3;
+			max-width: 1100px;
+			margin: 0 auto;
+			padding: 24px 16px 8px;
+			display: grid;
+			gap: 12px;
+			grid-template-columns: 1fr;
 		}
 
-		.moi-wires {
-			position: absolute;
-			inset: 0;
-			width: 100%;
-			height: 100%;
-			pointer-events: none;
-			opacity: 0.95;
-		}
-
-		.node {
-			position: absolute;
-			left: calc(var(--x) * 1%);
-			top: calc(var(--y) * 1%);
-			transform: translate(-50%, -50%) rotate(var(--r, 0deg)) translateY(calc(var(--scroll, 0) * 1px));
-			transform-origin: center;
-			max-width: min(520px, 86vw);
-			color: var(--fg);
-			background: var(--paper);
-			border: 2px solid var(--fg);
-			box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.55);
-			padding: 14px 14px 12px;
-			clip-path: polygon(2% 2%, 98% 0, 100% 86%, 94% 100%, 2% 98%, 0 18%);
-			backdrop-filter: blur(2px);
-		}
-
-		.node:hover {
-			filter: drop-shadow(0 0 12px rgba(255, 0, 0, 0.22));
-		}
-
-		.node:focus-within {
-			outline: 2px solid rgba(255, 230, 0, 0.55);
-			outline-offset: 4px;
-		}
-
-		.node__header {
-			display: flex;
-			justify-content: space-between;
-			align-items: baseline;
-			gap: 10px;
-		}
-
-		.node__kicker {
+		.moi-brand .kicker {
 			font-weight: 900;
-			font-size: 10px;
 			letter-spacing: 0.35em;
 			text-transform: uppercase;
-			color: var(--muted);
-		}
-
-		.node__chips {
-			display: flex;
-			gap: 6px;
-		}
-
-		.chip {
-			font-weight: 900;
-			font-size: 9px;
-			letter-spacing: 0.28em;
-			text-transform: uppercase;
-			padding: 4px 6px;
-			border: 1px solid rgba(246, 246, 246, 0.25);
-			opacity: 0.7;
-		}
-
-		.node--nav {
-			padding: 10px 12px;
-			max-width: none;
-			text-decoration: none;
-			background: rgba(0, 0, 0, 0.48);
-			clip-path: polygon(0 10%, 96% 0, 100% 90%, 92% 100%, 4% 94%);
-		}
-
-		.node--nav .node__label {
-			font-weight: 900;
-			letter-spacing: 0.22em;
-			text-transform: uppercase;
-			font-size: 11px;
-			display: block;
-		}
-
-		.node--nav .node__sub {
-			display: block;
-			margin-top: 4px;
 			font-size: 10px;
-			color: rgba(246, 246, 246, 0.7);
-			letter-spacing: 0.12em;
-			text-transform: uppercase;
-		}
-
-		.node--active {
-			border-color: var(--acid-yellow);
-			box-shadow: 10px 10px 0 rgba(255, 230, 0, 0.12);
-		}
-
-		.node--bio {
-			width: min(560px, 90vw);
-			background: rgba(0, 0, 0, 0.60);
-		}
-
-		.node__text {
-			margin-top: 10px;
-			font-family: 'Patrick Hand', ui-rounded, system-ui, sans-serif;
-			font-size: clamp(20px, 3vw, 36px);
-			line-height: 1.15;
-			color: var(--fg);
-		}
-
-		.node__micro {
-			margin-top: 8px;
-			font-size: 10px;
-			letter-spacing: 0.18em;
-			text-transform: uppercase;
 			color: rgba(246, 246, 246, 0.62);
 		}
 
-		.sep {
-			margin: 0 10px;
-			color: var(--red-thread);
+		.moi-brand .title {
+			margin: 6px 0 0;
+			font-family: 'Bebas Neue', system-ui, sans-serif;
+			font-size: clamp(56px, 9vw, 120px);
+			line-height: 0.9;
+			letter-spacing: 0.04em;
+			text-shadow: 16px 16px 0 rgba(255, 0, 0, 0.12);
 		}
 
-		.node__tags {
-			margin-top: 12px;
+		.moi-brand .sub {
+			margin-top: 6px;
+			font-weight: 900;
+			letter-spacing: 0.22em;
+			text-transform: uppercase;
+			font-size: 11px;
+			color: rgba(246, 246, 246, 0.70);
+		}
+
+		.moi-mini-nav {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px;
+			align-items: center;
+		}
+
+		.mini {
+			display: inline-flex;
+			gap: 10px;
+			align-items: center;
+			padding: 10px 12px;
+			border: 2px solid var(--fg);
+			background: rgba(0, 0, 0, 0.55);
+			box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.55);
+			text-decoration: none;
+			font-weight: 900;
+			letter-spacing: 0.18em;
+			text-transform: uppercase;
+			font-size: 11px;
+		}
+
+		.mini:hover {
+			background: rgba(0, 0, 0, 0.82);
+		}
+
+		.mini:focus-visible {
+			outline: 2px solid rgba(255, 230, 0, 0.6);
+			outline-offset: 4px;
+		}
+
+		.miniTag {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 28px;
+			height: 22px;
+			border: 2px solid rgba(246, 246, 246, 0.35);
+			font-size: 10px;
+			letter-spacing: 0.18em;
+			color: rgba(246, 246, 246, 0.78);
+		}
+
+		.mini.is-active {
+			border-color: var(--acid);
+			box-shadow: 8px 8px 0 rgba(255, 230, 0, 0.10);
+		}
+
+		.deck {
+			position: relative;
+			z-index: 2;
+			max-width: 1100px;
+			margin: 0 auto;
+			padding: 18px 16px 0;
+		}
+
+		.deckGrid {
+			display: grid;
+			gap: 14px;
+			grid-template-columns: 1fr;
+		}
+
+		@media (min-width: 900px) {
+			.moi-top { grid-template-columns: 1.2fr 0.8fr; align-items: end; }
+			.deckGrid { grid-template-columns: 1.2fr 0.8fr; }
+		}
+
+		.cassette {
+			border: 3px solid var(--fg);
+			background: rgba(0, 0, 0, 0.62);
+			box-shadow: 14px 14px 0 rgba(0, 0, 0, 0.60);
+			padding: 14px;
+			position: relative;
+		}
+
+		.cassetteShell {
+			border: 2px solid rgba(246, 246, 246, 0.35);
+			background:
+				linear-gradient(180deg, rgba(255, 0, 0, 0.08), transparent 30%),
+				linear-gradient(180deg, rgba(246, 246, 246, 0.05), transparent 30%),
+				repeating-linear-gradient(90deg, rgba(246, 246, 246, 0.03) 0 1px, transparent 1px 18px);
+			padding: 12px;
+			position: relative;
+		}
+
+		.screws {
+			position: absolute;
+			inset: 10px;
+			pointer-events: none;
+			background:
+				radial-gradient(circle at 0 0, rgba(246, 246, 246, 0.25) 0 2px, transparent 3px),
+				radial-gradient(circle at 100% 0, rgba(246, 246, 246, 0.25) 0 2px, transparent 3px),
+				radial-gradient(circle at 0 100%, rgba(246, 246, 246, 0.25) 0 2px, transparent 3px),
+				radial-gradient(circle at 100% 100%, rgba(246, 246, 246, 0.25) 0 2px, transparent 3px);
+			opacity: 0.8;
+		}
+
+		.window {
+			position: relative;
+			margin-top: 8px;
+			height: 170px;
+			border: 2px solid rgba(246, 246, 246, 0.30);
+			background: rgba(0, 0, 0, 0.55);
+			overflow: hidden;
+		}
+
+		.tape {
+			position: absolute;
+			left: 0;
+			right: 0;
+			top: 50%;
+			height: 10px;
+			transform: translateY(-50%);
+			background: linear-gradient(90deg, rgba(255, 0, 0, 0.20), rgba(246, 246, 246, 0.08), rgba(255, 0, 0, 0.18));
+			opacity: 0.9;
+		}
+
+		.reel {
+			position: absolute;
+			top: 50%;
+			width: 120px;
+			height: 120px;
+			border-radius: 999px;
+			transform: translateY(-50%);
+			background:
+				radial-gradient(circle at 50% 50%, rgba(246, 246, 246, 0.22) 0 2px, transparent 3px),
+				repeating-conic-gradient(from 0deg, rgba(246, 246, 246, 0.12) 0 10deg, rgba(0, 0, 0, 0) 10deg 26deg);
+			border: 2px solid rgba(246, 246, 246, 0.25);
+			filter: drop-shadow(0 0 12px rgba(255, 0, 0, 0.10));
+		}
+
+		.reel .hub {
+			position: absolute;
+			inset: 34px;
+			border-radius: 999px;
+			border: 2px solid rgba(246, 246, 246, 0.30);
+			background: rgba(0, 0, 0, 0.55);
+		}
+
+		.reelL { left: 18px; }
+		.reelR { right: 18px; }
+
+		.is-playing .reel {
+			animation: spin calc(2.2s - (var(--spd) * 1.3s)) linear infinite;
+		}
+
+		.is-playing .tape {
+			animation: tapeMove calc(1.6s - (var(--spd) * 1.0s)) linear infinite;
+		}
+
+		@keyframes spin {
+			to { transform: translateY(-50%) rotate(360deg); }
+		}
+
+		@keyframes tapeMove {
+			0% { filter: hue-rotate(0deg); }
+			100% { filter: hue-rotate(22deg); }
+		}
+
+		.label {
+			margin-top: 10px;
+			padding: 12px;
+			border: 2px solid rgba(246, 246, 246, 0.25);
+			background: rgba(0, 0, 0, 0.42);
+		}
+
+		.labelRow {
+			display: flex;
+			justify-content: space-between;
+			align-items: baseline;
+			gap: 12px;
+		}
+
+		.labelTitle {
+			font-weight: 900;
+			letter-spacing: 0.35em;
+			text-transform: uppercase;
+			font-size: 11px;
+			color: rgba(246, 246, 246, 0.80);
+		}
+
+		.labelCode {
+			font-weight: 900;
+			letter-spacing: 0.22em;
+			text-transform: uppercase;
+			font-size: 10px;
+			color: rgba(246, 246, 246, 0.55);
+		}
+
+		.labelText {
+			margin-top: 10px;
+			font-family: 'Patrick Hand', ui-rounded, system-ui, sans-serif;
+			font-size: 26px;
+			line-height: 1.12;
+		}
+
+		.sep { margin: 0 10px; color: var(--red); }
+
+		.labelMeta {
+			margin-top: 10px;
 			display: flex;
 			flex-wrap: wrap;
 			gap: 8px;
 		}
 
-		.tag {
+		.pill {
 			font-weight: 900;
+			letter-spacing: 0.22em;
+			text-transform: uppercase;
+			font-size: 10px;
+			padding: 8px 10px;
+			border: 2px solid var(--fg);
+			background: rgba(0, 0, 0, 0.35);
+		}
+
+		.tracklist {
+			margin-top: 14px;
+			border: 2px solid rgba(246, 246, 246, 0.25);
+			background: rgba(0, 0, 0, 0.40);
+			padding: 12px;
+		}
+
+		.trackHeader {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 12px;
+		}
+
+		.trackHeader .k {
+			font-weight: 900;
+			letter-spacing: 0.35em;
+			text-transform: uppercase;
+			font-size: 10px;
+			color: rgba(246, 246, 246, 0.62);
+		}
+
+		.led {
+			width: 10px;
+			height: 10px;
+			border-radius: 999px;
+			background: rgba(246, 246, 246, 0.15);
+			border: 1px solid rgba(246, 246, 246, 0.25);
+		}
+
+		.led.on {
+			background: rgba(255, 0, 0, 0.85);
+			box-shadow: 0 0 16px rgba(255, 0, 0, 0.35);
+		}
+
+		.tracks { margin: 10px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+
+		.track {
+			display: grid;
+			grid-template-columns: 34px 1fr;
+			gap: 10px;
+			text-decoration: none;
+			padding: 10px 10px;
+			border: 2px solid rgba(246, 246, 246, 0.25);
+			background: rgba(0, 0, 0, 0.55);
+			box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.55);
+		}
+
+		.track:hover {
+			border-color: rgba(255, 230, 0, 0.55);
+			background: rgba(0, 0, 0, 0.85);
+		}
+
+		.track:focus-visible {
+			outline: 2px solid rgba(255, 230, 0, 0.65);
+			outline-offset: 4px;
+		}
+
+		.trkId {
+			font-weight: 900;
+			letter-spacing: 0.18em;
+			text-transform: uppercase;
+			color: rgba(246, 246, 246, 0.75);
+		}
+
+		.trkName {
+			font-weight: 900;
+			letter-spacing: 0.22em;
+			text-transform: uppercase;
+			font-size: 12px;
+			display: block;
+		}
+
+		.trkNote {
+			grid-column: 2;
+			font-size: 12px;
+			color: rgba(246, 246, 246, 0.62);
+			letter-spacing: 0.08em;
+		}
+
+		.controls {
+			margin-top: 14px;
+			display: grid;
+			grid-template-columns: repeat(4, 1fr);
+			gap: 8px;
+			align-items: end;
+		}
+
+		.btn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			padding: 10px 10px;
+			border: 2px solid var(--fg);
+			background: rgba(0, 0, 0, 0.55);
+			box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.55);
+			font-weight: 900;
+			letter-spacing: 0.22em;
+			text-transform: uppercase;
+			font-size: 11px;
+			text-decoration: none;
+		}
+
+		.btn:hover { background: rgba(0, 0, 0, 0.85); }
+		.btn:focus-visible { outline: 2px solid rgba(255, 230, 0, 0.65); outline-offset: 4px; }
+		.btnPlay { border-color: rgba(255, 230, 0, 0.65); }
+		.btnRec { border-color: rgba(255, 0, 0, 0.75); }
+		.btnEject { border-style: dashed; }
+
+		.knob {
+			grid-column: 1 / -1;
+			display: grid;
+			gap: 6px;
+			margin-top: 8px;
+			padding: 10px 10px;
+			border: 2px solid rgba(246, 246, 246, 0.25);
+			background: rgba(0, 0, 0, 0.40);
+		}
+
+		.knobLabel {
+			font-weight: 900;
+			letter-spacing: 0.35em;
+			text-transform: uppercase;
+			font-size: 10px;
+			color: rgba(246, 246, 246, 0.62);
+		}
+
+		.knob input { width: 100%; }
+
+		.help {
+			grid-column: 1 / -1;
 			font-size: 10px;
 			letter-spacing: 0.18em;
 			text-transform: uppercase;
+			color: rgba(246, 246, 246, 0.58);
+		}
+
+		.notes {
+			border: 3px solid var(--fg);
+			background: rgba(0, 0, 0, 0.50);
+			box-shadow: 14px 14px 0 rgba(255, 0, 0, 0.10);
+			padding: 14px;
+			position: relative;
+			transform: rotate(-0.6deg);
+		}
+
+		.notesTop {
+			display: flex;
+			justify-content: space-between;
+			align-items: baseline;
+			gap: 12px;
+		}
+
+		.stamp {
+			background: rgba(255, 0, 0, 0.82);
+			color: #000;
+			border: 2px solid #000;
+			font-weight: 900;
+			letter-spacing: 0.28em;
+			text-transform: uppercase;
+			font-size: 11px;
+			padding: 8px 10px;
+			transform: rotate(2deg);
+			box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.60);
+		}
+
+		.notesKicker {
+			font-weight: 900;
+			letter-spacing: 0.35em;
+			text-transform: uppercase;
+			font-size: 10px;
+			color: rgba(246, 246, 246, 0.62);
+		}
+
+		.notesBody { margin-top: 10px; }
+
+		.bio {
+			font-family: 'Patrick Hand', ui-rounded, system-ui, sans-serif;
+			font-size: 32px;
+			line-height: 1.12;
+			margin: 0;
+		}
+
+		.cols {
+			margin-top: 14px;
+			display: grid;
+			gap: 14px;
+			grid-template-columns: 1fr;
+		}
+
+		@media (min-width: 600px) {
+			.cols { grid-template-columns: 1fr 1fr; }
+		}
+
+		.h {
+			font-weight: 900;
+			letter-spacing: 0.35em;
+			text-transform: uppercase;
+			font-size: 10px;
+			color: rgba(246, 246, 246, 0.62);
+			margin-bottom: 8px;
+		}
+
+		.list {
+			margin: 0;
+			padding-left: 18px;
+			color: rgba(246, 246, 246, 0.86);
+			font-family: 'Patrick Hand', ui-rounded, system-ui, sans-serif;
+			font-size: 22px;
+			line-height: 1.25;
+		}
+
+		.list b { color: var(--fg); }
+
+		.tags { display: flex; flex-wrap: wrap; gap: 8px; }
+		.tag {
+			font-weight: 900;
+			letter-spacing: 0.18em;
+			text-transform: uppercase;
+			font-size: 10px;
 			padding: 8px 10px;
 			border: 2px solid var(--fg);
 			background: rgba(0, 0, 0, 0.35);
 			transform: rotate(-1deg);
 		}
 
-		.node--focus {
-			width: min(420px, 86vw);
-			background: rgba(0, 0, 0, 0.48);
+		.credits {
+			margin-top: 14px;
+			border-top: 1px solid rgba(246, 246, 246, 0.18);
+			padding-top: 12px;
 		}
 
-		.node__list {
-			margin-top: 12px;
-			font-family: 'Patrick Hand', ui-rounded, system-ui, sans-serif;
-			font-size: 22px;
-			line-height: 1.2;
-			color: rgba(246, 246, 246, 0.88);
-		}
-
-		.node__list b {
-			color: var(--fg);
-		}
-
-		.node--phrase {
-			width: min(420px, 86vw);
-			background: rgba(0, 0, 0, 0.50);
-			clip-path: polygon(2% 0, 100% 6%, 98% 100%, 8% 98%, 0 70%, 0 10%);
-		}
-
-		.node__quote {
-			margin-top: 12px;
-			font-family: 'Patrick Hand', ui-rounded, system-ui, sans-serif;
-			font-size: 28px;
-			line-height: 1.15;
-		}
-
-		.node--exit {
-			width: min(360px, 80vw);
-			background: rgba(0, 0, 0, 0.42);
-			border-color: rgba(255, 0, 0, 0.65);
-			box-shadow: 10px 10px 0 rgba(255, 0, 0, 0.14);
-		}
-
-		.node__exits {
-			margin-top: 12px;
-			display: grid;
-			gap: 10px;
-		}
-
-		.exit {
-			display: block;
-			padding: 10px 12px;
-			text-decoration: none;
-			font-weight: 900;
-			letter-spacing: 0.22em;
+		.mono {
+			font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+			font-size: 12px;
+			letter-spacing: 0.10em;
 			text-transform: uppercase;
-			font-size: 11px;
-			border: 2px solid var(--fg);
-			background: rgba(0, 0, 0, 0.55);
-			box-shadow: 8px 8px 0 rgba(246, 246, 246, 0.10);
-			transform: rotate(-1deg);
+			color: rgba(246, 246, 246, 0.62);
 		}
 
-		.exit:hover {
-			background: rgba(0, 0, 0, 0.85);
-			border-color: var(--acid-yellow);
-		}
-
-		.node--stamp {
-			width: min(260px, 70vw);
-			background: rgba(255, 0, 0, 0.82);
-			color: #000;
-			border-color: #000;
-			box-shadow: 12px 12px 0 rgba(0, 0, 0, 0.65);
-			clip-path: polygon(3% 8%, 98% 0, 100% 92%, 92% 100%, 0 94%, 0 20%);
-		}
-
-		.stamp__big {
-			font-family: 'Bebas Neue', system-ui, sans-serif;
-			font-size: 52px;
-			letter-spacing: 0.06em;
-			font-weight: 900;
-			line-height: 0.95;
-		}
-
-		.stamp__small {
-			margin-top: 6px;
-			font-weight: 900;
-			letter-spacing: 0.24em;
-			text-transform: uppercase;
-			font-size: 10px;
-		}
-
-		/* Glitch mode (still readable) */
-		.moi-glitch .node {
-			animation: moiGlitchJitter 0.11s infinite steps(2, end);
-		}
-
-		.moi-glitch .moi-wires {
-			opacity: 1;
-			filter: contrast(1.2) saturate(1.4);
-		}
-
-		@keyframes moiGlitchJitter {
-			0% { transform: translate(-50%, -50%) rotate(var(--r, 0deg)) translateY(calc(var(--scroll, 0) * 1px)) translate(0, 0); }
-			50% { transform: translate(-50%, -50%) rotate(var(--r, 0deg)) translateY(calc(var(--scroll, 0) * 1px)) translate(1px, -1px); }
-			100% { transform: translate(-50%, -50%) rotate(var(--r, 0deg)) translateY(calc(var(--scroll, 0) * 1px)) translate(-1px, 1px); }
+		.is-rec .cassetteShell,
+		.is-rec .notes {
+			filter: saturate(1.15) contrast(1.05);
 		}
 
 		@media (prefers-reduced-motion: reduce) {
-			.node { transform: translate(-50%, -50%) rotate(var(--r, 0deg)); }
-			.moi-glitch .node { animation: none; }
+			.is-playing .reel,
+			.is-playing .tape { animation: none !important; }
 		}
 	</style>
 </BaseLayout>
