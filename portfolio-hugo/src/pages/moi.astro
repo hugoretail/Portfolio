@@ -18,136 +18,599 @@ function isActive(href: string) {
 	return pathname.startsWith(href);
 }
 
-function navCloudStyle(idx: number) {
-	// Deterministic “mess” to avoid a clean bar.
-	const left = (17 + idx * 13) % 86; // %
-	const top = (8 + idx * 19) % 70; // %
-	const rotate = (idx % 2 === 0 ? -1 : 1) * (1.4 + (idx % 3) * 0.9);
-	const skew = idx % 2 === 0 ? -10 : 10;
-	return `left:${left}%; top:${top}%; transform: translate(-12%, -10%) rotate(${rotate}deg) skewX(${skew}deg);`;
-}
+const navPositions: Array<{ x: number; y: number; r: number }> = [
+	{ x: 12, y: 22, r: -3.2 },
+	{ x: 78, y: 18, r: 2.2 },
+	{ x: 20, y: 56, r: 1.5 },
+	{ x: 70, y: 52, r: -2.3 },
+	{ x: 45, y: 78, r: 3.1 },
+	{ x: 8, y: 82, r: -1.3 },
+	{ x: 88, y: 72, r: 1.1 }
+];
+
+const navNodes = nav.map((item, idx) => ({
+	...item,
+	...navPositions[idx % navPositions.length]
+}));
+
+type Piece = {
+	id: string;
+	label: string;
+	kind: 'bio' | 'focus' | 'phrase' | 'exit' | 'stamp';
+	x: number;
+	y: number;
+	r: number;
+};
+
+const pieces: Piece[] = [
+	{ id: 'bio', label: 'DESCRIPTION', kind: 'bio', x: 44, y: 34, r: -1.8 },
+	{ id: 'focus', label: 'FOCUS', kind: 'focus', x: 62, y: 62, r: 1.4 },
+	{ id: 'phrase', label: 'PHRASE', kind: 'phrase', x: 30, y: 70, r: -2.2 },
+	{ id: 'exit', label: 'SORTIES', kind: 'exit', x: 86, y: 40, r: 2.9 },
+	{ id: 'stamp', label: 'DOSSIER', kind: 'stamp', x: 16, y: 10, r: -6.0 }
+];
 ---
 
 <BaseLayout title="Moi — Hugo Retail" description="À propos" showHeaderNav={false}>
-	<main class="relative min-h-screen overflow-hidden">
-		<div class="pointer-events-none absolute inset-0 bg-graffiti opacity-[0.12]" aria-hidden="true"></div>
-		<div class="pointer-events-none absolute inset-0 bg-nature opacity-[0.06]" aria-hidden="true"></div>
+	<main id="moiPage" class="moi-page relative min-h-screen overflow-hidden">
+		<div class="pointer-events-none absolute inset-0 bg-graffiti opacity-[0.10]" aria-hidden="true"></div>
+		<div class="pointer-events-none absolute inset-0 bg-nature opacity-[0.05]" aria-hidden="true"></div>
 		<div class="paper-grain" aria-hidden="true"></div>
 		<div class="noise-overlay" aria-hidden="true"></div>
+		<div class="moi-strata" aria-hidden="true"></div>
 
-		<!-- Big background typography shards -->
-		<div class="pointer-events-none absolute left-[-6vw] top-[10vh] rotate-[-8deg] font-display text-[18vw] leading-none text-[color:var(--fg)] opacity-[0.05]" aria-hidden="true">
+		<!-- Typography shards (bigger / more disrespectful) -->
+		<div class="pointer-events-none absolute left-[-10vw] top-[4vh] rotate-[-10deg] font-display text-[24vw] leading-none text-[color:var(--fg)] opacity-[0.05]" aria-hidden="true">
+			MOI
+		</div>
+		<div class="pointer-events-none absolute right-[-14vw] top-[38vh] rotate-[14deg] font-display text-[20vw] leading-none text-[color:var(--red-thread)] opacity-[0.06]" aria-hidden="true">
 			HUGO
 		</div>
-		<div class="pointer-events-none absolute right-[-8vw] top-[46vh] rotate-[11deg] font-display text-[16vw] leading-none text-[color:var(--red-thread)] opacity-[0.06]" aria-hidden="true">
+		<div class="pointer-events-none absolute left-[8vw] bottom-[-6vh] rotate-[6deg] font-display text-[16vw] leading-none text-[color:var(--acid-yellow)] opacity-[0.05]" aria-hidden="true">
 			RETAIL
 		</div>
 
-		<!-- Brutal header (custom for this page) -->
-		<header class="relative z-20 mx-auto max-w-6xl px-4 pt-6">
-			<div class="relative">
-				<!-- Two overlapping sheets instead of one big box -->
-				<div class="relative bg-black/60 p-4 md:p-6" style="border: 3px solid var(--fg); clip-path: polygon(1% 2%, 98% 0, 100% 86%, 94% 100%, 2% 98%, 0 18%);">
-					<div class="font-black uppercase tracking-[0.35em] text-[10px] text-[color:var(--muted)]">page / identité</div>
-					<div class="mt-2 flex flex-wrap items-end justify-between gap-4">
-						<h1 class="font-display text-6xl leading-none md:text-8xl" style="text-shadow: 10px 10px 0 rgba(255,0,0,0.10);">MOI</h1>
-						<div class="max-w-[360px] font-hand text-2xl leading-snug text-[color:var(--fg)]">
-							Je fabrique des images, des systèmes et des gestes.
-						</div>
-					</div>
+		<!-- Minimal header: not a bar, more like a tool overlay -->
+		<header class="relative z-30 mx-auto max-w-6xl px-4 pt-6">
+			<div class="flex flex-wrap items-center justify-between gap-3">
+				<div class="moi-title">
+					<div class="moi-kicker">PAGE / IDENTITÉ</div>
+					<div class="moi-h1">MOI</div>
 				</div>
-
-				<div class="absolute -right-2 -top-4 rotate-[2deg] bg-[color:var(--red-thread)] px-3 py-2 text-[11px] font-black uppercase tracking-widest text-black" style="border: 2px solid #000; box-shadow: 8px 8px 0 rgba(0,0,0,0.55);">
-					dossier
+				<div class="flex items-center gap-2">
+					<button id="glitchBtn" class="moi-btn" type="button" aria-pressed="false" title="Mode glitch (touche G)">GLITCH</button>
+					<a class="moi-btn" href="/">RETOUR</a>
 				</div>
+			</div>
+			<p class="mt-3 max-w-3xl font-hand text-2xl leading-snug text-[color:var(--fg)] md:text-3xl">
+				Je fais de la matière.
+				<span class="mx-2 text-[color:var(--red-thread)]">/</span>
+				Je l’organise.
+				<span class="mx-2 text-[color:var(--acid-yellow)]">/</span>
+				Je laisse du souffle.
+			</p>
+		</header>
 
-				<!-- Nav cloud (broken alignment on purpose) -->
-				<nav class="relative mt-5 h-[180px] md:h-[220px]" aria-label="Navigation">
-					{nav.map((item, idx) => (
+		<!-- Scattered board (broken layout) -->
+		<section class="relative z-20 mx-auto max-w-6xl px-4 pb-24 pt-8">
+			<div id="moiBoard" class="moi-board" role="region" aria-label="Tableau (navigation + notes)">
+				<svg id="moiWires" class="moi-wires" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+					<defs>
+						<filter id="wireGlow" x="-40%" y="-40%" width="180%" height="180%">
+							<feDropShadow dx="0" dy="0" stdDeviation="1.4" flood-color="#ff0000" flood-opacity="0.45" />
+							<feDropShadow dx="0" dy="0" stdDeviation="0.7" flood-color="#ffffff" flood-opacity="0.14" />
+						</filter>
+					</defs>
+					<g id="wirePaths" filter="url(#wireGlow)" />
+				</svg>
+
+				<!-- NAV nodes (scattered) -->
+				<nav class="moi-nav" aria-label="Navigation">
+					{navNodes.map((item) => (
 						<a
+							data-node={item.href}
 							href={item.href}
 							class:list={[
-								'absolute px-3 py-2 text-xs font-black uppercase tracking-widest transition',
-								'bg-black/45 hover:bg-black/80 focus:outline-none focus:ring-2 focus:ring-[color:var(--acid-yellow)]/50',
-								isActive(item.href) ? 'text-[color:var(--acid-yellow)]' : 'text-[color:var(--fg)]'
+								'node node--nav',
+								isActive(item.href) ? 'node--active' : ''
 							]}
-							style={`border:2px solid var(--fg); box-shadow:${idx % 2 === 0 ? '6px 6px 0 rgba(255,0,0,0.18)' : '6px 6px 0 rgba(246,246,246,0.10)'}; ${navCloudStyle(idx)}`}
+							style={`--x:${item.x}; --y:${item.y}; --r:${item.r}deg;`}
 						>
-							{item.label}
+							<span class="node__label">{item.label}</span>
+							<span class="node__sub">clic</span>
 						</a>
 					))}
 				</nav>
-			</div>
-		</header>
 
-		<section class="relative z-10 mx-auto max-w-6xl px-4 pb-20 pt-6 md:pt-8">
-			<div class="relative">
-				<!-- Collage layout: overlaps + clipped shapes -->
-				<div class="relative grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-					<!-- Main description sheet -->
-					<article class="relative bg-black/55 p-6 md:p-8" style="border:3px solid var(--fg); clip-path: polygon(2% 0, 98% 4%, 100% 92%, 92% 100%, 0 96%, 0 10%);">
-						<div class="flex flex-wrap items-baseline justify-between gap-4">
-							<div class="font-black uppercase tracking-[0.35em] text-[10px] text-[color:var(--muted)]">description</div>
-							<div class="font-black uppercase tracking-[0.35em] text-[10px] text-[color:var(--muted)]">à remplir</div>
-						</div>
-						<p class="mt-4 font-hand text-2xl leading-snug text-[color:var(--fg)] md:text-4xl">
-							Ici tu balances ta bio. Courte, tranchante, vraie.
-							<span class="mx-2 text-[color:var(--red-thread)]">/</span>
-							Ce que tu fais, ce que tu refuses, ce que tu cherches.
-						</p>
-
-						<div class="mt-7 flex flex-wrap gap-2">
-							<span class="px-3 py-2 text-xs font-black uppercase tracking-widest" style="border:2px solid var(--fg); transform: rotate(-4deg);">spray</span>
-							<span class="px-3 py-2 text-xs font-black uppercase tracking-widest" style="border:2px solid var(--fg); transform: rotate(2deg);">stylo</span>
-							<span class="px-3 py-2 text-xs font-black uppercase tracking-widest" style="border:2px solid var(--fg); transform: rotate(-1deg);">interfaces</span>
-							<span class="px-3 py-2 text-xs font-black uppercase tracking-widest" style="border:2px solid var(--fg); transform: rotate(3deg);">matière</span>
-							<span class="px-3 py-2 text-xs font-black uppercase tracking-widest" style="border:2px solid var(--fg); transform: rotate(-3deg);">contrainte</span>
+				<!-- Content pieces -->
+				{pieces.map((p) => (
+					<section data-piece={p.id} data-node={p.id} class:list={[`node node--${p.kind}`]} style={`--x:${p.x}; --y:${p.y}; --r:${p.r}deg;`}>
+						<div class="node__header">
+							<div class="node__kicker">{p.label}</div>
+							<div class="node__chips" aria-hidden="true">
+								<span class="chip">STICK</span>
+								<span class="chip">TRACE</span>
+							</div>
 						</div>
 
-						<!-- small tear strip -->
-						<div class="pointer-events-none absolute -bottom-4 left-8 hidden h-10 w-[70%] rotate-[-1deg] md:block" aria-hidden="true"
-							style="background: repeating-linear-gradient(90deg, rgba(255,0,0,0.20) 0 10px, rgba(255,0,0,0.05) 10px 18px); border:2px solid rgba(255,0,0,0.55); mix-blend-mode: screen;">
-						</div>
-					</article>
+						{p.kind === 'bio' ? (
+							<div>
+								<p class="node__text">
+									Ici tu écris ta bio.
+									<span class="sep">/</span>
+									Ce que tu sais faire.
+									<span class="sep">/</span>
+									Ce que tu refuses.
+									<span class="sep">/</span>
+									Ce que tu veux.
+								</p>
+								<p class="node__micro">Astuce: fais 6 lignes max. Pas d’excuse. Pas de blabla.</p>
+								<div class="node__tags">
+									<span class="tag">graffiti</span>
+									<span class="tag">hip-hop</span>
+									<span class="tag">IA/NLP</span>
+									<span class="tag">littérature</span>
+								</div>
+							</div>
+						) : null}
 
-					<!-- Right stack: overlapping notes -->
-					<div class="relative">
-						<div class="absolute -right-2 -top-4 rotate-[3deg] bg-[color:var(--acid-yellow)] px-3 py-2 text-xs font-black uppercase tracking-widest text-black" style="border:2px solid #000; box-shadow: 8px 8px 0 rgba(0,0,0,0.55);">
-							pas de filtre
-						</div>
-
-						<div class="relative bg-black/45 p-4 md:p-5" style="border: 2px solid var(--fg); transform: rotate(-1deg) translateX(-6px); box-shadow: 10px 10px 0 rgba(246,246,246,0.10);">
-							<div class="font-black uppercase tracking-[0.35em] text-[10px] text-[color:var(--muted)]">focus</div>
-							<ul class="mt-3 font-hand text-2xl leading-snug text-[color:var(--muted)]">
-								<li><span class="text-[color:var(--fg)]">Graffiti</span> — mur, rythme, précision</li>
-								<li><span class="text-[color:var(--fg)]">Hip-hop</span> — texture, coupe, boucle</li>
-								<li><span class="text-[color:var(--fg)]">IA/NLP</span> — contrainte, matière, montage</li>
-								<li><span class="text-[color:var(--fg)]">Code</span> — outils, interfaces</li>
+						{p.kind === 'focus' ? (
+							<ul class="node__list">
+								<li><b>Graffiti</b> — structure + souffle</li>
+								<li><b>Hip-hop</b> — coupe + boucle + texture</li>
+								<li><b>IA/NLP</b> — contrainte + montage + outil</li>
+								<li><b>Code</b> — interface + rythme + obsession</li>
 							</ul>
-						</div>
+						) : null}
 
-						<div class="relative -mt-2 bg-black/50 p-4 md:p-5" style="border: 2px solid var(--fg); transform: rotate(1.4deg) translateX(10px); clip-path: polygon(0 6%, 96% 0, 100% 88%, 92% 100%, 4% 94%);">
-							<div class="font-black uppercase tracking-[0.35em] text-[10px] text-[color:var(--muted)]">phrase</div>
-							<p class="mt-2 font-hand text-2xl leading-snug text-[color:var(--fg)]">
-								« Je prends le chaos. Je le cadre. Je garde le souffle. »
-							</p>
-							<div class="mt-3 text-[10px] font-black uppercase tracking-[0.35em] text-[color:var(--muted)]">— à ajuster</div>
-						</div>
-					</div>
-				</div>
+						{p.kind === 'phrase' ? (
+							<div>
+								<p class="node__quote">« Je prends le chaos. Je le cadre. Je garde le souffle. »</p>
+								<div class="node__micro">(à remplacer quand tu veux)</div>
+							</div>
+						) : null}
 
-				<!-- Diagonal exit banner -->
-				<div class="relative mt-10">
-					<div class="absolute left-[-10%] right-[-10%] top-4 h-20 rotate-[-4deg]" aria-hidden="true"
-						style="background: linear-gradient(90deg, rgba(255,0,0,0.25), rgba(246,246,246,0.10), rgba(255,0,0,0.18)); border-top:2px solid rgba(246,246,246,0.35); border-bottom:2px solid rgba(246,246,246,0.25); mix-blend-mode: screen;">
-					</div>
-					<div class="relative grid gap-3 md:grid-cols-3">
-						<a href="/frise" class="bg-black/55 px-5 py-4 font-black uppercase tracking-widest" style="border:3px solid var(--fg); transform: rotate(-2deg); box-shadow: 10px 10px 0 rgba(255,0,0,0.18);">Frise →</a>
-						<a href="/graffiti" class="bg-black/55 px-5 py-4 font-black uppercase tracking-widest" style="border:3px solid var(--fg); transform: rotate(1deg) translateY(6px);">Graffiti →</a>
-						<a href="/ia" class="bg-black/55 px-5 py-4 font-black uppercase tracking-widest" style="border:3px solid var(--fg); transform: rotate(-1deg) translateY(-4px);">IA / NLP →</a>
-					</div>
-				</div>
+						{p.kind === 'exit' ? (
+							<div class="node__exits">
+								<a class="exit" href="/frise">FRISE →</a>
+								<a class="exit" href="/graffiti">GRAFFITI →</a>
+								<a class="exit" href="/ia">IA / NLP →</a>
+								<a class="exit" href="/hiphop">HIP-HOP →</a>
+							</div>
+						) : null}
+
+						{p.kind === 'stamp' ? (
+							<div class="node__stamp">
+								<div class="stamp__big">DOSSIER</div>
+								<div class="stamp__small">/ identité / matières / outils /</div>
+							</div>
+						) : null}
+					</section>
+				))}
 			</div>
 		</section>
 	</main>
+
+	<script is:inline>
+		(() => {
+			const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false;
+			const page = document.getElementById('moiPage');
+			const board = document.getElementById('moiBoard');
+			const wiresSvg = document.getElementById('moiWires');
+			const wireGroup = document.getElementById('wirePaths');
+			const glitchBtn = document.getElementById('glitchBtn');
+			if (!page || !board || !wiresSvg || !wireGroup) return;
+
+			const nodes = Array.from(board.querySelectorAll('[data-node]'));
+			const getCenter = (el) => {
+				const r = el.getBoundingClientRect();
+				return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+			};
+
+			const edges = [
+				['bio', '/graffiti'],
+				['bio', '/ia'],
+				['bio', '/hiphop'],
+				['bio', '/litterature'],
+				['bio', '/frise'],
+				['focus', '/graffiti'],
+				['phrase', '/litterature'],
+				['exit', '/frise']
+			];
+
+			const byKey = new Map();
+			nodes.forEach((el) => byKey.set(el.getAttribute('data-node'), el));
+
+			let raf = null;
+			const render = () => {
+				raf = null;
+				const boardRect = board.getBoundingClientRect();
+				const w = Math.max(1, boardRect.width);
+				const h = Math.max(1, boardRect.height);
+				wiresSvg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+				while (wireGroup.firstChild) wireGroup.removeChild(wireGroup.firstChild);
+
+				edges.forEach(([a, b], i) => {
+					const elA = byKey.get(a);
+					const elB = byKey.get(b);
+					if (!elA || !elB) return;
+					const ca = getCenter(elA);
+					const cb = getCenter(elB);
+					const ax = ca.x - boardRect.left;
+					const ay = ca.y - boardRect.top;
+					const bx = cb.x - boardRect.left;
+					const by = cb.y - boardRect.top;
+
+					const dx = bx - ax;
+					const dy = by - ay;
+					const bend = Math.min(240, Math.max(70, Math.hypot(dx, dy) * 0.25));
+					const c1x = ax + dx * 0.25;
+					const c1y = ay + dy * 0.25 - bend;
+					const c2x = ax + dx * 0.75;
+					const c2y = ay + dy * 0.75 + bend * 0.45;
+
+					const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+					p.setAttribute('d', `M ${ax.toFixed(2)} ${ay.toFixed(2)} C ${c1x.toFixed(2)} ${c1y.toFixed(2)}, ${c2x.toFixed(2)} ${c2y.toFixed(2)}, ${bx.toFixed(2)} ${by.toFixed(2)}`);
+					p.setAttribute('fill', 'none');
+					p.setAttribute('stroke', i % 3 === 0 ? 'rgba(255,0,0,0.55)' : 'rgba(255,0,0,0.28)');
+					p.setAttribute('stroke-width', i % 4 === 0 ? '2.2' : '1.4');
+					p.setAttribute('stroke-linecap', 'round');
+					p.setAttribute('stroke-linejoin', 'round');
+					p.setAttribute('stroke-dasharray', i % 2 === 0 ? '10 9' : '0');
+					wireGroup.appendChild(p);
+				});
+			};
+
+			const requestRender = () => {
+				if (raf != null) return;
+				raf = window.requestAnimationFrame(render);
+			};
+
+			const setScrollVar = () => {
+				if (prefersReducedMotion) return;
+				const s = Math.max(-40, Math.min(140, (window.scrollY || 0) * 0.08));
+				board.style.setProperty('--scroll', String(s));
+			};
+
+			const setGlitch = (on) => {
+				page.classList.toggle('moi-glitch', on);
+				if (glitchBtn) glitchBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+			};
+
+			let glitchOn = false;
+			glitchBtn?.addEventListener('click', () => {
+				glitchOn = !glitchOn;
+				setGlitch(glitchOn);
+			});
+
+			window.addEventListener('resize', requestRender);
+			window.addEventListener('scroll', () => {
+				setScrollVar();
+				requestRender();
+			}, { passive: true });
+
+			window.addEventListener('keydown', (e) => {
+				if (e.key.toLowerCase() === 'g') {
+					glitchOn = !glitchOn;
+					setGlitch(glitchOn);
+				}
+			});
+
+			setScrollVar();
+			requestRender();
+		})();
+	</script>
+
+	<style>
+		.moi-page {
+			--paper: rgba(0, 0, 0, 0.55);
+			--paper2: rgba(0, 0, 0, 0.42);
+		}
+
+		.moi-strata {
+			position: absolute;
+			inset: 0;
+			pointer-events: none;
+			background:
+				linear-gradient(180deg, rgba(255, 0, 0, 0.08), transparent 26%),
+				linear-gradient(180deg, transparent 40%, rgba(255, 230, 0, 0.05) 65%, transparent 92%),
+				repeating-linear-gradient(0deg, rgba(246, 246, 246, 0.03) 0 1px, transparent 1px 14px);
+			opacity: 0.85;
+			mix-blend-mode: overlay;
+		}
+
+		.moi-title {
+			line-height: 1;
+		}
+
+		.moi-kicker {
+			font-size: 10px;
+			letter-spacing: 0.35em;
+			text-transform: uppercase;
+			font-weight: 900;
+			color: var(--muted);
+		}
+
+		.moi-h1 {
+			font-family: var(--font-display, 'Bebas Neue', system-ui, sans-serif);
+			font-weight: 900;
+			letter-spacing: 0.02em;
+			font-size: clamp(44px, 8vw, 90px);
+			text-shadow: 14px 14px 0 rgba(255, 0, 0, 0.12);
+		}
+
+		.moi-btn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			gap: 8px;
+			padding: 10px 12px;
+			font-weight: 900;
+			font-size: 11px;
+			letter-spacing: 0.22em;
+			text-transform: uppercase;
+			background: rgba(0, 0, 0, 0.55);
+			border: 2px solid var(--fg);
+			box-shadow: 6px 6px 0 rgba(246, 246, 246, 0.12);
+		}
+
+		.moi-btn:hover {
+			background: rgba(0, 0, 0, 0.78);
+		}
+
+		.moi-board {
+			position: relative;
+			min-height: min(1200px, 150vh);
+			border: 2px dashed rgba(246, 246, 246, 0.18);
+			background:
+				repeating-linear-gradient(90deg, rgba(246, 246, 246, 0.03) 0 1px, transparent 1px 120px),
+				repeating-linear-gradient(0deg, rgba(255, 0, 0, 0.028) 0 1px, transparent 1px 90px);
+		}
+
+		.moi-wires {
+			position: absolute;
+			inset: 0;
+			width: 100%;
+			height: 100%;
+			pointer-events: none;
+			opacity: 0.95;
+		}
+
+		.node {
+			position: absolute;
+			left: calc(var(--x) * 1%);
+			top: calc(var(--y) * 1%);
+			transform: translate(-50%, -50%) rotate(var(--r, 0deg)) translateY(calc(var(--scroll, 0) * 1px));
+			transform-origin: center;
+			max-width: min(520px, 86vw);
+			color: var(--fg);
+			background: var(--paper);
+			border: 2px solid var(--fg);
+			box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.55);
+			padding: 14px 14px 12px;
+			clip-path: polygon(2% 2%, 98% 0, 100% 86%, 94% 100%, 2% 98%, 0 18%);
+			backdrop-filter: blur(2px);
+		}
+
+		.node:hover {
+			filter: drop-shadow(0 0 12px rgba(255, 0, 0, 0.22));
+		}
+
+		.node:focus-within {
+			outline: 2px solid rgba(255, 230, 0, 0.55);
+			outline-offset: 4px;
+		}
+
+		.node__header {
+			display: flex;
+			justify-content: space-between;
+			align-items: baseline;
+			gap: 10px;
+		}
+
+		.node__kicker {
+			font-weight: 900;
+			font-size: 10px;
+			letter-spacing: 0.35em;
+			text-transform: uppercase;
+			color: var(--muted);
+		}
+
+		.node__chips {
+			display: flex;
+			gap: 6px;
+		}
+
+		.chip {
+			font-weight: 900;
+			font-size: 9px;
+			letter-spacing: 0.28em;
+			text-transform: uppercase;
+			padding: 4px 6px;
+			border: 1px solid rgba(246, 246, 246, 0.25);
+			opacity: 0.7;
+		}
+
+		.node--nav {
+			padding: 10px 12px;
+			max-width: none;
+			text-decoration: none;
+			background: rgba(0, 0, 0, 0.48);
+			clip-path: polygon(0 10%, 96% 0, 100% 90%, 92% 100%, 4% 94%);
+		}
+
+		.node--nav .node__label {
+			font-weight: 900;
+			letter-spacing: 0.22em;
+			text-transform: uppercase;
+			font-size: 11px;
+			display: block;
+		}
+
+		.node--nav .node__sub {
+			display: block;
+			margin-top: 4px;
+			font-size: 10px;
+			color: rgba(246, 246, 246, 0.7);
+			letter-spacing: 0.12em;
+			text-transform: uppercase;
+		}
+
+		.node--active {
+			border-color: var(--acid-yellow);
+			box-shadow: 10px 10px 0 rgba(255, 230, 0, 0.12);
+		}
+
+		.node--bio {
+			width: min(560px, 90vw);
+			background: rgba(0, 0, 0, 0.60);
+		}
+
+		.node__text {
+			margin-top: 10px;
+			font-family: 'Patrick Hand', ui-rounded, system-ui, sans-serif;
+			font-size: clamp(20px, 3vw, 36px);
+			line-height: 1.15;
+			color: var(--fg);
+		}
+
+		.node__micro {
+			margin-top: 8px;
+			font-size: 10px;
+			letter-spacing: 0.18em;
+			text-transform: uppercase;
+			color: rgba(246, 246, 246, 0.62);
+		}
+
+		.sep {
+			margin: 0 10px;
+			color: var(--red-thread);
+		}
+
+		.node__tags {
+			margin-top: 12px;
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px;
+		}
+
+		.tag {
+			font-weight: 900;
+			font-size: 10px;
+			letter-spacing: 0.18em;
+			text-transform: uppercase;
+			padding: 8px 10px;
+			border: 2px solid var(--fg);
+			background: rgba(0, 0, 0, 0.35);
+			transform: rotate(-1deg);
+		}
+
+		.node--focus {
+			width: min(420px, 86vw);
+			background: rgba(0, 0, 0, 0.48);
+		}
+
+		.node__list {
+			margin-top: 12px;
+			font-family: 'Patrick Hand', ui-rounded, system-ui, sans-serif;
+			font-size: 22px;
+			line-height: 1.2;
+			color: rgba(246, 246, 246, 0.88);
+		}
+
+		.node__list b {
+			color: var(--fg);
+		}
+
+		.node--phrase {
+			width: min(420px, 86vw);
+			background: rgba(0, 0, 0, 0.50);
+			clip-path: polygon(2% 0, 100% 6%, 98% 100%, 8% 98%, 0 70%, 0 10%);
+		}
+
+		.node__quote {
+			margin-top: 12px;
+			font-family: 'Patrick Hand', ui-rounded, system-ui, sans-serif;
+			font-size: 28px;
+			line-height: 1.15;
+		}
+
+		.node--exit {
+			width: min(360px, 80vw);
+			background: rgba(0, 0, 0, 0.42);
+			border-color: rgba(255, 0, 0, 0.65);
+			box-shadow: 10px 10px 0 rgba(255, 0, 0, 0.14);
+		}
+
+		.node__exits {
+			margin-top: 12px;
+			display: grid;
+			gap: 10px;
+		}
+
+		.exit {
+			display: block;
+			padding: 10px 12px;
+			text-decoration: none;
+			font-weight: 900;
+			letter-spacing: 0.22em;
+			text-transform: uppercase;
+			font-size: 11px;
+			border: 2px solid var(--fg);
+			background: rgba(0, 0, 0, 0.55);
+			box-shadow: 8px 8px 0 rgba(246, 246, 246, 0.10);
+			transform: rotate(-1deg);
+		}
+
+		.exit:hover {
+			background: rgba(0, 0, 0, 0.85);
+			border-color: var(--acid-yellow);
+		}
+
+		.node--stamp {
+			width: min(260px, 70vw);
+			background: rgba(255, 0, 0, 0.82);
+			color: #000;
+			border-color: #000;
+			box-shadow: 12px 12px 0 rgba(0, 0, 0, 0.65);
+			clip-path: polygon(3% 8%, 98% 0, 100% 92%, 92% 100%, 0 94%, 0 20%);
+		}
+
+		.stamp__big {
+			font-family: 'Bebas Neue', system-ui, sans-serif;
+			font-size: 52px;
+			letter-spacing: 0.06em;
+			font-weight: 900;
+			line-height: 0.95;
+		}
+
+		.stamp__small {
+			margin-top: 6px;
+			font-weight: 900;
+			letter-spacing: 0.24em;
+			text-transform: uppercase;
+			font-size: 10px;
+		}
+
+		/* Glitch mode (still readable) */
+		.moi-glitch .node {
+			animation: moiGlitchJitter 0.11s infinite steps(2, end);
+		}
+
+		.moi-glitch .moi-wires {
+			opacity: 1;
+			filter: contrast(1.2) saturate(1.4);
+		}
+
+		@keyframes moiGlitchJitter {
+			0% { transform: translate(-50%, -50%) rotate(var(--r, 0deg)) translateY(calc(var(--scroll, 0) * 1px)) translate(0, 0); }
+			50% { transform: translate(-50%, -50%) rotate(var(--r, 0deg)) translateY(calc(var(--scroll, 0) * 1px)) translate(1px, -1px); }
+			100% { transform: translate(-50%, -50%) rotate(var(--r, 0deg)) translateY(calc(var(--scroll, 0) * 1px)) translate(-1px, 1px); }
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			.node { transform: translate(-50%, -50%) rotate(var(--r, 0deg)); }
+			.moi-glitch .node { animation: none; }
+		}
+	</style>
 </BaseLayout>
