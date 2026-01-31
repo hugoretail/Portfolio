@@ -2,19 +2,24 @@
 import '../styles/global.css';
 import RedThread from '../components/RedThread.svelte';
 import SiteHeader from '../components/SiteHeader.astro';
+import BrutalAnimatedBackground from '../components/BrutalAnimatedBackground.svelte';
 
 type Props = {
   title?: string;
   description?: string;
   showThread?: boolean;
   showHeaderNav?: boolean;
+  showAnimatedBackground?: boolean;
+  backgroundTint?: 'fire' | 'mono';
 };
 
 const {
   title = 'Hugo Retail',
   description = 'Portfolio',
   showThread = true,
-  showHeaderNav = false
+  showHeaderNav = false,
+  showAnimatedBackground = true,
+  backgroundTint = 'fire'
 } = Astro.props;
 ---
 <!doctype html>
@@ -50,7 +55,8 @@ const {
     <link rel="preload" as="image" href="/assets/images/dice-bump-5.svg" />
     <link rel="preload" as="image" href="/assets/images/dice-bump-6.svg" />
   </head>
-  <body class="min-h-screen bg-[color:var(--bg)] text-[color:var(--fg)]">
+  <body class={`min-h-screen bg-[color:var(--bg)] text-[color:var(--fg)] ${showAnimatedBackground ? 'has-animated-bg' : ''}`}>
+    {showAnimatedBackground ? <BrutalAnimatedBackground client:only="svelte" tint={backgroundTint} /> : null}
     {showThread ? <RedThread client:load href="/frise" /> : null}
 
     {showHeaderNav ? <SiteHeader /> : null}

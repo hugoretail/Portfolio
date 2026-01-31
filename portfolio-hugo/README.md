@@ -70,3 +70,4 @@ Ajoute un fichier `public/assets/music/boom-bap-sample.mp3` (ou change la prop `
 
 - `Dice3D` stoppe le rendu quand le canvas n’est pas visible (IntersectionObserver).
 - Les images “texture” sont préchargées dans [src/layouts/BaseLayout.astro](src/layouts/BaseLayout.astro).
+

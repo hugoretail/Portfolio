@@ -46,6 +46,18 @@ body {
 	background-blend-mode: normal, screen, overlay, overlay;
 }
 
+/* When the animated background is active, drop the heavy SVG layers */
+.has-animated-bg .bg-graffiti {
+	background-image:
+		radial-gradient(circle at 18% 22%, rgba(255, 0, 0, 0.07), transparent 46%),
+		radial-gradient(circle at 76% 78%, rgba(246, 246, 246, 0.06), transparent 52%),
+		repeating-linear-gradient(90deg, rgba(246, 246, 246, 0.03) 0 1px, transparent 1px 140px);
+	background-size: cover, cover, auto;
+	background-position: center, center, center;
+	background-repeat: no-repeat;
+	background-blend-mode: screen, overlay, overlay;
+}
+
 .bg-nature {
 	background-image:
 		url('/assets/images/nature-loops.svg'),
@@ -55,6 +67,16 @@ body {
 	background-size: cover, cover, cover;
 	background-position: center;
 	background-blend-mode: normal, screen, overlay;
+}
+
+.has-animated-bg .bg-nature {
+	background-image:
+		radial-gradient(circle at 20% 70%, rgba(25, 255, 122, 0.05), transparent 55%),
+		radial-gradient(circle at 80% 30%, rgba(10, 127, 59, 0.04), transparent 60%);
+	background-repeat: no-repeat;
+	background-size: cover, cover;
+	background-position: center;
+	background-blend-mode: screen, overlay;
 }
 
 .font-display {
@@ -80,6 +102,10 @@ body {
 	pointer-events: none;
 }
 
+.has-animated-bg .noise-overlay {
+	opacity: 0.55;
+}
+
 .paper-grain {
 	position: absolute;
 	inset: 0;
@@ -89,4 +115,8 @@ body {
 		repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.08) 0 1px, transparent 1px 9px);
 	opacity: 0.28;
 	pointer-events: none;
+}
+
+.has-animated-bg .paper-grain {
+	opacity: 0.18;
 }

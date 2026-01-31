@@ -1,0 +1,538 @@
+<script lang="ts">
+  import { onDestroy, onMount } from 'svelte';
+
+  // LIGHT by default: few strokes + CSS dash animation.
+  export let density = 7;
+  export let tint: 'fire' | 'mono' = 'fire';
+  export let randomize = true;
+  export let regenOnCycleEnd = true;
+  // One shared cycle for all strokes (calmer + allows safe regeneration on boundary)
+  export let cycleSeconds = 26;
+
+  let hostA: HTMLDivElement | null = null;
+  let hostB: HTMLDivElement | null = null;
+  let activeLayer: 'a' | 'b' = 'a';
+  let regenTimer: number | null = null;
+
+  const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
+  const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
+  const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+  function mulberry32(seed: number) {
+    return function () {
+      let t = (seed += 0x6d2b79f5);
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function pickPalette(mode: 'fire' | 'mono') {
+    if (mode === 'mono') {
+      return ['rgba(246,246,246,0.20)', 'rgba(246,246,246,0.12)', 'rgba(185,185,185,0.14)'];
+    }
+    return [
+      'rgba(255,0,0,0.18)',
+      'rgba(255,59,212,0.10)',
+      'rgba(0,209,255,0.10)',
+      'rgba(255,230,0,0.08)',
+      'rgba(246,246,246,0.10)'
+    ];
+  }
+
+  function makePathFromPoints(points: Array<{ x: number; y: number }>) {
+    if (points.length < 2) return '';
+    let d = `M ${points[0].x.toFixed(2)} ${points[0].y.toFixed(2)}`;
+    for (let i = 1; i < points.length; i++) {
+      const prev = points[i - 1];
+      const cur = points[i];
+      const cp1x = (prev.x + cur.x) / 2;
+      const cp1y = prev.y;
+      const cp2x = (prev.x + cur.x) / 2;
+      const cp2y = cur.y;
+      d += ` C ${cp1x.toFixed(2)} ${cp1y.toFixed(2)}, ${cp2x.toFixed(2)} ${cp2y.toFixed(2)}, ${cur.x.toFixed(2)} ${cur.y.toFixed(2)}`;
+    }
+    return d;
+  }
+
+  function dist2(a: { x: number; y: number }, b: { x: number; y: number }) {
+    const dx = a.x - b.x;
+    const dy = a.y - b.y;
+    return dx * dx + dy * dy;
+  }
+
+  function pickAnchors(rand: () => number, count: number, W: number, H: number) {
+    // Dart-throwing: avoids visible "zones" while still reducing collisions.
+    const anchors: Array<{ x: number; y: number }> = [];
+    const minD = 140;
+    const minD2 = minD * minD;
+    const triesPer = 18;
+
+    for (let i = 0; i < count; i++) {
+      let best: { x: number; y: number } | null = null;
+      let bestScore = -1;
+
+      for (let t = 0; t < triesPer; t++) {
+        const p = { x: 40 + rand() * (W - 80), y: 40 + rand() * (H - 80) };
+        let score = Infinity;
+        for (const a of anchors) score = Math.min(score, dist2(p, a));
+        if (anchors.length === 0) score = minD2;
+        if (score > bestScore) {
+          bestScore = score;
+          best = p;
+        }
+      }
+
+      if (best) anchors.push(best);
+    }
+
+    return anchors;
+  }
+
+  function wrapX(x: number, W: number) {
+    // True wrap (not clamp) to enable "exit left, appear right" tricks.
+    let xx = x;
+    while (xx < 0) xx += W;
+    while (xx > W) xx -= W;
+    return xx;
+  }
+
+  function makeWrapWalk(rand: () => number, start: { x: number; y: number }, W: number, H: number) {
+    // Random walk that occasionally exits the screen and re-enters on the other side.
+    const points: Array<{ x: number; y: number; move?: boolean }> = [];
+    let x = start.x;
+    let y = start.y;
+    points.push({ x, y });
+
+    const steps = 9 + Math.floor(rand() * 10);
+    for (let i = 0; i < steps; i++) {
+      const a = (rand() * Math.PI * 2);
+      const len = 80 + rand() * 180;
+      let nx = x + Math.cos(a) * len;
+      let ny = y + Math.sin(a) * len;
+
+      // Occasionally force a "screen-edge" move.
+      if (rand() < 0.25) {
+        const goLeft = rand() < 0.5;
+        nx = goLeft ? -20 - rand() * 140 : W + 20 + rand() * 140;
+        ny = clamp(ny, 40, H - 40);
+      }
+
+      const wrapped = nx < 0 || nx > W;
+      nx = wrapped ? wrapX(nx, W) : clamp(nx, 40, W - 40);
+      ny = clamp(ny, 40, H - 40);
+
+      if (wrapped) {
+        // Break path: teleport re-entry feels like a screen wrap.
+        points.push({ x: nx, y: ny, move: true });
+      } else {
+        points.push({ x: nx, y: ny });
+      }
+
+      x = nx;
+      y = ny;
+    }
+
+    // Build d with hard breaks for wrap segments.
+    let d = '';
+    for (let i = 0; i < points.length; i++) {
+      const p = points[i];
+      if (i === 0 || p.move) {
+        d += `M ${p.x.toFixed(2)} ${p.y.toFixed(2)} `;
+      } else {
+        d += `L ${p.x.toFixed(2)} ${p.y.toFixed(2)} `;
+      }
+    }
+    return d.trim();
+  }
+
+  function makeGlitchBracket(rand: () => number, start: { x: number; y: number }, W: number, H: number) {
+    // A "UI bracket" / HUD shape with micro jitter.
+    const x = clamp(start.x, 60, W - 60);
+    const y = clamp(start.y, 60, H - 60);
+    const w = 70 + rand() * 160;
+    const h = 40 + rand() * 120;
+    const j = () => (rand() - 0.5) * 6;
+    const x2 = clamp(x + w, 40, W - 40);
+    const y2 = clamp(y + h, 40, H - 40);
+    return (
+      `M ${(x + j()).toFixed(2)} ${(y + j()).toFixed(2)} L ${(x2 + j()).toFixed(2)} ${(y + j()).toFixed(2)} ` +
+      `M ${(x + j()).toFixed(2)} ${(y + j()).toFixed(2)} L ${(x + j()).toFixed(2)} ${(y2 + j()).toFixed(2)} ` +
+      `M ${(x2 + j()).toFixed(2)} ${(y2 + j()).toFixed(2)} L ${(x2 + j()).toFixed(2)} ${(y + h * 0.45 + j()).toFixed(2)} ` +
+      `M ${(x2 + j()).toFixed(2)} ${(y2 + j()).toFixed(2)} L ${(x + w * 0.55 + j()).toFixed(2)} ${(y2 + j()).toFixed(2)}`
+    );
+  }
+
+  function generateSvg(seed = 1337) {
+    const rand = mulberry32(seed);
+    const colors = pickPalette(tint);
+    const W = 1000;
+    const H = 600;
+
+    const cycleSec = clamp(cycleSeconds, 10, 34);
+
+    const count = clamp(Math.round(density), 6, 14);
+    const strokes: Array<{
+      d: string;
+      stroke: string;
+      w: number;
+      alpha: number;
+      i: number;
+      dur: number;
+      phase: number;
+    }> = [];
+
+    const anchors = pickAnchors(rand, count, W, H);
+    const kindsCount = 12;
+    for (let i = 0; i < count; i++) {
+      // fully random motif choice (prevents repeated patterns)
+      const kind = Math.floor(rand() * kindsCount);
+      const stroke = colors[Math.floor(rand() * colors.length)];
+      const w = clamp(1.6 + rand() * 1.8 + (kind === 1 ? 0.6 : 0), 1.6, 3.6);
+      const alpha = 0.5 + rand() * 0.42;
+
+      // Calm + consistent: single shared duration. De-sync via phase only.
+      const dur = cycleSec;
+      const phase = rand() * dur;
+
+      let d = '';
+
+      const a = anchors[i] ?? { x: 40 + rand() * (W - 80), y: 40 + rand() * (H - 80) };
+      const zx = a.x;
+      const zy = a.y;
+
+      if (kind === 0) {
+        // thread / cable
+        const points: Array<{ x: number; y: number }> = [];
+        const x0 = clamp(10 + rand() * 340, 10, 360);
+        const n = 9 + Math.floor(rand() * 4);
+        for (let k = 0; k < n; k++) {
+          const t = k / (n - 1);
+          points.push({
+            x: x0 + Math.sin(t * Math.PI * (3 + rand() * 4) + rand() * 2) * (10 + rand() * 34),
+            y: t * H
+          });
+        }
+        d = makePathFromPoints(points);
+      } else if (kind === 1) {
+        // graffiti tag strokes (angular-ish)
+        const points: Array<{ x: number; y: number }> = [];
+        const cx = zx;
+        const cy = zy;
+        points.push({ x: cx, y: cy });
+
+        let x = cx;
+        let y = cy;
+        const n = 6 + Math.floor(rand() * 4);
+        for (let k = 0; k < n; k++) {
+          const a = (Math.floor(rand() * 8) / 8) * Math.PI * 2;
+          const len = 70 + rand() * 140;
+          x = clamp(x + Math.cos(a) * len, 40, W - 40);
+          y = clamp(y + Math.sin(a) * len, 40, H - 40);
+          points.push({ x, y });
+        }
+        d = makePathFromPoints(points);
+      } else if (kind === 2) {
+        // circuit rectilinear path
+        const points: Array<{ x: number; y: number }> = [];
+        let x = zx;
+        let y = zy;
+        points.push({ x, y });
+
+        const steps = 7 + Math.floor(rand() * 4);
+        for (let k = 0; k < steps; k++) {
+          const horizontal = k % 2 === 0;
+          const len = 60 + rand() * 140;
+          if (horizontal) x = clamp(x + (rand() > 0.5 ? 1 : -1) * len, 40, W - 40);
+          else y = clamp(y + (rand() > 0.5 ? 1 : -1) * len, 40, H - 40);
+          points.push({ x, y });
+        }
+        d = makePathFromPoints(points);
+      } else if (kind === 3) {
+        // leaf vein / fan
+        const points: Array<{ x: number; y: number }> = [];
+        const baseX = zx;
+        const baseY = zy;
+        const hh = 90 + rand() * 170;
+        const angle = (-Math.PI / 2) + (rand() - 0.5) * 0.8;
+        const dx = Math.cos(angle) * hh;
+        const dy = Math.sin(angle) * hh;
+
+        points.push({ x: baseX, y: baseY });
+        const n = 6;
+        for (let k = 1; k <= n; k++) {
+          const t = k / n;
+          points.push({
+            x: baseX + dx * t + Math.sin(t * 8 + rand()) * (8 + rand() * 10),
+            y: baseY + dy * t + Math.cos(t * 6 + rand()) * (6 + rand() * 10)
+          });
+        }
+        d = makePathFromPoints(points);
+      } else if (kind === 4) {
+        // dice / frames
+        const x0 = zx;
+        const y0 = zy;
+        const s = 70 + rand() * 120;
+        const x = clamp(x0, 40, W - s - 40);
+        const y = clamp(y0, 40, H - s - 40);
+        // slightly "broken" frame
+        const inset = 8 + rand() * 18;
+        const x2 = x + s;
+        const y2 = y + s;
+        d = `M ${x.toFixed(2)} ${y.toFixed(2)} L ${x2.toFixed(2)} ${y.toFixed(2)} L ${x2.toFixed(2)} ${y2.toFixed(2)} L ${x.toFixed(2)} ${y2.toFixed(2)} Z ` +
+          `M ${(x + inset).toFixed(2)} ${(y + inset).toFixed(2)} L ${(x2 - inset).toFixed(2)} ${(y + inset).toFixed(2)} L ${(x2 - inset).toFixed(2)} ${(y2 - inset).toFixed(2)} L ${(x + inset).toFixed(2)} ${(y2 - inset).toFixed(2)} Z`;
+      } else if (kind === 5) {
+        // scribble spiral
+        const cx = zx;
+        const cy = zy;
+        const turns = 1.5 + rand() * 2.2;
+        const steps = 18 + Math.floor(rand() * 14);
+        const r0 = 6 + rand() * 20;
+        const r1 = 60 + rand() * 90;
+        let dd = `M ${(cx + r0).toFixed(2)} ${cy.toFixed(2)}`;
+        for (let k = 1; k <= steps; k++) {
+          const t = k / steps;
+          const ang = t * Math.PI * 2 * turns + (rand() - 0.5) * 0.18;
+          const r = r0 + (r1 - r0) * t + (rand() - 0.5) * 6;
+          const px = clamp(cx + Math.cos(ang) * r, 40, W - 40);
+          const py = clamp(cy + Math.sin(ang) * r, 40, H - 40);
+          dd += ` L ${px.toFixed(2)} ${py.toFixed(2)}`;
+        }
+        d = dd;
+      } else if (kind === 6) {
+        // barcode / brutal scan marks
+        const x = clamp(zx - 120, 40, W - 280);
+        const y = clamp(zy - 60, 40, H - 120);
+        const w0 = 220 + rand() * 180;
+        const h0 = 90 + rand() * 60;
+        const bars = 10 + Math.floor(rand() * 14);
+        let dd = '';
+        for (let b = 0; b < bars; b++) {
+          const bx = x + (b / bars) * w0;
+          const bw = 1 + Math.floor(rand() * 3);
+          dd += `M ${bx.toFixed(2)} ${y.toFixed(2)} L ${bx.toFixed(2)} ${(y + h0).toFixed(2)} `;
+          dd += `M ${(bx + bw).toFixed(2)} ${y.toFixed(2)} L ${(bx + bw).toFixed(2)} ${(y + h0).toFixed(2)} `;
+        }
+        d = dd.trim();
+      } else if (kind === 7) {
+        // wrap-walk: exits left and reappears right (screen trick)
+        d = makeWrapWalk(rand, { x: zx, y: zy }, W, H);
+      } else if (kind === 8) {
+        // HUD / bracket
+        d = makeGlitchBracket(rand, { x: zx, y: zy }, W, H);
+      } else if (kind === 9) {
+        // "pixel burst" (diagonal-ish micro lines)
+        const cx = zx;
+        const cy = zy;
+        const rays = 9 + Math.floor(rand() * 10);
+        const r0 = 8 + rand() * 16;
+        const r1 = 70 + rand() * 120;
+        let dd = '';
+        for (let k = 0; k < rays; k++) {
+          const t = k / (rays - 1);
+          const ang = lerp(-Math.PI * 0.85, Math.PI * 0.15, t) + (rand() - 0.5) * 0.15;
+          const x1 = clamp(cx + Math.cos(ang) * r0, 40, W - 40);
+          const y1 = clamp(cy + Math.sin(ang) * r0, 40, H - 40);
+          const x2 = clamp(cx + Math.cos(ang) * r1, 40, W - 40);
+          const y2 = clamp(cy + Math.sin(ang) * r1, 40, H - 40);
+          dd += `M ${x1.toFixed(2)} ${y1.toFixed(2)} L ${x2.toFixed(2)} ${y2.toFixed(2)} `;
+        }
+        d = dd.trim();
+      } else if (kind === 10) {
+        // "cursor / caret" strokes
+        const x = clamp(zx, 60, W - 60);
+        const y = clamp(zy, 60, H - 60);
+        const h = 40 + rand() * 120;
+        const w1 = 16 + rand() * 26;
+        d = `M ${x.toFixed(2)} ${(y - h * 0.5).toFixed(2)} L ${x.toFixed(2)} ${(y + h * 0.5).toFixed(2)} ` +
+          `M ${(x - w1).toFixed(2)} ${(y + h * 0.5).toFixed(2)} L ${(x + w1).toFixed(2)} ${(y + h * 0.5).toFixed(2)}`;
+      } else {
+        // knot + cross (tiny local signature)
+        const x = zx;
+        const y = zy;
+        const r = 18 + rand() * 28;
+        const a = rand() * Math.PI * 2;
+        const x1 = clamp(x + Math.cos(a) * r, 40, W - 40);
+        const y1 = clamp(y + Math.sin(a) * r, 40, H - 40);
+        const x2 = clamp(x - Math.cos(a) * r, 40, W - 40);
+        const y2 = clamp(y - Math.sin(a) * r, 40, H - 40);
+        d = `M ${x1.toFixed(2)} ${y1.toFixed(2)} L ${x2.toFixed(2)} ${y2.toFixed(2)} ` +
+          `M ${x1.toFixed(2)} ${y2.toFixed(2)} L ${x2.toFixed(2)} ${y1.toFixed(2)}`;
+      }
+
+      if (!d) continue;
+      strokes.push({ d, stroke, w, alpha, i, dur, phase });
+    }
+
+    const paths = strokes
+      .map((s) => {
+        return `
+          <path
+            class=\"stroke\"
+            style=\"--i:${s.i};--dur:${s.dur.toFixed(2)}s;--phase:${s.phase.toFixed(2)}s\"
+            d=\"${s.d}\"
+            pathLength=\"1000\"
+            fill=\"none\"
+            stroke=\"${s.stroke}\"
+            stroke-width=\"${s.w}\"
+            stroke-linecap=\"round\"
+            stroke-linejoin=\"round\"
+            stroke-opacity=\"${s.alpha}\"
+          />`;
+      })
+      .join('\n');
+
+    // Shared cycle boundary -> regeneration won't "cut" mid-erase.
+    const cycleMs = Math.ceil(cycleSec * 1000);
+    const svg = `
+      <svg class=\"bg\" viewBox=\"0 0 1000 600\" preserveAspectRatio=\"none\" aria-hidden=\"true\">
+        <rect width=\"1000\" height=\"600\" fill=\"transparent\" />
+        ${paths}
+      </svg>
+    `;
+    return { svg, cycleMs };
+  }
+
+  function renderInto(target: HTMLDivElement, seed: number) {
+    const { svg, cycleMs } = generateSvg(seed);
+    target.innerHTML = svg;
+    return cycleMs;
+  }
+
+  onMount(() => {
+    if (!isBrowser) return;
+    if (!hostA || !hostB) return;
+    const prefersReduced = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false;
+
+    const renderOnce = () => {
+      const seed = randomize ? Math.floor(Math.random() * 1_000_000_000) : 1337;
+      const next = activeLayer === 'a' ? 'b' : 'a';
+      const target = next === 'a' ? hostA! : hostB!;
+      const cycleMs = renderInto(target, seed);
+
+      // Flip layer on the next frame to avoid a one-frame flash.
+      requestAnimationFrame(() => {
+        activeLayer = next;
+      });
+
+      if (!regenOnCycleEnd || prefersReduced) return;
+      if (regenTimer) window.clearTimeout(regenTimer);
+      regenTimer = window.setTimeout(() => {
+        renderOnce();
+      }, cycleMs);
+    };
+
+    // First paint: render both fast, then activate one.
+    const seed0 = randomize ? Math.floor(Math.random() * 1_000_000_000) : 1337;
+    renderInto(hostA, seed0);
+    activeLayer = 'a';
+
+    if (!prefersReduced) {
+      // Schedule regen based on the active SVG's cycle.
+      if (regenOnCycleEnd) {
+        const { cycleMs } = generateSvg(seed0);
+        regenTimer = window.setTimeout(() => {
+          renderOnce();
+        }, cycleMs);
+      }
+    }
+  });
+
+  onDestroy(() => {
+    if (!isBrowser) return;
+    if (regenTimer) window.clearTimeout(regenTimer);
+  });
+</script>
+
+<div class="wrap pointer-events-none fixed inset-0 z-0" aria-hidden="true">
+  <div class="host">
+    <div class="layer" class:is-active={activeLayer === 'a'} bind:this={hostA}></div>
+    <div class="layer" class:is-active={activeLayer === 'b'} bind:this={hostB}></div>
+  </div>
+  <div class="vignette"></div>
+</div>
+
+<style>
+  :global(svg.bg) {
+    /* We use pathLength="1000" so these are stable and cheap */
+    --dash: 1000;
+  }
+
+  :global(svg.bg .stroke) {
+    stroke-dasharray: var(--dash);
+    stroke-dashoffset: var(--dash);
+    animation: drawErase var(--dur, 7.6s) cubic-bezier(0.3, 0, 0.2, 1) infinite;
+    /* Phase (negative delay) keeps all strokes aligned on shared cycle boundaries */
+    animation-delay: calc(-1 * var(--phase, 0s));
+    will-change: stroke-dashoffset;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(svg.bg .stroke) {
+      animation: none;
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes drawErase {
+    0% {
+      stroke-dashoffset: var(--dash);
+    }
+    /* draw */
+    40% {
+      stroke-dashoffset: 0;
+    }
+    /* hold */
+    60% {
+      stroke-dashoffset: 0;
+    }
+    /* erase: exact reverse of draw (no jump, no fade) */
+    100% {
+      stroke-dashoffset: var(--dash);
+    }
+  }
+
+  .wrap {
+    opacity: 0.9;
+    mix-blend-mode: normal;
+  }
+
+  .host {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  .layer {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 900ms cubic-bezier(0.2, 0, 0.2, 1);
+  }
+
+  .layer.is-active {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .layer {
+      transition: none;
+    }
+  }
+
+  .host :global(svg.bg) {
+    width: 100%;
+    height: 100%;
+    opacity: 0.62;
+  }
+
+  .vignette {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 30% 25%, rgba(0, 0, 0, 0.15), transparent 55%),
+      radial-gradient(circle at 70% 80%, rgba(0, 0, 0, 0.22), transparent 60%),
+      radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.62));
+    pointer-events: none;
+  }
+</style>
