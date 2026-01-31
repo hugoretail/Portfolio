@@ -58,6 +58,7 @@ const pieces: Piece[] = [
 		<div class="paper-grain" aria-hidden="true"></div>
 		<div class="noise-overlay" aria-hidden="true"></div>
 		<div class="moi-strata" aria-hidden="true"></div>
+		<div id="sprayLayer" class="spray-layer" aria-hidden="true"></div>
 
 		<!-- Typography shards (bigger / more disrespectful) -->
 		<div class="pointer-events-none absolute left-[-10vw] top-[4vh] rotate-[-10deg] font-display text-[24vw] leading-none text-[color:var(--fg)] opacity-[0.05]" aria-hidden="true">
@@ -78,6 +79,8 @@ const pieces: Piece[] = [
 					<div class="moi-h1">MOI</div>
 				</div>
 				<div class="flex items-center gap-2">
+					<button id="resetBtn" class="moi-btn" type="button" title="Reset layout">RESET</button>
+					<button id="shuffleBtn" class="moi-btn" type="button" title="Shuffle layout">SHUFFLE</button>
 					<button id="glitchBtn" class="moi-btn" type="button" aria-pressed="false" title="Mode glitch (touche G)">GLITCH</button>
 					<a class="moi-btn" href="/">RETOUR</a>
 				</div>
@@ -89,6 +92,9 @@ const pieces: Piece[] = [
 				<span class="mx-2 text-[color:var(--acid-yellow)]">/</span>
 				Je laisse du souffle.
 			</p>
+			<div class="moi-help" aria-hidden="true">
+				Drag les notes. Alt+drag les liens. Touche <b>G</b> = glitch. Konami = secret.
+			</div>
 		</header>
 
 		<!-- Scattered board (broken layout) -->
@@ -109,6 +115,7 @@ const pieces: Piece[] = [
 					{navNodes.map((item) => (
 						<a
 							data-node={item.href}
+							data-draggable="alt"
 							href={item.href}
 							class:list={[
 								'node node--nav',
@@ -124,7 +131,14 @@ const pieces: Piece[] = [
 
 				<!-- Content pieces -->
 				{pieces.map((p) => (
-					<section data-piece={p.id} data-node={p.id} class:list={[`node node--${p.kind}`]} style={`--x:${p.x}; --y:${p.y}; --r:${p.r}deg;`}>
+					<section
+						data-piece={p.id}
+						data-node={p.id}
+						data-draggable="true"
+						tabindex="0"
+						class:list={[`node node--${p.kind}`]}
+						style={`--x:${p.x}; --y:${p.y}; --r:${p.r}deg;`}
+					>
 						<div class="node__header">
 							<div class="node__kicker">{p.label}</div>
 							<div class="node__chips" aria-hidden="true">
@@ -199,7 +213,11 @@ const pieces: Piece[] = [
 			const wiresSvg = document.getElementById('moiWires');
 			const wireGroup = document.getElementById('wirePaths');
 			const glitchBtn = document.getElementById('glitchBtn');
+			const resetBtn = document.getElementById('resetBtn');
+			const shuffleBtn = document.getElementById('shuffleBtn');
+			const sprayLayer = document.getElementById('sprayLayer');
 			if (!page || !board || !wiresSvg || !wireGroup) return;
+			const STORAGE_KEY = 'moi.board.v3';
 
 			const nodes = Array.from(board.querySelectorAll('[data-node]'));
 			const getCenter = (el) => {
@@ -220,6 +238,38 @@ const pieces: Piece[] = [
 
 			const byKey = new Map();
 			nodes.forEach((el) => byKey.set(el.getAttribute('data-node'), el));
+
+			const readSaved = () => {
+				try {
+					const raw = window.localStorage.getItem(STORAGE_KEY);
+					if (!raw) return {};
+					return JSON.parse(raw);
+				} catch {
+					return {};
+				}
+			};
+
+			const writeSaved = (obj) => {
+				try {
+					window.localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
+				} catch {
+					// ignore
+				}
+			};
+
+			const applyOffsetsFromStorage = () => {
+				const saved = readSaved();
+				nodes.forEach((el) => {
+					const key = el.getAttribute('data-node');
+					const o = saved?.[key];
+					const dx = Number.isFinite(o?.dx) ? o.dx : 0;
+					const dy = Number.isFinite(o?.dy) ? o.dy : 0;
+					el.style.setProperty('--dx', `${dx}px`);
+					el.style.setProperty('--dy', `${dy}px`);
+				});
+			};
+
+			applyOffsetsFromStorage();
 
 			let raf = null;
 			const render = () => {
@@ -250,6 +300,8 @@ const pieces: Piece[] = [
 					const c2y = ay + dy * 0.75 + bend * 0.45;
 
 					const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+					p.setAttribute('data-a', a);
+					p.setAttribute('data-b', b);
 					p.setAttribute('d', `M ${ax.toFixed(2)} ${ay.toFixed(2)} C ${c1x.toFixed(2)} ${c1y.toFixed(2)}, ${c2x.toFixed(2)} ${c2y.toFixed(2)}, ${bx.toFixed(2)} ${by.toFixed(2)}`);
 					p.setAttribute('fill', 'none');
 					p.setAttribute('stroke', i % 3 === 0 ? 'rgba(255,0,0,0.55)' : 'rgba(255,0,0,0.28)');
@@ -283,6 +335,187 @@ const pieces: Piece[] = [
 				setGlitch(glitchOn);
 			});
 
+			// Highlight connected wires/nodes on hover/focus
+			const setHot = (key) => {
+				const hotKeys = new Set([key]);
+				edges.forEach(([a, b]) => {
+					if (a === key) hotKeys.add(b);
+					if (b === key) hotKeys.add(a);
+				});
+
+				nodes.forEach((el) => {
+					const k = el.getAttribute('data-node');
+					el.classList.toggle('is-hot', hotKeys.has(k));
+					el.classList.toggle('is-hot-main', k === key);
+				});
+
+				const paths = wireGroup.querySelectorAll('path');
+				paths.forEach((p) => {
+					const a = p.getAttribute('data-a');
+					const b = p.getAttribute('data-b');
+					const hot = a === key || b === key;
+					p.classList.toggle('wire-hot', hot);
+				});
+			};
+
+			const clearHot = () => {
+				nodes.forEach((el) => {
+					el.classList.remove('is-hot');
+					el.classList.remove('is-hot-main');
+				});
+				wireGroup.querySelectorAll('path').forEach((p) => p.classList.remove('wire-hot'));
+			};
+
+			nodes.forEach((el) => {
+				el.addEventListener('mouseenter', () => {
+					const key = el.getAttribute('data-node');
+					if (key) setHot(key);
+				});
+				el.addEventListener('mouseleave', clearHot);
+				el.addEventListener('focusin', () => {
+					const key = el.getAttribute('data-node');
+					if (key) setHot(key);
+				});
+				el.addEventListener('focusout', clearHot);
+			});
+
+			// Dragging (persisted per node)
+			const isInteractiveTarget = (t) => !!t?.closest?.('a,button,input,textarea,select,label');
+			let drag = null;
+
+			const startDrag = (el, e) => {
+				const key = el.getAttribute('data-node');
+				if (!key) return;
+				const saved = readSaved();
+				const cur = saved?.[key] ?? {};
+				const dx0 = Number.isFinite(cur.dx) ? cur.dx : 0;
+				const dy0 = Number.isFinite(cur.dy) ? cur.dy : 0;
+				drag = { el, key, x0: e.clientX, y0: e.clientY, dx0, dy0 };
+				el.classList.add('is-dragging');
+				try { el.setPointerCapture?.(e.pointerId); } catch {}
+			};
+
+			const moveDrag = (e) => {
+				if (!drag) return;
+				const dx = drag.dx0 + (e.clientX - drag.x0);
+				const dy = drag.dy0 + (e.clientY - drag.y0);
+				drag.el.style.setProperty('--dx', `${dx}px`);
+				drag.el.style.setProperty('--dy', `${dy}px`);
+				requestRender();
+			};
+
+			const endDrag = () => {
+				if (!drag) return;
+				drag.el.classList.remove('is-dragging');
+				const key = drag.key;
+				const style = getComputedStyle(drag.el);
+				const dx = parseFloat(style.getPropertyValue('--dx')) || 0;
+				const dy = parseFloat(style.getPropertyValue('--dy')) || 0;
+				const saved = readSaved();
+				saved[key] = { dx, dy };
+				writeSaved(saved);
+				drag = null;
+				requestRender();
+			};
+
+			board.addEventListener('pointerdown', (e) => {
+				const target = e.target;
+				const el = target?.closest?.('[data-node]');
+				if (!el || !board.contains(el)) return;
+				const dragMode = el.getAttribute('data-draggable');
+				if (!dragMode) return;
+				if (dragMode === 'alt' && !e.altKey) return;
+				if (isInteractiveTarget(target) && dragMode !== 'alt') return;
+				e.preventDefault();
+				startDrag(el, e);
+			});
+
+			board.addEventListener('pointermove', moveDrag);
+			board.addEventListener('pointerup', endDrag);
+			board.addEventListener('pointercancel', endDrag);
+
+			// Keyboard nudge (focused node)
+			board.addEventListener('keydown', (e) => {
+				const el = e.target?.closest?.('[data-node]');
+				if (!el || !board.contains(el)) return;
+				const key = e.key;
+				if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) return;
+				e.preventDefault();
+				const step = e.shiftKey ? 12 : 3;
+				const style = getComputedStyle(el);
+				let dx = parseFloat(style.getPropertyValue('--dx')) || 0;
+				let dy = parseFloat(style.getPropertyValue('--dy')) || 0;
+				if (key === 'ArrowLeft') dx -= step;
+				if (key === 'ArrowRight') dx += step;
+				if (key === 'ArrowUp') dy -= step;
+				if (key === 'ArrowDown') dy += step;
+				el.style.setProperty('--dx', `${dx}px`);
+				el.style.setProperty('--dy', `${dy}px`);
+				const saved = readSaved();
+				saved[el.getAttribute('data-node')] = { dx, dy };
+				writeSaved(saved);
+				requestRender();
+			});
+
+			resetBtn?.addEventListener('click', () => {
+				try { window.localStorage.removeItem(STORAGE_KEY); } catch {}
+				nodes.forEach((el) => {
+					el.style.setProperty('--dx', `0px`);
+					el.style.setProperty('--dy', `0px`);
+				});
+				requestRender();
+			});
+
+			shuffleBtn?.addEventListener('click', () => {
+				const saved = readSaved();
+				nodes.forEach((el) => {
+					const k = el.getAttribute('data-node');
+					const dx = Math.round((Math.random() - 0.5) * 220);
+					const dy = Math.round((Math.random() - 0.5) * 200);
+					el.style.setProperty('--dx', `${dx}px`);
+					el.style.setProperty('--dy', `${dy}px`);
+					saved[k] = { dx, dy };
+				});
+				writeSaved(saved);
+				requestRender();
+			});
+
+			// Spray cursor trail (lightweight)
+			if (!prefersReducedMotion && sprayLayer) {
+				let last = 0;
+				window.addEventListener('pointermove', (e) => {
+					const now = performance.now();
+					if (now - last < 24) return;
+					last = now;
+					const dot = document.createElement('span');
+					dot.className = 'spray-dot';
+					dot.style.left = `${e.clientX}px`;
+					dot.style.top = `${e.clientY}px`;
+					dot.style.transform = `translate(-50%,-50%) rotate(${(Math.random() * 50 - 25).toFixed(1)}deg)`;
+					sprayLayer.appendChild(dot);
+					window.setTimeout(() => dot.remove(), 900);
+				}, { passive: true });
+			}
+
+			// Konami easter egg: 8-bit mode
+			const konami = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+			let konamiIdx = 0;
+			window.addEventListener('keydown', (e) => {
+				const k = e.key;
+				const expected = konami[konamiIdx];
+				if (!expected) return;
+				if (k === expected || k.toLowerCase() === expected) {
+					konamiIdx++;
+					if (konamiIdx >= konami.length) {
+						konamiIdx = 0;
+						page.classList.toggle('moi-8bit');
+						requestRender();
+					}
+				} else {
+					konamiIdx = 0;
+				}
+			});
+
 			window.addEventListener('resize', requestRender);
 			window.addEventListener('scroll', () => {
 				setScrollVar();
@@ -305,6 +538,30 @@ const pieces: Piece[] = [
 		.moi-page {
 			--paper: rgba(0, 0, 0, 0.55);
 			--paper2: rgba(0, 0, 0, 0.42);
+		}
+
+		.spray-layer {
+			position: fixed;
+			inset: 0;
+			pointer-events: none;
+			z-index: 18;
+			mix-blend-mode: screen;
+		}
+
+		.spray-dot {
+			position: absolute;
+			width: 14px;
+			height: 14px;
+			border-radius: 999px;
+			background: radial-gradient(circle at 35% 35%, rgba(255, 0, 0, 0.55), rgba(255, 0, 0, 0.0) 68%);
+			filter: blur(0.2px);
+			opacity: 0.9;
+			animation: sprayFade 0.9s ease-out forwards;
+		}
+
+		@keyframes sprayFade {
+			0% { opacity: 0.9; transform: translate(-50%,-50%) scale(1); }
+			100% { opacity: 0; transform: translate(-50%,-50%) scale(1.9); }
 		}
 
 		.moi-strata {
@@ -380,7 +637,7 @@ const pieces: Piece[] = [
 			position: absolute;
 			left: calc(var(--x) * 1%);
 			top: calc(var(--y) * 1%);
-			transform: translate(-50%, -50%) rotate(var(--r, 0deg)) translateY(calc(var(--scroll, 0) * 1px));
+			transform: translate(-50%, -50%) rotate(var(--r, 0deg)) translateY(calc(var(--scroll, 0) * 1px)) translate(var(--dx, 0px), var(--dy, 0px));
 			transform-origin: center;
 			max-width: min(520px, 86vw);
 			color: var(--fg);
@@ -394,6 +651,21 @@ const pieces: Piece[] = [
 
 		.node:hover {
 			filter: drop-shadow(0 0 12px rgba(255, 0, 0, 0.22));
+		}
+
+		.is-dragging {
+			cursor: grabbing;
+			z-index: 60;
+		}
+
+		.is-hot {
+			border-color: rgba(255, 0, 0, 0.85);
+			box-shadow: 12px 12px 0 rgba(255, 0, 0, 0.10);
+		}
+
+		.is-hot-main {
+			outline: 2px solid rgba(255, 230, 0, 0.55);
+			outline-offset: 5px;
 		}
 
 		.node:focus-within {
@@ -592,6 +864,13 @@ const pieces: Piece[] = [
 			font-size: 10px;
 		}
 
+		.wire-hot {
+			opacity: 1;
+			stroke: rgba(255, 0, 0, 0.82) !important;
+			stroke-width: 2.6 !important;
+			stroke-dasharray: 0 !important;
+		}
+
 		/* Glitch mode (still readable) */
 		.moi-glitch .node {
 			animation: moiGlitchJitter 0.11s infinite steps(2, end);
@@ -602,14 +881,36 @@ const pieces: Piece[] = [
 			filter: contrast(1.2) saturate(1.4);
 		}
 
+		.moi-help {
+			margin-top: 10px;
+			font-size: 10px;
+			letter-spacing: 0.18em;
+			text-transform: uppercase;
+			color: rgba(246, 246, 246, 0.58);
+			max-width: 740px;
+		}
+
+		.moi-8bit {
+			image-rendering: pixelated;
+			filter: contrast(1.05) saturate(1.1);
+		}
+
+		.moi-8bit .node {
+			clip-path: none;
+			box-shadow: 10px 10px 0 rgba(255, 230, 0, 0.10);
+			border-style: dashed;
+			backdrop-filter: none;
+		}
+
 		@keyframes moiGlitchJitter {
-			0% { transform: translate(-50%, -50%) rotate(var(--r, 0deg)) translateY(calc(var(--scroll, 0) * 1px)) translate(0, 0); }
-			50% { transform: translate(-50%, -50%) rotate(var(--r, 0deg)) translateY(calc(var(--scroll, 0) * 1px)) translate(1px, -1px); }
-			100% { transform: translate(-50%, -50%) rotate(var(--r, 0deg)) translateY(calc(var(--scroll, 0) * 1px)) translate(-1px, 1px); }
+			0% { transform: translate(-50%, -50%) rotate(var(--r, 0deg)) translateY(calc(var(--scroll, 0) * 1px)) translate(var(--dx, 0px), var(--dy, 0px)) translate(0, 0); }
+			50% { transform: translate(-50%, -50%) rotate(var(--r, 0deg)) translateY(calc(var(--scroll, 0) * 1px)) translate(var(--dx, 0px), var(--dy, 0px)) translate(1px, -1px); }
+			100% { transform: translate(-50%, -50%) rotate(var(--r, 0deg)) translateY(calc(var(--scroll, 0) * 1px)) translate(var(--dx, 0px), var(--dy, 0px)) translate(-1px, 1px); }
 		}
 
 		@media (prefers-reduced-motion: reduce) {
-			.node { transform: translate(-50%, -50%) rotate(var(--r, 0deg)); }
+			.node { transform: translate(-50%, -50%) rotate(var(--r, 0deg)) translate(var(--dx, 0px), var(--dy, 0px)); }
+			.spray-layer { display: none; }
 			.moi-glitch .node { animation: none; }
 		}
 	</style>
