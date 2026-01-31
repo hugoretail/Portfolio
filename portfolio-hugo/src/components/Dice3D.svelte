@@ -6,19 +6,20 @@
   export type DiceSide = {
     label: string;
     textureUrl: string;
+    href: string;
   };
 
   export let sides: DiceSide[] = [
-    { label: 'Projet IA', textureUrl: '/assets/images/dice-face-1.svg' },
-    { label: 'Fresque 2023', textureUrl: '/assets/images/dice-face-2.svg' },
-    { label: 'Playlist Boom Bap', textureUrl: '/assets/images/dice-face-3.svg' },
-    { label: 'Extrait Litté', textureUrl: '/assets/images/dice-face-4.svg' },
-    { label: 'Tooling / Code', textureUrl: '/assets/images/dice-face-5.svg' },
-    { label: 'Live / Jam', textureUrl: '/assets/images/dice-face-6.svg' }
+    { label: 'Projet IA', textureUrl: '/assets/images/dice-face-1.svg', href: '/ia' },
+    { label: 'Fresque 2023', textureUrl: '/assets/images/dice-face-2.svg', href: '/graffiti' },
+    { label: 'Playlist Boom Bap', textureUrl: '/assets/images/dice-face-3.svg', href: '/hiphop' },
+    { label: 'Extrait Litté', textureUrl: '/assets/images/dice-face-4.svg', href: '/litterature' },
+    { label: 'Tooling / Code', textureUrl: '/assets/images/dice-face-5.svg', href: '/moi' },
+    { label: 'Live / Jam', textureUrl: '/assets/images/dice-face-6.svg', href: '/hiphop' }
   ];
 
   let container: HTMLDivElement | null = null;
-  let labelEl: HTMLDivElement | null = null;
+  let labelEl: HTMLSpanElement | null = null;
   let buttonEl: HTMLButtonElement | null = null;
   let boundsEl: HTMLDivElement | null = null;
 
@@ -57,6 +58,7 @@
   let throwSpeed0 = 0;
 
   let pendingLabel: string | null = null;
+  let pendingHref: string | null = null;
   let resultReady = false;
   let resultShown = false;
 
@@ -304,6 +306,12 @@
     labelEl.textContent = text;
   }
 
+  function goToResult(e?: Event) {
+    if (e) e.preventDefault();
+    if (!pendingHref || !resultShown) return;
+    window.location.assign(pendingHref);
+  }
+
   function atRest() {
     return !dragging && vel.x === 0 && vel.y === 0;
   }
@@ -436,6 +444,7 @@
 
     const idx = faceIndexFromOrientation();
     pendingLabel = sides[idx]?.label ?? '...';
+    pendingHref = sides[idx]?.href ?? null;
     resultShown = true;
     setResultText(pendingLabel);
     triggerAura();
@@ -445,6 +454,7 @@
     if (!cube || !isVisible) return;
 
     pendingLabel = null;
+    pendingHref = null;
     resultReady = false;
     resultShown = false;
     setResultText('—');
@@ -569,6 +579,7 @@
 
     // Reset label; final result is derived from the settled orientation.
     pendingLabel = null;
+    pendingHref = null;
     resultReady = false;
     resultShown = false;
     setResultText('—');
@@ -689,9 +700,32 @@
 <div class="relative z-10 w-full">
   <div class="mb-2 flex items-center gap-3">
     <div class="font-display text-xl tracking-wide">Dé 3D</div>
-    <div bind:this={labelEl} class="ml-auto text-right text-sm font-black uppercase tracking-wide text-[color:var(--acid-yellow)]">
-      —
-    </div>
+    <a
+      class="ml-auto inline-flex items-center gap-2 text-right text-sm font-black uppercase tracking-wide text-[color:var(--acid-yellow)]"
+      href={resultShown && pendingHref ? pendingHref : '#'}
+      aria-disabled={resultShown && pendingHref ? 'false' : 'true'}
+      tabindex={resultShown && pendingHref ? 0 : -1}
+      on:click={(e) => {
+        if (!(resultShown && pendingHref)) {
+          e.preventDefault();
+          return;
+        }
+        goToResult(e);
+      }}
+    >
+      <span
+        bind:this={labelEl}
+        class={resultShown && pendingHref ? 'cursor-pointer underline decoration-[color:var(--acid-yellow)]/35 underline-offset-4' : ''}
+      >
+        —
+      </span>
+      <span
+        aria-hidden="true"
+        class={resultShown && pendingHref ? 'opacity-55 translate-y-[0.5px]' : 'opacity-0'}
+      >
+        ↗
+      </span>
+    </a>
   </div>
 
   <!-- keeps layout space in embedded contexts (also used as spawn reference) -->

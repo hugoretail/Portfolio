@@ -1,0 +1,89 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Moi — Hugo Retail" description="À propos" showHeaderNav={true}>
+	<main class="relative min-h-screen overflow-hidden">
+		<div class="pointer-events-none absolute inset-0 bg-graffiti opacity-[0.16]" aria-hidden="true"></div>
+		<div class="pointer-events-none absolute inset-0 bg-nature opacity-[0.08]" aria-hidden="true"></div>
+		<div class="paper-grain" aria-hidden="true"></div>
+		<div class="noise-overlay" aria-hidden="true"></div>
+
+		<section class="relative z-10 mx-auto max-w-6xl px-4 pb-16 pt-8 md:pt-10">
+			<div class="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+				<div class="brutal-border bg-black/55 p-6 md:p-8">
+					<div class="flex flex-wrap items-baseline justify-between gap-3">
+						<h1 class="font-display text-6xl leading-none md:text-8xl">Moi</h1>
+						<div class="font-black uppercase tracking-widest text-xs text-[color:var(--muted)]">dossier</div>
+					</div>
+
+					<p class="mt-4 font-hand text-3xl leading-snug text-[color:var(--fg)]">
+						Je fabrique des images, des systèmes et des gestes.
+						<span class="mx-2 text-[color:var(--red-thread)]">/</span>
+						Brutaliste, mais vivant.
+					</p>
+
+					<div class="mt-6 grid gap-4 md:grid-cols-2">
+						<div class="brutal-border bg-black/35 p-4">
+							<div class="font-black uppercase tracking-widest text-[11px] text-[color:var(--muted)]">focus</div>
+							<ul class="mt-2 font-hand text-2xl text-[color:var(--muted)]">
+								<li>Graffiti: mur, rythme, précision</li>
+								<li>Hip-hop: texture, coupe, boucle</li>
+								<li>IA/NLP: contrainte, matière, montage</li>
+								<li>Code: outils, interfaces, fluidité</li>
+							</ul>
+						</div>
+
+						<div class="brutal-border bg-black/35 p-4">
+							<div class="font-black uppercase tracking-widest text-[11px] text-[color:var(--muted)]">phrase</div>
+							<p class="mt-2 font-hand text-2xl leading-snug text-[color:var(--muted)]">
+								« Je prends le chaos, je le cadre. Je garde le souffle. »
+							</p>
+							<div class="mt-3 font-black uppercase tracking-widest text-[10px] text-[color:var(--muted)]">
+								— à ajuster
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Right column: brutal “ID card” / stamp vibe -->
+				<aside class="relative">
+					<div class="brutal-border bg-black/60 p-6">
+						<div class="flex items-center justify-between gap-3">
+							<div class="font-display text-3xl">Carte</div>
+							<div class="brutal-border-red px-3 py-2 font-black uppercase tracking-widest text-[11px] text-[color:var(--red-thread)]">
+								CONFIDENTIEL
+							</div>
+						</div>
+
+						<div class="mt-5 grid gap-3">
+							<div class="brutal-border bg-black/35 p-4">
+								<div class="font-black uppercase tracking-widest text-[11px] text-[color:var(--muted)]">nom</div>
+								<div class="mt-1 font-display text-4xl">Hugo</div>
+							</div>
+
+							<div class="brutal-border bg-black/35 p-4">
+								<div class="font-black uppercase tracking-widest text-[11px] text-[color:var(--muted)]">médiums</div>
+								<div class="mt-2 flex flex-wrap gap-2">
+									<span class="brutal-border bg-black/30 px-3 py-2 text-xs font-black uppercase tracking-widest">spray</span>
+									<span class="brutal-border bg-black/30 px-3 py-2 text-xs font-black uppercase tracking-widest">stylo</span>
+									<span class="brutal-border bg-black/30 px-3 py-2 text-xs font-black uppercase tracking-widest">web</span>
+									<span class="brutal-border bg-black/30 px-3 py-2 text-xs font-black uppercase tracking-widest">3D</span>
+								</div>
+							</div>
+
+							<div class="brutal-border bg-black/35 p-4">
+								<div class="font-black uppercase tracking-widest text-[11px] text-[color:var(--muted)]">accès rapide</div>
+								<div class="mt-2 flex flex-col gap-2">
+									<a class="brutal-border bg-black/30 px-3 py-3 font-black uppercase tracking-widest text-xs hover:bg-black/50" href="/frise">Frise</a>
+									<a class="brutal-border bg-black/30 px-3 py-3 font-black uppercase tracking-widest text-xs hover:bg-black/50" href="/graffiti">Graffiti</a>
+									<a class="brutal-border bg-black/30 px-3 py-3 font-black uppercase tracking-widest text-xs hover:bg-black/50" href="/ia">IA / NLP</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</aside>
+			</div>
+		</section>
+	</main>
+</BaseLayout>

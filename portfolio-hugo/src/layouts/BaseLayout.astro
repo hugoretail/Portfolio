@@ -1,17 +1,20 @@
 ---
 import '../styles/global.css';
 import RedThread from '../components/RedThread.svelte';
+import SiteHeader from '../components/SiteHeader.astro';
 
 type Props = {
   title?: string;
   description?: string;
   showThread?: boolean;
+  showHeaderNav?: boolean;
 };
 
 const {
   title = 'Hugo Retail',
   description = 'Portfolio',
-  showThread = true
+  showThread = true,
+  showHeaderNav = false
 } = Astro.props;
 ---
 <!doctype html>
@@ -49,6 +52,8 @@ const {
   </head>
   <body class="min-h-screen bg-[color:var(--bg)] text-[color:var(--fg)]">
     {showThread ? <RedThread client:load href="/frise" /> : null}
+
+    {showHeaderNav ? <SiteHeader /> : null}
 
     <div class="relative">
       <slot />

@@ -9,7 +9,6 @@
   let pathHighlightEl: SVGPathElement | null = null;
   let pathDarkEl: SVGPathElement | null = null;
   let pathLightEl: SVGPathElement | null = null;
-  let hitEl: SVGPathElement | null = null;
   let svgEl: SVGSVGElement | null = null;
 
   let rafId: number | null = null;
@@ -72,7 +71,6 @@
     pathHighlightEl?.setAttribute('d', d);
     pathDarkEl?.setAttribute('d', d);
     pathLightEl?.setAttribute('d', d);
-    hitEl?.setAttribute('d', d);
 
     // Fake rope twist: slide the stripe pattern as you scroll.
     const twist = (motionY * 0.25) % 32;
@@ -160,26 +158,22 @@
     if (rafId != null) cancelAnimationFrame(rafId);
     if (animRaf != null) cancelAnimationFrame(animRaf);
   });
-
-  function goTimeline() {
-    if (!href) return;
-    if (typeof window === 'undefined') return;
-    if (window.location.pathname === href) return;
-    window.location.assign(href);
-  }
-
-  function onHitKeydown(e: KeyboardEvent) {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      goTimeline();
-    }
-  }
 </script>
 
-<div class="fixed inset-0 z-0">
+<!-- Click zone (kept slim so it doesn't block UI) -->
+<a
+  class="fixed left-0 top-0 z-30 h-full"
+  href={href}
+  aria-label="Ouvrir la frise chronologique"
+  style="width: clamp(72px, 12vw, 96px);"
+></a>
+
+<!-- Visual thread (never intercepts pointer events) -->
+<div class="pointer-events-none fixed inset-0 z-20">
   <svg
     bind:this={svgEl}
     class="h-full w-full"
+    pointer-events="none"
     viewBox="0 0 100 100"
     preserveAspectRatio="none"
   >
@@ -248,24 +242,6 @@
       </pattern>
     </defs>
 
-    <!-- Invisible hit area (only on stroke) -->
-    <path
-      bind:this={hitEl}
-      d="M 40 0 C 40 0, 40 1000, 40 1000"
-      fill="none"
-      stroke="transparent"
-      stroke-width="26"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      pointer-events="stroke"
-      tabindex="0"
-      role="link"
-      aria-label="Ouvrir la frise chronologique"
-      style="cursor: pointer;"
-      on:click={goTimeline}
-      on:keydown={onHitKeydown}
-    />
-
     <path
       bind:this={pathShadowEl}
       d="M 40 0 C 40 0, 40 1000, 40 1000"
@@ -275,7 +251,6 @@
       stroke-linecap="round"
       stroke-linejoin="round"
       opacity="0.35"
-      pointer-events="none"
     />
 
     <path
@@ -289,7 +264,6 @@
       opacity="0.9"
       filter="url(#threadShadow)"
       stroke-dasharray="32 0"
-      pointer-events="none"
     />
 
     <!-- darker patches (paint density) -->
@@ -304,7 +278,6 @@
       opacity="0.18"
       filter="url(#patchDark)"
       stroke-dasharray="46 10"
-      pointer-events="none"
     />
 
     <!-- lighter patches (catching light) -->
@@ -319,7 +292,6 @@
       opacity="0.14"
       filter="url(#patchLight)"
       stroke-dasharray="54 14"
-      pointer-events="none"
     />
 
     <!-- subtle inner shading / variation to avoid flat red -->
@@ -344,7 +316,6 @@
       stroke-linejoin="round"
       opacity="0.16"
       filter="url(#threadGrain)"
-      pointer-events="none"
     />
   </svg>
 </div>

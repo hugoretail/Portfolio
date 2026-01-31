@@ -8,8 +8,8 @@ import QRCode from '../components/QRCode.svelte';
 
 <BaseLayout title="Hugo Retail">
 	<main class="relative min-h-screen overflow-hidden">
-		<div class="absolute inset-0 bg-graffiti opacity-20" aria-hidden="true"></div>
-		<div class="absolute inset-0 bg-nature opacity-[0.10]" aria-hidden="true"></div>
+		<div class="pointer-events-none absolute inset-0 bg-graffiti opacity-20" aria-hidden="true"></div>
+		<div class="pointer-events-none absolute inset-0 bg-nature opacity-[0.10]" aria-hidden="true"></div>
 		<div class="paper-grain" aria-hidden="true"></div>
 		<div class="noise-overlay" aria-hidden="true"></div>
 
@@ -23,7 +23,7 @@ import QRCode from '../components/QRCode.svelte';
 				</div>
 
 				<div class="flex items-center gap-4">
-					<ExplorerButton client:load href="/graffiti" label="Explorer" />
+					<ExplorerButton client:load href="/moi" label="Explorer" />
 				</div>
 			</header>
 
