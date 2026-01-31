@@ -46,7 +46,6 @@ const pieces: Piece[] = [
 	{ id: 'bio', label: 'DESCRIPTION', kind: 'bio', x: 44, y: 34, r: -1.8 },
 	{ id: 'focus', label: 'FOCUS', kind: 'focus', x: 62, y: 62, r: 1.4 },
 	{ id: 'phrase', label: 'PHRASE', kind: 'phrase', x: 30, y: 70, r: -2.2 },
-	{ id: 'exit', label: 'SORTIES', kind: 'exit', x: 86, y: 40, r: 2.9 },
 	{ id: 'stamp', label: 'DOSSIER', kind: 'stamp', x: 16, y: 10, r: -6.0 }
 ];
 ---
@@ -78,12 +77,6 @@ const pieces: Piece[] = [
 					<div class="moi-kicker">PAGE / IDENTITÉ</div>
 					<div class="moi-h1">MOI</div>
 				</div>
-				<div class="flex items-center gap-2">
-					<button id="resetBtn" class="moi-btn" type="button" title="Reset layout">RESET</button>
-					<button id="shuffleBtn" class="moi-btn" type="button" title="Shuffle layout">SHUFFLE</button>
-					<button id="glitchBtn" class="moi-btn" type="button" aria-pressed="false" title="Mode glitch (touche G)">GLITCH</button>
-					<a class="moi-btn" href="/">RETOUR</a>
-				</div>
 			</div>
 			<p class="mt-3 max-w-3xl font-hand text-2xl leading-snug text-[color:var(--fg)] md:text-3xl">
 				Je fais de la matière.
@@ -92,9 +85,7 @@ const pieces: Piece[] = [
 				<span class="mx-2 text-[color:var(--acid-yellow)]">/</span>
 				Je laisse du souffle.
 			</p>
-			<div class="moi-help" aria-hidden="true">
-				Drag les notes. Alt+drag les liens. Touche <b>G</b> = glitch. Konami = secret.
-			</div>
+			<div class="moi-help" aria-hidden="true">Clique + maintiens pour déplacer. Relâche sans bouger = clic.</div>
 		</header>
 
 		<!-- Scattered board (broken layout) -->
@@ -115,7 +106,7 @@ const pieces: Piece[] = [
 					{navNodes.map((item) => (
 						<a
 							data-node={item.href}
-							data-draggable="alt"
+							data-draggable="true"
 							href={item.href}
 							class:list={[
 								'node node--nav',
@@ -212,9 +203,6 @@ const pieces: Piece[] = [
 			const board = document.getElementById('moiBoard');
 			const wiresSvg = document.getElementById('moiWires');
 			const wireGroup = document.getElementById('wirePaths');
-			const glitchBtn = document.getElementById('glitchBtn');
-			const resetBtn = document.getElementById('resetBtn');
-			const shuffleBtn = document.getElementById('shuffleBtn');
 			const sprayLayer = document.getElementById('sprayLayer');
 			if (!page || !board || !wiresSvg || !wireGroup) return;
 			const STORAGE_KEY = 'moi.board.v3';
@@ -232,8 +220,7 @@ const pieces: Piece[] = [
 				['bio', '/litterature'],
 				['bio', '/frise'],
 				['focus', '/graffiti'],
-				['phrase', '/litterature'],
-				['exit', '/frise']
+				['phrase', '/litterature']
 			];
 
 			const byKey = new Map();
@@ -324,17 +311,6 @@ const pieces: Piece[] = [
 				board.style.setProperty('--scroll', String(s));
 			};
 
-			const setGlitch = (on) => {
-				page.classList.toggle('moi-glitch', on);
-				if (glitchBtn) glitchBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
-			};
-
-			let glitchOn = false;
-			glitchBtn?.addEventListener('click', () => {
-				glitchOn = !glitchOn;
-				setGlitch(glitchOn);
-			});
-
 			// Highlight connected wires/nodes on hover/focus
 			const setHot = (key) => {
 				const hotKeys = new Set([key]);
@@ -380,8 +356,18 @@ const pieces: Piece[] = [
 			});
 
 			// Dragging (persisted per node)
-			const isInteractiveTarget = (t) => !!t?.closest?.('a,button,input,textarea,select,label');
+			const DRAG_THRESHOLD = 6;
 			let drag = null;
+			let dragIntent = null;
+			let suppressClickUntil = 0;
+
+			// Cancel native click navigation right after a drag.
+			board.addEventListener('click', (e) => {
+				if (performance.now() < suppressClickUntil) {
+					e.preventDefault();
+					e.stopPropagation();
+				}
+			}, true);
 
 			const startDrag = (el, e) => {
 				const key = el.getAttribute('data-node');
@@ -419,20 +405,62 @@ const pieces: Piece[] = [
 			};
 
 			board.addEventListener('pointerdown', (e) => {
+				if (e.button !== 0) return;
+				if (e.ctrlKey || e.metaKey || e.shiftKey) return;
 				const target = e.target;
 				const el = target?.closest?.('[data-node]');
 				if (!el || !board.contains(el)) return;
 				const dragMode = el.getAttribute('data-draggable');
 				if (!dragMode) return;
-				if (dragMode === 'alt' && !e.altKey) return;
-				if (isInteractiveTarget(target) && dragMode !== 'alt') return;
+
+				// Block default click so click/drag is consistent and we can drag nav without Alt.
 				e.preventDefault();
-				startDrag(el, e);
+				const a = target?.closest?.('a[href]');
+				dragIntent = {
+					el,
+					x0: e.clientX,
+					y0: e.clientY,
+					pointerId: e.pointerId,
+					href: a?.getAttribute?.('href') ?? null
+				};
+				try { el.setPointerCapture?.(e.pointerId); } catch {}
 			});
 
-			board.addEventListener('pointermove', moveDrag);
-			board.addEventListener('pointerup', endDrag);
-			board.addEventListener('pointercancel', endDrag);
+			board.addEventListener('pointermove', (e) => {
+				if (drag) return moveDrag(e);
+				if (!dragIntent) return;
+				const dist = Math.hypot(e.clientX - dragIntent.x0, e.clientY - dragIntent.y0);
+				if (dist < DRAG_THRESHOLD) return;
+				e.preventDefault();
+				suppressClickUntil = performance.now() + 600;
+				startDrag(dragIntent.el, {
+					clientX: dragIntent.x0,
+					clientY: dragIntent.y0,
+					pointerId: dragIntent.pointerId
+				});
+				moveDrag(e);
+			});
+
+			const endPointer = (e) => {
+				if (drag) {
+					suppressClickUntil = performance.now() + 600;
+					endDrag();
+					dragIntent = null;
+					return;
+				}
+				if (!dragIntent) return;
+				const href = dragIntent.href;
+				const moved = Math.hypot(e.clientX - dragIntent.x0, e.clientY - dragIntent.y0) >= DRAG_THRESHOLD;
+				dragIntent = null;
+				if (!moved && href) window.location.assign(href);
+			};
+
+			board.addEventListener('pointerup', endPointer);
+			board.addEventListener('pointercancel', () => {
+				suppressClickUntil = performance.now() + 600;
+				dragIntent = null;
+				endDrag();
+			});
 
 			// Keyboard nudge (focused node)
 			board.addEventListener('keydown', (e) => {
@@ -453,29 +481,6 @@ const pieces: Piece[] = [
 				el.style.setProperty('--dy', `${dy}px`);
 				const saved = readSaved();
 				saved[el.getAttribute('data-node')] = { dx, dy };
-				writeSaved(saved);
-				requestRender();
-			});
-
-			resetBtn?.addEventListener('click', () => {
-				try { window.localStorage.removeItem(STORAGE_KEY); } catch {}
-				nodes.forEach((el) => {
-					el.style.setProperty('--dx', `0px`);
-					el.style.setProperty('--dy', `0px`);
-				});
-				requestRender();
-			});
-
-			shuffleBtn?.addEventListener('click', () => {
-				const saved = readSaved();
-				nodes.forEach((el) => {
-					const k = el.getAttribute('data-node');
-					const dx = Math.round((Math.random() - 0.5) * 220);
-					const dy = Math.round((Math.random() - 0.5) * 200);
-					el.style.setProperty('--dx', `${dx}px`);
-					el.style.setProperty('--dy', `${dy}px`);
-					saved[k] = { dx, dy };
-				});
 				writeSaved(saved);
 				requestRender();
 			});
@@ -521,13 +526,6 @@ const pieces: Piece[] = [
 				setScrollVar();
 				requestRender();
 			}, { passive: true });
-
-			window.addEventListener('keydown', (e) => {
-				if (e.key.toLowerCase() === 'g') {
-					glitchOn = !glitchOn;
-					setGlitch(glitchOn);
-				}
-			});
 
 			setScrollVar();
 			requestRender();
@@ -637,6 +635,8 @@ const pieces: Piece[] = [
 			position: absolute;
 			left: calc(var(--x) * 1%);
 			top: calc(var(--y) * 1%);
+			touch-action: none;
+			cursor: grab;
 			transform: translate(-50%, -50%) rotate(var(--r, 0deg)) translateY(calc(var(--scroll, 0) * 1px)) translate(var(--dx, 0px), var(--dy, 0px));
 			transform-origin: center;
 			max-width: min(520px, 86vw);
