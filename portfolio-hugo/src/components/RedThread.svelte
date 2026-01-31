@@ -9,7 +9,9 @@
   let pathHighlightEl: SVGPathElement | null = null;
   let pathDarkEl: SVGPathElement | null = null;
   let pathLightEl: SVGPathElement | null = null;
+  let pathHitEl: SVGPathElement | null = null;
   let svgEl: SVGSVGElement | null = null;
+  let hitSvgEl: SVGSVGElement | null = null;
 
   let rafId: number | null = null;
   let animRaf: number | null = null;
@@ -64,6 +66,7 @@
 
     // Keep path units in real pixels -> no weird stretching / pointy artifacts.
     svgEl.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    hitSvgEl?.setAttribute('viewBox', `0 0 ${width} ${height}`);
 
     const d = buildPath(height, motionY, width);
     pathEl.setAttribute('d', d);
@@ -71,6 +74,7 @@
     pathHighlightEl?.setAttribute('d', d);
     pathDarkEl?.setAttribute('d', d);
     pathLightEl?.setAttribute('d', d);
+    pathHitEl?.setAttribute('d', d);
 
     // Fake rope twist: slide the stripe pattern as you scroll.
     const twist = (motionY * 0.25) % 32;
@@ -158,15 +162,48 @@
     if (rafId != null) cancelAnimationFrame(rafId);
     if (animRaf != null) cancelAnimationFrame(animRaf);
   });
+
+  function openThread() {
+    // Component is client:load, but keep it defensive.
+    if (typeof window === 'undefined') return;
+    window.location.assign(href);
+  }
+
+  function onHitKeydown(e: KeyboardEvent) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      openThread();
+    }
+  }
 </script>
 
-<!-- Click zone (kept slim so it doesn't block UI) -->
-<a
-  class="fixed left-0 top-0 z-30 h-full"
-  href={href}
-  aria-label="Ouvrir la frise chronologique"
-  style="width: clamp(72px, 12vw, 96px);"
-></a>
+<!-- Accessible fallback link (keyboard / screen readers) -->
+<a class="thread-access" href={href}>Ouvrir la frise chronologique</a>
+
+<!-- Click zone: ONLY the stroke is interactive (rest of the page stays clickable) -->
+<div class="thread-hit fixed inset-0 z-30" aria-hidden="true">
+  <svg
+    bind:this={hitSvgEl}
+    class="h-full w-full"
+    viewBox="0 0 100 100"
+    preserveAspectRatio="none"
+  >
+    <path
+      bind:this={pathHitEl}
+      d="M 40 0 C 40 0, 40 1000, 40 1000"
+      fill="none"
+      stroke="transparent"
+      stroke-width="22"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      tabindex="0"
+      role="link"
+      aria-label="Ouvrir la frise chronologique"
+      on:pointerdown|preventDefault={openThread}
+      on:keydown={onHitKeydown}
+    />
+  </svg>
+</div>
 
 <!-- Visual thread (never intercepts pointer events) -->
 <div class="pointer-events-none fixed inset-0 z-20">
@@ -319,3 +356,46 @@
     />
   </svg>
 </div>
+
+<style>
+  .thread-hit {
+    pointer-events: none;
+  }
+
+  .thread-hit svg {
+    pointer-events: none;
+  }
+
+  .thread-hit path {
+    pointer-events: stroke;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .thread-access {
+    position: fixed;
+    left: -10000px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    z-index: 40;
+  }
+
+  .thread-access:focus {
+    left: 12px;
+    top: 12px;
+    width: auto;
+    height: auto;
+    padding: 10px 12px;
+    overflow: visible;
+    background: rgba(0, 0, 0, 0.85);
+    border: 2px solid var(--fg);
+    box-shadow: 6px 6px 0 rgba(255, 0, 0, 0.22);
+    color: var(--fg);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-weight: 900;
+    font-size: 11px;
+  }
+</style>

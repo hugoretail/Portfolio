@@ -1,88 +1,152 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+
+const pathname = Astro.url?.pathname ?? '/';
+type NavItem = { href: string; label: string };
+const nav: NavItem[] = [
+	{ href: '/', label: 'Accueil' },
+	{ href: '/moi', label: 'Moi' },
+	{ href: '/graffiti', label: 'Graffiti' },
+	{ href: '/hiphop', label: 'Hiphop' },
+	{ href: '/ia', label: 'IA / NLP' },
+	{ href: '/litterature', label: 'Littérature' },
+	{ href: '/frise', label: 'Frise' }
+];
+
+function isActive(href: string) {
+	if (href === '/') return pathname === '/';
+	return pathname.startsWith(href);
+}
+
+function navCloudStyle(idx: number) {
+	// Deterministic “mess” to avoid a clean bar.
+	const left = (17 + idx * 13) % 86; // %
+	const top = (8 + idx * 19) % 70; // %
+	const rotate = (idx % 2 === 0 ? -1 : 1) * (1.4 + (idx % 3) * 0.9);
+	const skew = idx % 2 === 0 ? -10 : 10;
+	return `left:${left}%; top:${top}%; transform: translate(-12%, -10%) rotate(${rotate}deg) skewX(${skew}deg);`;
+}
 ---
 
-<BaseLayout title="Moi — Hugo Retail" description="À propos" showHeaderNav={true}>
+<BaseLayout title="Moi — Hugo Retail" description="À propos" showHeaderNav={false}>
 	<main class="relative min-h-screen overflow-hidden">
-		<div class="pointer-events-none absolute inset-0 bg-graffiti opacity-[0.16]" aria-hidden="true"></div>
-		<div class="pointer-events-none absolute inset-0 bg-nature opacity-[0.08]" aria-hidden="true"></div>
+		<div class="pointer-events-none absolute inset-0 bg-graffiti opacity-[0.12]" aria-hidden="true"></div>
+		<div class="pointer-events-none absolute inset-0 bg-nature opacity-[0.06]" aria-hidden="true"></div>
 		<div class="paper-grain" aria-hidden="true"></div>
 		<div class="noise-overlay" aria-hidden="true"></div>
 
-		<section class="relative z-10 mx-auto max-w-6xl px-4 pb-16 pt-8 md:pt-10">
-			<div class="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
-				<div class="brutal-border bg-black/55 p-6 md:p-8">
-					<div class="flex flex-wrap items-baseline justify-between gap-3">
-						<h1 class="font-display text-6xl leading-none md:text-8xl">Moi</h1>
-						<div class="font-black uppercase tracking-widest text-xs text-[color:var(--muted)]">dossier</div>
-					</div>
+		<!-- Big background typography shards -->
+		<div class="pointer-events-none absolute left-[-6vw] top-[10vh] rotate-[-8deg] font-display text-[18vw] leading-none text-[color:var(--fg)] opacity-[0.05]" aria-hidden="true">
+			HUGO
+		</div>
+		<div class="pointer-events-none absolute right-[-8vw] top-[46vh] rotate-[11deg] font-display text-[16vw] leading-none text-[color:var(--red-thread)] opacity-[0.06]" aria-hidden="true">
+			RETAIL
+		</div>
 
-					<p class="mt-4 font-hand text-3xl leading-snug text-[color:var(--fg)]">
-						Je fabrique des images, des systèmes et des gestes.
-						<span class="mx-2 text-[color:var(--red-thread)]">/</span>
-						Brutaliste, mais vivant.
-					</p>
-
-					<div class="mt-6 grid gap-4 md:grid-cols-2">
-						<div class="brutal-border bg-black/35 p-4">
-							<div class="font-black uppercase tracking-widest text-[11px] text-[color:var(--muted)]">focus</div>
-							<ul class="mt-2 font-hand text-2xl text-[color:var(--muted)]">
-								<li>Graffiti: mur, rythme, précision</li>
-								<li>Hip-hop: texture, coupe, boucle</li>
-								<li>IA/NLP: contrainte, matière, montage</li>
-								<li>Code: outils, interfaces, fluidité</li>
-							</ul>
-						</div>
-
-						<div class="brutal-border bg-black/35 p-4">
-							<div class="font-black uppercase tracking-widest text-[11px] text-[color:var(--muted)]">phrase</div>
-							<p class="mt-2 font-hand text-2xl leading-snug text-[color:var(--muted)]">
-								« Je prends le chaos, je le cadre. Je garde le souffle. »
-							</p>
-							<div class="mt-3 font-black uppercase tracking-widest text-[10px] text-[color:var(--muted)]">
-								— à ajuster
-							</div>
+		<!-- Brutal header (custom for this page) -->
+		<header class="relative z-20 mx-auto max-w-6xl px-4 pt-6">
+			<div class="relative">
+				<!-- Two overlapping sheets instead of one big box -->
+				<div class="relative bg-black/60 p-4 md:p-6" style="border: 3px solid var(--fg); clip-path: polygon(1% 2%, 98% 0, 100% 86%, 94% 100%, 2% 98%, 0 18%);">
+					<div class="font-black uppercase tracking-[0.35em] text-[10px] text-[color:var(--muted)]">page / identité</div>
+					<div class="mt-2 flex flex-wrap items-end justify-between gap-4">
+						<h1 class="font-display text-6xl leading-none md:text-8xl" style="text-shadow: 10px 10px 0 rgba(255,0,0,0.10);">MOI</h1>
+						<div class="max-w-[360px] font-hand text-2xl leading-snug text-[color:var(--fg)]">
+							Je fabrique des images, des systèmes et des gestes.
 						</div>
 					</div>
 				</div>
 
-				<!-- Right column: brutal “ID card” / stamp vibe -->
-				<aside class="relative">
-					<div class="brutal-border bg-black/60 p-6">
-						<div class="flex items-center justify-between gap-3">
-							<div class="font-display text-3xl">Carte</div>
-							<div class="brutal-border-red px-3 py-2 font-black uppercase tracking-widest text-[11px] text-[color:var(--red-thread)]">
-								CONFIDENTIEL
-							</div>
+				<div class="absolute -right-2 -top-4 rotate-[2deg] bg-[color:var(--red-thread)] px-3 py-2 text-[11px] font-black uppercase tracking-widest text-black" style="border: 2px solid #000; box-shadow: 8px 8px 0 rgba(0,0,0,0.55);">
+					dossier
+				</div>
+
+				<!-- Nav cloud (broken alignment on purpose) -->
+				<nav class="relative mt-5 h-[180px] md:h-[220px]" aria-label="Navigation">
+					{nav.map((item, idx) => (
+						<a
+							href={item.href}
+							class:list={[
+								'absolute px-3 py-2 text-xs font-black uppercase tracking-widest transition',
+								'bg-black/45 hover:bg-black/80 focus:outline-none focus:ring-2 focus:ring-[color:var(--acid-yellow)]/50',
+								isActive(item.href) ? 'text-[color:var(--acid-yellow)]' : 'text-[color:var(--fg)]'
+							]}
+							style={`border:2px solid var(--fg); box-shadow:${idx % 2 === 0 ? '6px 6px 0 rgba(255,0,0,0.18)' : '6px 6px 0 rgba(246,246,246,0.10)'}; ${navCloudStyle(idx)}`}
+						>
+							{item.label}
+						</a>
+					))}
+				</nav>
+			</div>
+		</header>
+
+		<section class="relative z-10 mx-auto max-w-6xl px-4 pb-20 pt-6 md:pt-8">
+			<div class="relative">
+				<!-- Collage layout: overlaps + clipped shapes -->
+				<div class="relative grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+					<!-- Main description sheet -->
+					<article class="relative bg-black/55 p-6 md:p-8" style="border:3px solid var(--fg); clip-path: polygon(2% 0, 98% 4%, 100% 92%, 92% 100%, 0 96%, 0 10%);">
+						<div class="flex flex-wrap items-baseline justify-between gap-4">
+							<div class="font-black uppercase tracking-[0.35em] text-[10px] text-[color:var(--muted)]">description</div>
+							<div class="font-black uppercase tracking-[0.35em] text-[10px] text-[color:var(--muted)]">à remplir</div>
+						</div>
+						<p class="mt-4 font-hand text-2xl leading-snug text-[color:var(--fg)] md:text-4xl">
+							Ici tu balances ta bio. Courte, tranchante, vraie.
+							<span class="mx-2 text-[color:var(--red-thread)]">/</span>
+							Ce que tu fais, ce que tu refuses, ce que tu cherches.
+						</p>
+
+						<div class="mt-7 flex flex-wrap gap-2">
+							<span class="px-3 py-2 text-xs font-black uppercase tracking-widest" style="border:2px solid var(--fg); transform: rotate(-4deg);">spray</span>
+							<span class="px-3 py-2 text-xs font-black uppercase tracking-widest" style="border:2px solid var(--fg); transform: rotate(2deg);">stylo</span>
+							<span class="px-3 py-2 text-xs font-black uppercase tracking-widest" style="border:2px solid var(--fg); transform: rotate(-1deg);">interfaces</span>
+							<span class="px-3 py-2 text-xs font-black uppercase tracking-widest" style="border:2px solid var(--fg); transform: rotate(3deg);">matière</span>
+							<span class="px-3 py-2 text-xs font-black uppercase tracking-widest" style="border:2px solid var(--fg); transform: rotate(-3deg);">contrainte</span>
 						</div>
 
-						<div class="mt-5 grid gap-3">
-							<div class="brutal-border bg-black/35 p-4">
-								<div class="font-black uppercase tracking-widest text-[11px] text-[color:var(--muted)]">nom</div>
-								<div class="mt-1 font-display text-4xl">Hugo</div>
-							</div>
+						<!-- small tear strip -->
+						<div class="pointer-events-none absolute -bottom-4 left-8 hidden h-10 w-[70%] rotate-[-1deg] md:block" aria-hidden="true"
+							style="background: repeating-linear-gradient(90deg, rgba(255,0,0,0.20) 0 10px, rgba(255,0,0,0.05) 10px 18px); border:2px solid rgba(255,0,0,0.55); mix-blend-mode: screen;">
+						</div>
+					</article>
 
-							<div class="brutal-border bg-black/35 p-4">
-								<div class="font-black uppercase tracking-widest text-[11px] text-[color:var(--muted)]">médiums</div>
-								<div class="mt-2 flex flex-wrap gap-2">
-									<span class="brutal-border bg-black/30 px-3 py-2 text-xs font-black uppercase tracking-widest">spray</span>
-									<span class="brutal-border bg-black/30 px-3 py-2 text-xs font-black uppercase tracking-widest">stylo</span>
-									<span class="brutal-border bg-black/30 px-3 py-2 text-xs font-black uppercase tracking-widest">web</span>
-									<span class="brutal-border bg-black/30 px-3 py-2 text-xs font-black uppercase tracking-widest">3D</span>
-								</div>
-							</div>
+					<!-- Right stack: overlapping notes -->
+					<div class="relative">
+						<div class="absolute -right-2 -top-4 rotate-[3deg] bg-[color:var(--acid-yellow)] px-3 py-2 text-xs font-black uppercase tracking-widest text-black" style="border:2px solid #000; box-shadow: 8px 8px 0 rgba(0,0,0,0.55);">
+							pas de filtre
+						</div>
 
-							<div class="brutal-border bg-black/35 p-4">
-								<div class="font-black uppercase tracking-widest text-[11px] text-[color:var(--muted)]">accès rapide</div>
-								<div class="mt-2 flex flex-col gap-2">
-									<a class="brutal-border bg-black/30 px-3 py-3 font-black uppercase tracking-widest text-xs hover:bg-black/50" href="/frise">Frise</a>
-									<a class="brutal-border bg-black/30 px-3 py-3 font-black uppercase tracking-widest text-xs hover:bg-black/50" href="/graffiti">Graffiti</a>
-									<a class="brutal-border bg-black/30 px-3 py-3 font-black uppercase tracking-widest text-xs hover:bg-black/50" href="/ia">IA / NLP</a>
-								</div>
-							</div>
+						<div class="relative bg-black/45 p-4 md:p-5" style="border: 2px solid var(--fg); transform: rotate(-1deg) translateX(-6px); box-shadow: 10px 10px 0 rgba(246,246,246,0.10);">
+							<div class="font-black uppercase tracking-[0.35em] text-[10px] text-[color:var(--muted)]">focus</div>
+							<ul class="mt-3 font-hand text-2xl leading-snug text-[color:var(--muted)]">
+								<li><span class="text-[color:var(--fg)]">Graffiti</span> — mur, rythme, précision</li>
+								<li><span class="text-[color:var(--fg)]">Hip-hop</span> — texture, coupe, boucle</li>
+								<li><span class="text-[color:var(--fg)]">IA/NLP</span> — contrainte, matière, montage</li>
+								<li><span class="text-[color:var(--fg)]">Code</span> — outils, interfaces</li>
+							</ul>
+						</div>
+
+						<div class="relative -mt-2 bg-black/50 p-4 md:p-5" style="border: 2px solid var(--fg); transform: rotate(1.4deg) translateX(10px); clip-path: polygon(0 6%, 96% 0, 100% 88%, 92% 100%, 4% 94%);">
+							<div class="font-black uppercase tracking-[0.35em] text-[10px] text-[color:var(--muted)]">phrase</div>
+							<p class="mt-2 font-hand text-2xl leading-snug text-[color:var(--fg)]">
+								« Je prends le chaos. Je le cadre. Je garde le souffle. »
+							</p>
+							<div class="mt-3 text-[10px] font-black uppercase tracking-[0.35em] text-[color:var(--muted)]">— à ajuster</div>
 						</div>
 					</div>
-				</aside>
+				</div>
+
+				<!-- Diagonal exit banner -->
+				<div class="relative mt-10">
+					<div class="absolute left-[-10%] right-[-10%] top-4 h-20 rotate-[-4deg]" aria-hidden="true"
+						style="background: linear-gradient(90deg, rgba(255,0,0,0.25), rgba(246,246,246,0.10), rgba(255,0,0,0.18)); border-top:2px solid rgba(246,246,246,0.35); border-bottom:2px solid rgba(246,246,246,0.25); mix-blend-mode: screen;">
+					</div>
+					<div class="relative grid gap-3 md:grid-cols-3">
+						<a href="/frise" class="bg-black/55 px-5 py-4 font-black uppercase tracking-widest" style="border:3px solid var(--fg); transform: rotate(-2deg); box-shadow: 10px 10px 0 rgba(255,0,0,0.18);">Frise →</a>
+						<a href="/graffiti" class="bg-black/55 px-5 py-4 font-black uppercase tracking-widest" style="border:3px solid var(--fg); transform: rotate(1deg) translateY(6px);">Graffiti →</a>
+						<a href="/ia" class="bg-black/55 px-5 py-4 font-black uppercase tracking-widest" style="border:3px solid var(--fg); transform: rotate(-1deg) translateY(-4px);">IA / NLP →</a>
+					</div>
+				</div>
 			</div>
 		</section>
 	</main>
