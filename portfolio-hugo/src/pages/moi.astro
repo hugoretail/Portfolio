@@ -19,13 +19,15 @@ function isActive(href: string) {
 }
 
 const navPositions: Array<{ x: number; y: number; r: number }> = [
-	{ x: 12, y: 22, r: -3.2 },
-	{ x: 78, y: 18, r: 2.2 },
-	{ x: 20, y: 56, r: 1.5 },
-	{ x: 70, y: 52, r: -2.3 },
-	{ x: 45, y: 78, r: 3.1 },
-	{ x: 8, y: 82, r: -1.3 },
-	{ x: 88, y: 72, r: 1.1 }
+	// Accueil / Moi stay as-is (no extra notes)
+	{ x: 12, y: 12, r: -3.2 },
+	{ x: 86, y: 12, r: 2.2 },
+	// Sections
+	{ x: 12, y: 44, r: -2.0 }, // Graffiti
+	{ x: 90, y: 44, r: 2.0 },  // Hiphop
+	{ x: 54, y: 70, r: 2.8 },  // IA / NLP
+	{ x: 18, y: 74, r: -1.4 }, // Littérature
+	{ x: 88, y: 66, r: 1.1 }   // Frise
 ];
 
 const navNodes = nav.map((item, idx) => ({
@@ -36,18 +38,82 @@ const navNodes = nav.map((item, idx) => ({
 type Piece = {
 	id: string;
 	label: string;
-	kind: 'bio' | 'focus' | 'phrase' | 'exit' | 'stamp';
+	kind: 'bio' | 'focus' | 'phrase' | 'stamp' | 'note';
 	x: number;
 	y: number;
 	r: number;
+	title?: string;
+	text?: string;
+	forKey?: string;
 };
 
-const pieces: Piece[] = [
-	{ id: 'bio', label: 'DESCRIPTION', kind: 'bio', x: 44, y: 34, r: -1.8 },
-	{ id: 'focus', label: 'FOCUS', kind: 'focus', x: 62, y: 62, r: 1.4 },
-	{ id: 'phrase', label: 'PHRASE', kind: 'phrase', x: 30, y: 70, r: -2.2 },
-	{ id: 'stamp', label: 'DOSSIER', kind: 'stamp', x: 16, y: 10, r: -6.0 }
+const piecesCore: Piece[] = [
+	{ id: 'bio', label: 'DESCRIPTION', kind: 'bio', x: 50, y: 14, r: -1.8 },
+	{ id: 'focus', label: 'FOCUS', kind: 'focus', x: 22, y: 64, r: 1.2 },
+	{ id: 'phrase', label: 'PHRASE', kind: 'phrase', x: 44, y: 92, r: -2.2 },
+	{ id: 'stamp', label: 'DOSSIER', kind: 'stamp', x: 5, y: 4, r: -6.0 }
 ];
+
+// One extra note per section label (except Accueil/Moi)
+const piecesNotes: Piece[] = [
+	{
+		id: 'note-graffiti',
+		label: 'NOTE',
+		kind: 'note',
+		x: 32,
+		y: 44,
+		r: 1.4,
+		forKey: '/graffiti',
+		title: 'GRAFFITI',
+		text: 'Je cherche la ligne juste: vitesse + contrôle. Mur = métronome.'
+	},
+	{
+		id: 'note-hiphop',
+		label: 'NOTE',
+		kind: 'note',
+		x: 68,
+		y: 44,
+		r: -1.6,
+		forKey: '/hiphop',
+		title: 'HIP-HOP',
+		text: 'Découpe, boucle, silence. Une idée = un kick.'
+	},
+	{
+		id: 'note-ia',
+		label: 'FOCUS',
+		kind: 'note',
+		x: 66,
+		y: 72,
+		r: 2.2,
+		forKey: '/ia',
+		title: 'IA / NLP',
+		text: 'Je mets des contraintes pour sortir du style. Le modèle = outil, pas oracle.'
+	},
+	{
+		id: 'note-litterature',
+		label: 'PHRASE',
+		kind: 'note',
+		x: 10,
+		y: 86,
+		r: -2.6,
+		forKey: '/litterature',
+		title: 'LITTÉRATURE',
+		text: 'Je cadre pour laisser respirer. La phrase fait le montage.'
+	},
+	{
+		id: 'note-frise',
+		label: 'NOTE',
+		kind: 'note',
+		x: 74,
+		y: 86,
+		r: 1.0,
+		forKey: '/frise',
+		title: 'FRISE',
+		text: 'Trace = preuve. Chrono = récit. Je range le chaos sans l’éteindre.'
+	}
+];
+
+const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 ---
 
 <BaseLayout title="Moi — Hugo Retail" description="À propos" showHeaderNav={false}>
@@ -104,18 +170,21 @@ const pieces: Piece[] = [
 				<!-- NAV nodes (scattered) -->
 				<nav class="moi-nav" aria-label="Navigation">
 					{navNodes.map((item) => (
+						// eslint-disable-next-line astro/no-set-html-directive
 						<a
 							data-node={item.href}
 							data-draggable="true"
 							href={item.href}
 							class:list={[
 								'node node--nav',
+								(item.href !== '/' && item.href !== '/moi') ? 'node--linkout' : '',
 								isActive(item.href) ? 'node--active' : ''
 							]}
 							style={`--x:${item.x}; --y:${item.y}; --r:${item.r}deg;`}
 						>
 							<span class="node__label">{item.label}</span>
-							<span class="node__sub">clic</span>
+							<span class="node__sub">{(item.href !== '/' && item.href !== '/moi') ? 'ouvrir' : 'clic'}</span>
+							{(item.href !== '/' && item.href !== '/moi') ? <span class="node__go" aria-hidden="true">↗</span> : null}
 						</a>
 					))}
 				</nav>
@@ -124,7 +193,7 @@ const pieces: Piece[] = [
 				{pieces.map((p) => (
 					<section
 						data-piece={p.id}
-						data-node={p.id}
+						data-node={p.kind === 'note' ? `note:${p.forKey}` : p.id}
 						data-draggable="true"
 						tabindex="0"
 						class:list={[`node node--${p.kind}`]}
@@ -175,12 +244,10 @@ const pieces: Piece[] = [
 							</div>
 						) : null}
 
-						{p.kind === 'exit' ? (
-							<div class="node__exits">
-								<a class="exit" href="/frise">FRISE →</a>
-								<a class="exit" href="/graffiti">GRAFFITI →</a>
-								<a class="exit" href="/ia">IA / NLP →</a>
-								<a class="exit" href="/hiphop">HIP-HOP →</a>
+						{p.kind === 'note' ? (
+							<div class="node__note">
+								<div class="node__noteTitle">{p.title}</div>
+								<p class="node__noteText">{p.text}</p>
 							</div>
 						) : null}
 
@@ -205,7 +272,7 @@ const pieces: Piece[] = [
 			const wireGroup = document.getElementById('wirePaths');
 			const sprayLayer = document.getElementById('sprayLayer');
 			if (!page || !board || !wiresSvg || !wireGroup) return;
-			const STORAGE_KEY = 'moi.board.v3';
+			const STORAGE_KEY = 'moi.board.v4';
 
 			const nodes = Array.from(board.querySelectorAll('[data-node]'));
 			const getCenter = (el) => {
@@ -220,7 +287,13 @@ const pieces: Piece[] = [
 				['bio', '/litterature'],
 				['bio', '/frise'],
 				['focus', '/graffiti'],
-				['phrase', '/litterature']
+				['phrase', '/litterature'],
+				// Bind each section label to its own note
+				['/graffiti', 'note:/graffiti'],
+				['/hiphop', 'note:/hiphop'],
+				['/ia', 'note:/ia'],
+				['/litterature', 'note:/litterature'],
+				['/frise', 'note:/frise']
 			];
 
 			const byKey = new Map();
@@ -711,6 +784,53 @@ const pieces: Piece[] = [
 			clip-path: polygon(0 10%, 96% 0, 100% 90%, 92% 100%, 4% 94%);
 		}
 
+		.node--nav.node--linkout {
+			border-color: rgba(255, 230, 0, 0.75);
+			box-shadow: 10px 10px 0 rgba(255, 230, 0, 0.10);
+			padding-right: 44px;
+			background:
+				linear-gradient(180deg, rgba(255, 230, 0, 0.08), transparent 40%),
+				rgba(0, 0, 0, 0.58);
+			filter: drop-shadow(0 0 16px rgba(255, 230, 0, 0.08));
+		}
+
+		.node--nav.node--linkout .node__label {
+			text-shadow: 0 0 10px rgba(255, 230, 0, 0.08);
+		}
+
+		.node--nav.node--linkout .node__sub {
+			color: rgba(255, 230, 0, 0.80);
+		}
+
+		.node__go {
+			position: absolute;
+			right: 10px;
+			top: 50%;
+			transform: translateY(-50%);
+			width: 22px;
+			height: 22px;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			border: 2px solid rgba(255, 230, 0, 0.65);
+			background: rgba(0, 0, 0, 0.55);
+			font-weight: 900;
+			line-height: 1;
+			color: rgba(255, 230, 0, 0.90);
+			box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.55);
+			pointer-events: none;
+		}
+
+		@media (prefers-reduced-motion: no-preference) {
+			.node--nav.node--linkout {
+				animation: linkPulse 1.8s ease-in-out infinite;
+			}
+			@keyframes linkPulse {
+				0%, 100% { filter: drop-shadow(0 0 14px rgba(255, 230, 0, 0.06)); }
+				50% { filter: drop-shadow(0 0 22px rgba(255, 230, 0, 0.13)); }
+			}
+		}
+
 		.node--nav .node__label {
 			font-weight: 900;
 			letter-spacing: 0.22em;
@@ -798,6 +918,34 @@ const pieces: Piece[] = [
 			width: min(420px, 86vw);
 			background: rgba(0, 0, 0, 0.50);
 			clip-path: polygon(2% 0, 100% 6%, 98% 100%, 8% 98%, 0 70%, 0 10%);
+		}
+
+		.node--note {
+			width: min(280px, 76vw);
+			max-width: min(300px, 80vw);
+			padding: 12px 12px 10px;
+			background: rgba(0, 0, 0, 0.44);
+			border-color: rgba(246, 246, 246, 0.75);
+			box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.58);
+			clip-path: polygon(2% 6%, 98% 0, 100% 84%, 90% 100%, 0 92%, 0 18%);
+		}
+
+		.node__noteTitle {
+			margin-top: 10px;
+			font-weight: 900;
+			letter-spacing: 0.22em;
+			text-transform: uppercase;
+			font-size: 12px;
+			color: rgba(246, 246, 246, 0.92);
+		}
+
+		.node__noteText {
+			margin-top: 8px;
+			margin-bottom: 0;
+			font-family: 'Patrick Hand', ui-rounded, system-ui, sans-serif;
+			font-size: 19px;
+			line-height: 1.15;
+			color: rgba(246, 246, 246, 0.84);
 		}
 
 		.node__quote {

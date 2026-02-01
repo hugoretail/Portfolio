@@ -246,7 +246,7 @@
       // Wider width range + occasional very thick marker strokes.
       const wBase = 1.4 + rand() * 2.6 + (kind === 1 ? 0.6 : 0);
       const w = clamp(wBase + (rand() < 0.14 ? 1.3 + rand() * 1.8 : 0), 1.2, 5.2);
-      const alpha = 0.42 + rand() * 0.42;
+      const alpha = 0.30 + rand() * 0.32;
 
       // Calm + consistent: single shared duration. De-sync via phase only.
       const dur = cycleSec;
