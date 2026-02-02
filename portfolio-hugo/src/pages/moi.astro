@@ -8,7 +8,7 @@ const nav: NavItem[] = [
 	{ href: '/moi', label: 'Moi' },
 	{ href: '/graffiti', label: 'Graffiti' },
 	{ href: '/hiphop', label: 'Hiphop' },
-	{ href: '/ia', label: 'IA / NLP' },
+	{ href: '/informatique', label: 'Informatique' },
 	{ href: '/litterature', label: 'Littérature' },
 	{ href: '/frise', label: 'Frise' }
 ];
@@ -25,7 +25,7 @@ const navPositions: Array<{ x: number; y: number; r: number }> = [
 	// Sections
 	{ x: 12, y: 44, r: -2.0 }, // Graffiti
 	{ x: 90, y: 44, r: 2.0 },  // Hiphop
-	{ x: 54, y: 70, r: 2.8 },  // IA / NLP
+	{ x: 54, y: 70, r: 2.8 },  // Informatique
 	{ x: 18, y: 74, r: -1.4 }, // Littérature
 	{ x: 88, y: 66, r: 1.1 }   // Frise
 ];
@@ -85,8 +85,8 @@ const piecesNotes: Piece[] = [
 		x: 66,
 		y: 72,
 		r: 2.2,
-		forKey: '/ia',
-		title: 'IA / NLP',
+		forKey: '/informatique',
+		title: 'INFORMATIQUE',
 		text: 'Je mets des contraintes pour sortir du style. Le modèle = outil, pas oracle.'
 	},
 	{
@@ -222,7 +222,7 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 								<div class="node__tags">
 									<span class="tag">graffiti</span>
 									<span class="tag">hip-hop</span>
-									<span class="tag">IA/NLP</span>
+									<span class="tag">informatique</span>
 									<span class="tag">littérature</span>
 								</div>
 							</div>
@@ -232,7 +232,7 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 							<ul class="node__list">
 								<li><b>Graffiti</b> — structure + souffle</li>
 								<li><b>Hip-hop</b> — coupe + boucle + texture</li>
-								<li><b>IA/NLP</b> — contrainte + montage + outil</li>
+								<li><b>Informatique</b> — contrainte + montage + outil</li>
 								<li><b>Code</b> — interface + rythme + obsession</li>
 							</ul>
 						) : null}
@@ -282,7 +282,7 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 
 			const edges = [
 				['bio', '/graffiti'],
-				['bio', '/ia'],
+				['bio', '/informatique'],
 				['bio', '/hiphop'],
 				['bio', '/litterature'],
 				['bio', '/frise'],
@@ -291,7 +291,7 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 				// Bind each section label to its own note
 				['/graffiti', 'note:/graffiti'],
 				['/hiphop', 'note:/hiphop'],
-				['/ia', 'note:/ia'],
+				['/informatique', 'note:/informatique'],
 				['/litterature', 'note:/litterature'],
 				['/frise', 'note:/frise']
 			];

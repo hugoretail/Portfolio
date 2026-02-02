@@ -10,7 +10,7 @@
   };
 
   export let sides: DiceSide[] = [
-    { label: 'Projet IA', textureUrl: '/assets/images/dice-face-1.svg', href: '/ia' },
+    { label: 'Informatique', textureUrl: '/assets/images/dice-face-1.svg', href: '/informatique' },
     { label: 'Fresque 2023', textureUrl: '/assets/images/dice-face-2.svg', href: '/graffiti' },
     { label: 'Playlist Boom Bap', textureUrl: '/assets/images/dice-face-3.svg', href: '/hiphop' },
     { label: 'Extrait Litté', textureUrl: '/assets/images/dice-face-4.svg', href: '/litterature' },

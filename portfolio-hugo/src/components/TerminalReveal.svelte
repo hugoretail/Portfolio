@@ -6,14 +6,14 @@
   const helpText = [
     'help — commandes',
     'list — projets',
-    'open ia — détail IA/NLP',
+    'open informatique — détail',
     'open graffiti — fresques',
     'open hiphop — playlist',
     'clear — effacer'
   ];
 
   const projects = [
-    { key: 'ia', title: 'IA / NLP', detail: 'Prompts, pipelines, textes génératifs, outils.' },
+    { key: 'informatique', title: 'Informatique', detail: 'Réseaux, dev, systèmes, tooling, interfaces.' },
     { key: 'graffiti', title: 'Graffiti', detail: 'Fresques, lettrages, couleurs, murs.' },
     { key: 'hiphop', title: 'Hip-Hop', detail: 'Boom bap, diggin, loops, cassette vibes.' }
   ];
@@ -60,7 +60,7 @@
         return;
       }
       await append('out', `${found.title}: ${found.detail}`);
-      await append('out', `Lien: /${found.key === 'ia' ? 'ia' : found.key}`);
+      await append('out', `Lien: /${found.key === 'informatique' ? 'informatique' : found.key}`);
       return;
     }
 
@@ -77,7 +77,7 @@
 
 <div class="relative z-10 w-full">
   <div class="mb-2 flex items-end gap-3">
-    <div class="font-display text-xl tracking-wide">IA / NLP</div>
+    <div class="font-display text-xl tracking-wide">Informatique</div>
     <div class="font-hand text-lg text-[color:var(--muted)]">terminal interactif</div>
   </div>
 
@@ -96,7 +96,7 @@
     <form class="relative mt-2 flex gap-2" on:submit={onSubmit}>
       <input
         class="brutal-border-red w-full bg-black/40 px-3 py-2 text-sm font-black uppercase tracking-widest text-white outline-none"
-        placeholder="help / list / open ia"
+        placeholder="help / list / open informatique"
         bind:value={input}
         aria-label="Commande terminal"
       />

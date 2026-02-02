@@ -18,7 +18,8 @@ npm run dev
 - [src/pages/index.astro](src/pages/index.astro) : accueil
 - [src/pages/graffiti.astro](src/pages/graffiti.astro)
 - [src/pages/hiphop.astro](src/pages/hiphop.astro)
-- [src/pages/ia.astro](src/pages/ia.astro)
+- [src/pages/informatique.astro](src/pages/informatique.astro)
+- [src/pages/ia.astro](src/pages/ia.astro) (redirection)
 - [src/pages/litterature.astro](src/pages/litterature.astro)
 
 Composants clés :

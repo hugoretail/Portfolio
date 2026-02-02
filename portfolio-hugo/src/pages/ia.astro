@@ -1,138 +1,33 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import SiteNav from '../components/SiteNav.astro';
-import TerminalReveal from '../components/TerminalReveal.svelte';
 ---
 
-<BaseLayout title="Hugo — IA/NLP" description="Terminal interactif pour explorer les projets IA/NLP.">
-  <div class="relative min-h-screen overflow-hidden">
+<BaseLayout title="Redirection — Informatique" description="Redirection vers /informatique">
+  <main class="relative min-h-screen overflow-hidden">
     <div class="absolute inset-0 bg-black" aria-hidden="true"></div>
-    <div class="pointer-events-none absolute inset-0 bg-graffiti opacity-12" aria-hidden="true"></div>
-    <div class="pointer-events-none absolute inset-0 bg-nature opacity-[0.06]" aria-hidden="true"></div>
     <div class="paper-grain" aria-hidden="true"></div>
     <div class="noise-overlay" aria-hidden="true"></div>
 
-    <SiteNav />
-
-    <main class="relative z-10 mx-auto max-w-6xl px-4 py-10">
-      <header class="mb-8">
-        <h1 class="font-display text-6xl md:text-7xl">IA / NLP</h1>
-        <p class="mt-3 max-w-2xl font-hand text-2xl text-[color:var(--muted)]">
-          Pas de jargon. Des outils. Des textes. Une interface qui répond.
+    <section class="relative z-10 mx-auto max-w-3xl px-4 py-16">
+      <div class="brutal-border bg-black/50 p-5">
+        <div class="font-display text-4xl">Redirection…</div>
+        <p class="mt-3 font-hand text-2xl text-[color:var(--muted)]">
+          La page IA/NLP est devenue <b>Informatique</b>.
         </p>
-      </header>
-
-      <div class="grid gap-8 lg:grid-cols-2">
-        <TerminalReveal client:load />
-
-        <div class="brutal-border bg-black/40 p-4">
-          <div class="font-display text-2xl tracking-wide">Interaction</div>
-          <p class="mt-2 font-hand text-2xl text-[color:var(--muted)]">
-            Survole ce bloc : une “lumière” suit ton curseur.
-          </p>
-
-          <div class="spotlight brutal-border-red mt-4 h-[260px] bg-black/40" aria-label="Zone spotlight" />
-
-          <a
-            class="mt-4 inline-block text-sm font-black uppercase tracking-widest underline"
-            href="#"
-            aria-label="Voir un projet IA"
-          >
-            Voir un projet
-          </a>
-        </div>
+        <a class="mt-4 inline-block text-sm font-black uppercase tracking-widest underline" href="/informatique">
+          Aller sur /informatique
+        </a>
       </div>
-    </main>
-  </div>
+    </section>
+  </main>
 
-  <style>
-    .spotlight {
-      position: relative;
-      overflow: hidden;
-      background: rgba(0, 0, 0, 0.35);
-    }
-
-    .spotlight::before {
-      content: '';
-      position: absolute;
-      inset: -200px;
-      background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(0, 209, 255, 0.28), transparent 42%);
-      transform: translateZ(0);
-      pointer-events: none;
-    }
-
-    .spotlight:hover::before {
-      transition: none;
-    }
-
-    .spotlight:hover {
-      cursor: crosshair;
-    }
-
-    .spotlight:hover::before {
-      opacity: 1;
-    }
-
-    .spotlight {
-      --x: 50%;
-      --y: 50%;
-    }
-
-    .spotlight:hover {
-      background: rgba(0, 0, 0, 0.45);
-    }
-
-    .spotlight:hover::before {
-      animation: none;
-    }
-
-    .spotlight:hover {
-      will-change: transform;
-    }
-
-    .spotlight:hover {
-      outline: none;
-    }
-
-    .spotlight:hover {
-      box-shadow: 10px 10px 0 rgba(255, 0, 0, 0.16);
-    }
-
-    .spotlight:hover {
-      transform: translate(-1px, -1px);
-    }
-
-    .spotlight:hover {
-      transition: transform 140ms ease, box-shadow 140ms ease;
-    }
-
-    .spotlight:hover {
-      --x: 50%;
-      --y: 50%;
-    }
-
-    .spotlight:hover {
-      background-image: url('/assets/images/graffiti-texture.svg');
-      background-size: cover;
-      background-position: center;
-      background-blend-mode: screen;
-    }
-
-    .spotlight:hover {
-      background-color: rgba(0, 0, 0, 0.55);
-    }
-  </style>
-
-  <script>
-    // tiny vanilla pointer tracker (kept in-page so it stays static/cheap)
-    document.addEventListener('pointermove', (e) => {
-      const target = e.target;
-      if (!(target instanceof HTMLElement) || !target.classList.contains('spotlight')) return;
-      const r = target.getBoundingClientRect();
-      const x = ((e.clientX - r.left) / r.width) * 100;
-      const y = ((e.clientY - r.top) / r.height) * 100;
-      target.style.setProperty('--x', `${x}%`);
-      target.style.setProperty('--y', `${y}%`);
-    });
+  <script is:inline>
+    (() => {
+      try {
+        window.location.replace('/informatique');
+      } catch {
+        window.location.href = '/informatique';
+      }
+    })();
   </script>
 </BaseLayout>
