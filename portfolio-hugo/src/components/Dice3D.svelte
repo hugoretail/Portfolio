@@ -34,6 +34,7 @@
 
   // Floating “physics” (DOM-level). The WebGL scene only rerenders when cube animates.
   export let floating = true;
+  $: floating;
   let diceSize = 240;
   const padding = 14;
   // Heavier feel: less bounce, more damping.
@@ -753,7 +754,7 @@
     class:cursor-grabbing={dragging}
   >
     <div class="pointer-events-none absolute inset-0 noise-overlay" aria-hidden="true"></div>
-    <div bind:this={container} class="absolute inset-0" />
+    <div bind:this={container} class="absolute inset-0"></div>
 
     <div bind:this={auraEl} class="pointer-events-none absolute inset-0 opacity-0" aria-hidden="true">
       <div class="aura"></div>

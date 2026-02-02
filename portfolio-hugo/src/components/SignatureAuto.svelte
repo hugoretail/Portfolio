@@ -102,13 +102,12 @@
     <div class="font-hand text-lg text-[color:var(--muted)]">Kamen</div>
   </div>
 
-  <div
-    class="brutal-border-red relative h-[280px] w-full bg-black/20 p-3"
-    role="img"
-    tabindex="0"
+  <button
+    type="button"
+    class="brutal-border-red relative h-[280px] w-full bg-black/20 p-3 text-left"
     aria-label="Signature animée (survol = rejouer)"
     on:pointerenter={replay}
-    on:focusin={replay}
+    on:focus={replay}
   >
     <div class="pointer-events-none absolute inset-0 bg-graffiti opacity-10" aria-hidden="true"></div>
     <div class="pointer-events-none absolute inset-0 paper-grain" aria-hidden="true"></div>
@@ -116,5 +115,5 @@
     <div bind:this={host} class="relative h-full w-full" aria-label="Signature animée"></div>
 
 
-  </div>
+  </button>
 </div>
