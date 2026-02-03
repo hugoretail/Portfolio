@@ -140,18 +140,15 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 		<header class="relative z-30 mx-auto max-w-6xl px-4 pt-6">
 			<div class="flex flex-wrap items-center justify-between gap-3">
 				<div class="moi-title">
-					<div class="moi-kicker">PAGE / IDENTITÉ</div>
+					<div class="moi-kicker">Le tableau</div>
 					<div class="moi-h1">MOI</div>
 				</div>
 			</div>
 			<p class="mt-3 max-w-3xl font-hand text-2xl leading-snug text-[color:var(--fg)] md:text-3xl">
-				Je fais de la matière.
-				<span class="mx-2 text-[color:var(--red-thread)]">/</span>
-				Je l’organise.
-				<span class="mx-2 text-[color:var(--acid-yellow)]">/</span>
-				Je laisse du souffle.
+				Une façon d'organiser ma <span class="text-[color:var(--acid-yellow)]">personne</span>.
+				Visitez les pages <span class="text-[color:var(--red-thread)]">jaunes</span> !
 			</p>
-			<div class="moi-help" aria-hidden="true">Clique + maintiens pour déplacer. Relâche sans bouger = clic.</div>
+			<div class="moi-help" aria-hidden="true">Tous les post-it sont déplaçables.</div>
 		</header>
 
 		<!-- Scattered board (broken layout) -->
@@ -183,7 +180,7 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 							style={`--x:${item.x}; --y:${item.y}; --r:${item.r}deg;`}
 						>
 							<span class="node__label">{item.label}</span>
-							<span class="node__sub">{(item.href !== '/' && item.href !== '/moi') ? 'ouvrir' : 'clic'}</span>
+							<span class="node__sub">{(item.href !== '/' && item.href !== '/moi') ? 'ouvrir' : ''}</span>
 							{(item.href !== '/' && item.href !== '/moi') ? <span class="node__go" aria-hidden="true">↗</span> : null}
 						</a>
 					))}
@@ -202,29 +199,18 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 						<div class="node__header">
 							<div class="node__kicker">{p.label}</div>
 							<div class="node__chips" aria-hidden="true">
-								<span class="chip">STICK</span>
-								<span class="chip">TRACE</span>
+								<span class="chip">POST-IT</span>
 							</div>
 						</div>
 
 						{p.kind === 'bio' ? (
 							<div>
 								<p class="node__text">
-									Ici tu écris ta bio.
-									<span class="sep">/</span>
-									Ce que tu sais faire.
-									<span class="sep">/</span>
-									Ce que tu refuses.
-									<span class="sep">/</span>
-									Ce que tu veux.
+									Je mélange mes passions à mes compétences.
+									Pour l'échange culturel.
+									Pour l'environnement.
+									Et pour moi.
 								</p>
-								<p class="node__micro">Astuce: fais 6 lignes max. Pas d’excuse. Pas de blabla.</p>
-								<div class="node__tags">
-									<span class="tag">graffiti</span>
-									<span class="tag">hip-hop</span>
-									<span class="tag">informatique</span>
-									<span class="tag">littérature</span>
-								</div>
 							</div>
 						) : null}
 
@@ -709,7 +695,7 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 			left: calc(var(--x) * 1%);
 			top: calc(var(--y) * 1%);
 			touch-action: none;
-			cursor: grab;
+			cursor: pointer;
 			transform: translate(-50%, -50%) rotate(var(--r, 0deg)) translateY(calc(var(--scroll, 0) * 1px)) translate(var(--dx, 0px), var(--dy, 0px));
 			transform-origin: center;
 			max-width: min(520px, 86vw);

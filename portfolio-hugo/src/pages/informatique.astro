@@ -1,12 +1,12 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import SiteNav from '../components/SiteNav.astro';
 
 type NodeData = {
   id: string;
   label: string;
   kind: 'center' | 'main' | 'sub';
   parent?: string;
+  variant?: 'ring' | 'dashed' | 'double' | 'chip' | 'scan';
   tip: string;
   detailTitle: string;
   detail: string;
@@ -22,6 +22,7 @@ const nodes: NodeData[] = [
     id: 'hugo',
     label: 'HUGO',
     kind: 'center',
+    variant: 'double',
     tip: 'Centre · moi / mon stack',
     detailTitle: 'Hugo',
     detail: 'Le hub. J’assemble et je ship. Le but: des systèmes qui tournent, pas des démos qui clignotent.',
@@ -37,62 +38,67 @@ const nodes: NodeData[] = [
     label: 'IA',
     kind: 'main',
     parent: 'hugo',
+    variant: 'scan',
     tip: 'Réseaux, DL, NLP',
     detailTitle: 'IA',
     detail: 'Réseaux de neurones, deep learning, NLP. L’IA comme outil: contrainte → montage → résultat.',
     bullets: ['Classification / génération', 'Évaluation & itérations', 'NLP (stage Tsukuba 2026)'],
     href: 'https://www.github.com/',
     color: '#00ffff',
-    x: 50,
-    y: 18
+    x: 52,
+    y: 14
   },
   {
     id: 'poo',
     label: 'POO',
     kind: 'main',
     parent: 'hugo',
+    variant: 'ring',
     tip: 'Java / Python / patterns',
     detailTitle: 'POO / Programmation',
     detail: 'Objets, patterns, lisibilité, responsabilité. Faire simple, mais solide.',
     bullets: ['Java / Python', 'Design patterns', 'Tests & refactor'],
     href: 'https://www.github.com/',
     color: '#00ff6a',
-    x: 78,
-    y: 30
+    x: 84,
+    y: 28
   },
   {
     id: 'devops',
     label: 'DEVOPS',
     kind: 'main',
     parent: 'hugo',
+    variant: 'chip',
     tip: 'CI/CD, containers, cloud',
     detailTitle: 'DevOps / Cloud',
     detail: 'Déploiement, automatisation, observabilité. Le code vit en prod.',
     bullets: ['Docker', 'CI/CD', 'Cloud'],
     href: 'https://www.github.com/',
     color: '#ff7a00',
-    x: 84,
-    y: 62
+    x: 88,
+    y: 66
   },
   {
     id: 'db',
     label: 'DB',
     kind: 'main',
     parent: 'hugo',
+    variant: 'double',
     tip: 'SQL, schémas, perf',
     detailTitle: 'Bases de données',
     detail: 'Modéliser propre, interroger vite, garder la data lisible.',
     bullets: ['SQL', 'Modélisation', 'Index / perf'],
     href: 'https://www.github.com/',
     color: '#ffe600',
-    x: 50,
-    y: 84
+    x: 52,
+    y: 88
   },
   {
     id: 'algo',
     label: 'ALGO',
     kind: 'main',
     parent: 'hugo',
+    variant: 'dashed',
     tip: 'structures, complexité',
     detailTitle: 'Algorithmes',
     detail: 'Structures, complexité, bonnes primitives. Quand ça rame: on mesure, puis on coupe.',
@@ -107,14 +113,15 @@ const nodes: NodeData[] = [
     label: 'WEB',
     kind: 'main',
     parent: 'hugo',
+    variant: 'ring',
     tip: 'UI/UX, front, perf',
     detailTitle: 'Web / Interfaces',
     detail: 'Interfaces brutales mais claires. Interactions nettes, anims légères.',
     bullets: ['Astro / Svelte', 'Animations CSS/SVG', 'Perf & a11y'],
     href: 'https://www.github.com/',
     color: '#ff005d',
-    x: 22,
-    y: 30
+    x: 16,
+    y: 26
   },
 
   // Sub nodes (IA)
@@ -123,6 +130,7 @@ const nodes: NodeData[] = [
     label: 'NEURONES',
     kind: 'sub',
     parent: 'ia',
+    variant: 'double',
     tip: 'MLP / CNN / attention',
     detailTitle: 'Réseaux de neurones',
     detail: 'Représentation, entraînement, régularisation — dataset propre.',
@@ -137,14 +145,15 @@ const nodes: NodeData[] = [
     label: 'NLP',
     kind: 'sub',
     parent: 'ia',
+    variant: 'scan',
     tip: 'Tsukuba 2026',
     detailTitle: 'NLP',
     detail: 'Stage au laboratoire du Professeur Inui (Université de Tsukuba, 2026). Sentiment analysis / corpus multilingues.',
     bullets: ['Prétraitement', 'Évaluation', 'Résultats reproductibles'],
     href: 'https://www.github.com/',
     color: '#00ffff',
-    x: 50,
-    y: 30
+    x: 58,
+    y: 26
   },
 
   // Sub nodes (DevOps)
@@ -153,14 +162,15 @@ const nodes: NodeData[] = [
     label: 'DOCKER',
     kind: 'sub',
     parent: 'devops',
+    variant: 'dashed',
     tip: 'containers',
     detailTitle: 'Docker',
     detail: 'Reproductible, clean, portable. Le même artefact partout.',
     bullets: ['Images multi-stage', 'Perf build', 'Best practices'],
     href: 'https://www.github.com/',
     color: '#ff7a00',
-    x: 92,
-    y: 58
+    x: 96,
+    y: 62
   },
 
   // Sub nodes (DB)
@@ -169,14 +179,15 @@ const nodes: NodeData[] = [
     label: 'SQL',
     kind: 'sub',
     parent: 'db',
+    variant: 'ring',
     tip: 'requêtes',
     detailTitle: 'SQL',
     detail: 'Requêtes lisibles. Index quand il faut. Mesure avant optimisation.',
     bullets: ['Joins', 'Indexes', 'EXPLAIN'],
     href: 'https://www.github.com/',
     color: '#ffe600',
-    x: 42,
-    y: 76
+    x: 44,
+    y: 80
   }
 ];
 ---
@@ -188,9 +199,11 @@ const nodes: NodeData[] = [
     <div class="paper-grain" aria-hidden="true"></div>
     <div class="noise-overlay" aria-hidden="true"></div>
 
-    <SiteNav />
+    <a class="bb-backbtn brutal-border" href="/moi" aria-label="Retour à /moi" title="Retour">
+      <span aria-hidden="true">←</span>
+    </a>
 
-    <main class="relative z-10 mx-auto max-w-6xl px-4 pb-16 pt-8">
+    <main class="relative z-10 mx-auto max-w-7xl px-4 pb-16 pt-8">
       <header class="mb-8">
         <div class="font-black uppercase tracking-widest text-xs text-[color:var(--muted)]">informatique</div>
         <h1 class="mt-2 font-display text-6xl leading-none md:text-7xl">RÉSEAU DE NEURONES</h1>
@@ -216,6 +229,7 @@ const nodes: NodeData[] = [
                 style={`--x:${n.x}%; --y:${n.y}%; --c:${n.color};`}
                 data-id={n.id}
                 data-parent={n.parent ?? ''}
+                data-variant={n.variant ?? 'ring'}
                 data-label={n.label}
                 data-tip={n.tip}
                 data-detail-title={n.detailTitle}
@@ -288,6 +302,57 @@ const nodes: NodeData[] = [
         document.body.classList.toggle('is-modal-open', !!on);
       };
 
+      const fitAllLabels = () => {
+        const els = Array.from(stage.querySelectorAll('.nn-node'));
+        els.forEach((btn) => {
+          const txt = btn.querySelector('.nn-node__txt');
+          if (!txt) return;
+
+          // Reset so measurements are stable
+          btn.style.removeProperty('--fs');
+          btn.style.removeProperty('--ls');
+
+          const label = (btn.getAttribute('data-label') || '').trim();
+          if (label.length >= 8) btn.style.setProperty('--ls', '0.14em');
+          if (label.length >= 10) btn.style.setProperty('--ls', '0.10em');
+
+          // If still overflowing, step font-size down a bit.
+          const maxSteps = 16;
+          let fs = parseFloat(getComputedStyle(txt).fontSize || '10');
+          const minFs = 8;
+          let steps = 0;
+          while (steps < maxSteps && fs > minFs) {
+            // scrollWidth/Height are stable even with grid centering
+            if (txt.scrollWidth <= txt.clientWidth + 1 && txt.scrollHeight <= txt.clientHeight + 1) break;
+            fs = Math.max(minFs, fs - 0.5);
+            btn.style.setProperty('--fs', `${fs}px`);
+            steps += 1;
+          }
+        });
+      };
+
+      const prepModalAnimationFrom = (fromEl) => {
+        if (!modal) return;
+        const r = fromEl.getBoundingClientRect();
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const cx = r.left + r.width / 2;
+        const cy = r.top + r.height / 2;
+        const dx = cx - vw / 2;
+        const dy = cy - vh / 2;
+        const targetW = Math.min(860, vw * 0.92);
+        const s = clamp(r.width / Math.max(1, targetW), 0.06, 0.92);
+
+        modal.style.setProperty('--from-dx', `${dx}px`);
+        modal.style.setProperty('--from-dy', `${dy}px`);
+        modal.style.setProperty('--from-s', `${s}`);
+        modal.classList.add('nn-modal--anim');
+        modal.classList.remove('nn-modal--open');
+
+        fromEl.classList.add('is-opening');
+        window.setTimeout(() => fromEl.classList.remove('is-opening'), 260);
+      };
+
       const openModal = (el) => {
         if (!modal || !mT || !mD || !mB || !mL) return;
         const title = el.getAttribute('data-detail-title') || el.getAttribute('data-label') || 'Détail';
@@ -313,6 +378,8 @@ const nodes: NodeData[] = [
           mL.style.display = 'none';
         }
 
+        prepModalAnimationFrom(el);
+
         try {
           if (typeof modal.showModal === 'function') modal.showModal();
           else modal.setAttribute('open', 'true');
@@ -320,11 +387,28 @@ const nodes: NodeData[] = [
           modal.setAttribute('open', 'true');
         }
         setModalOpen(true);
+
+        if (!prefersReducedMotion) {
+          requestAnimationFrame(() => {
+            // Trigger transition on the panel
+            modal.classList.add('nn-modal--open');
+          });
+        } else {
+          modal.classList.add('nn-modal--open');
+        }
       };
 
       if (modal) {
-        modal.addEventListener('close', () => setModalOpen(false));
-        modal.addEventListener('cancel', () => setModalOpen(false));
+        const clear = () => {
+          setModalOpen(false);
+          modal.classList.remove('nn-modal--open');
+          modal.classList.remove('nn-modal--anim');
+          modal.style.removeProperty('--from-dx');
+          modal.style.removeProperty('--from-dy');
+          modal.style.removeProperty('--from-s');
+        };
+        modal.addEventListener('close', clear);
+        modal.addEventListener('cancel', clear);
       }
 
       // Build SVG links
@@ -341,6 +425,12 @@ const nodes: NodeData[] = [
         p.classList.add('nn-link');
         p.setAttribute('data-from', from);
         p.setAttribute('data-to', to);
+
+        const toEl = byId.get(to);
+        const rawColor = (toEl?.style?.getPropertyValue('--c') || '').trim();
+        const color = rawColor || (toEl ? (getComputedStyle(toEl).getPropertyValue('--c') || '').trim() : '');
+        if (color) p.style.setProperty('--lc', color);
+
         svg.appendChild(p);
         paths.push(p);
         addAdj(from, to);
@@ -406,6 +496,7 @@ const nodes: NodeData[] = [
 
       const relayout = debounce(layout, 60);
       window.addEventListener('resize', relayout, { passive: true });
+      window.addEventListener('resize', debounce(fitAllLabels, 90), { passive: true });
 
       // Tooltip
       const showTip = (el, e) => {
@@ -481,17 +572,31 @@ const nodes: NodeData[] = [
       // Init animation (<5s)
       const appearOrder = ['hugo','ia','poo','devops','db','algo','web','nn','nlp','docker','sql'];
 
+      const DRAW_MS = prefersReducedMotion ? 0 : 1900;
+      const NODE_DELAY_MS = prefersReducedMotion ? 0 : 560;
+
       const showNode = (id) => {
         const el = byId.get(id);
         if (!el) return;
-        el.classList.add('is-on');
+
+        // Draw the incoming link first, then "energize" the node.
         paths.forEach((p) => {
-          if (p.getAttribute('data-to') === id) p.classList.add('is-on');
+          if (p.getAttribute('data-to') !== id) return;
+          p.style.setProperty('--draw', `${DRAW_MS}ms`);
+          p.classList.add('is-on');
         });
+
+        if (id === 'hugo' || prefersReducedMotion) {
+          el.classList.add('is-on');
+          return;
+        }
+
+        window.setTimeout(() => el.classList.add('is-on'), NODE_DELAY_MS);
       };
 
       requestAnimationFrame(() => {
         layout();
+        fitAllLabels();
         if (prefersReducedMotion) {
           appearOrder.forEach(showNode);
           paths.forEach((p) => p.classList.add('is-on'));
@@ -499,10 +604,10 @@ const nodes: NodeData[] = [
         }
 
         showNode('hugo');
-        let t = 320;
+        let t = 760;
         appearOrder.slice(1).forEach((id) => {
           window.setTimeout(() => showNode(id), t);
-          t += 160;
+          t += 360;
         });
       });
     })();
@@ -521,6 +626,31 @@ const nodes: NodeData[] = [
     html.is-modal-open,
     body.is-modal-open {
       overflow: hidden;
+    }
+
+    .bb-backbtn {
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      z-index: 60;
+      display: inline-grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      background: rgba(0,0,0,0.60);
+      border: 2px solid rgba(246,246,246,0.45);
+      color: rgba(246,246,246,0.88);
+      font-weight: 900;
+      font-size: 18px;
+      line-height: 1;
+      text-decoration: none;
+      box-shadow: 8px 8px 0 rgba(0,0,0,0.60);
+      transition: background 140ms ease, transform 140ms ease;
+    }
+
+    .bb-backbtn:hover {
+      background: rgba(0,0,0,0.72);
+      transform: translateY(-1px);
     }
 
     .nn-grid {
@@ -542,7 +672,7 @@ const nodes: NodeData[] = [
 
     .nn-stage__inner {
       position: relative;
-      height: min(680px, 68vh);
+      height: min(780px, 74vh);
       width: 100%;
       overflow: hidden;
       isolation: isolate;
@@ -568,7 +698,8 @@ const nodes: NodeData[] = [
 
     .nn-link.is-on {
       opacity: 0.70;
-      animation: nn-draw 720ms ease both;
+      stroke: color-mix(in oklab, var(--lc, rgba(240,240,240,0.55)) 78%, white 0%);
+      animation: nn-draw var(--draw, 1600ms) cubic-bezier(.17,.84,.28,1) both;
     }
 
     .nn-link.is-dim { opacity: 0.14; }
@@ -594,7 +725,7 @@ const nodes: NodeData[] = [
       transform: translate(-50%, -50%) scale(0.70);
       opacity: 0;
 
-      border-radius: 999px;
+      border-radius: var(--shape, 999px);
       border: 2px solid color-mix(in oklab, var(--c) 82%, white 0%);
       background:
         radial-gradient(circle at 35% 30%, color-mix(in oklab, var(--c) 55%, white 10%), rgba(0,0,0,0.70) 64%),
@@ -612,6 +743,62 @@ const nodes: NodeData[] = [
       transition: transform 200ms ease, box-shadow 200ms ease, opacity 200ms ease, filter 200ms ease;
     }
 
+    .nn-node::before,
+    .nn-node::after {
+      content: '';
+      position: absolute;
+      inset: 6px;
+      border-radius: inherit;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    /* Variants: more diversity than just color */
+    .nn-node[data-variant='dashed'] { border-style: dashed; border-width: 2px; }
+    .nn-node[data-variant='dashed']::before {
+      opacity: 0.55;
+      border: 1px dashed rgba(246,246,246,0.35);
+    }
+
+    .nn-node[data-variant='double'] {
+      outline: 2px solid rgba(246,246,246,0.16);
+      outline-offset: 3px;
+    }
+    .nn-node[data-variant='double']::before {
+      opacity: 0.70;
+      inset: 8px;
+      border: 1px solid color-mix(in oklab, var(--c) 55%, transparent);
+    }
+
+    .nn-node[data-variant='chip'] {
+      --shape: 18px;
+      border-width: 2px;
+      box-shadow:
+        0 0 0 2px rgba(0,0,0,0.55) inset,
+        0 0 12px color-mix(in oklab, var(--c) 45%, transparent),
+        12px 12px 0 rgba(0,0,0,0.58);
+    }
+    .nn-node[data-variant='chip']::before {
+      opacity: 0.55;
+      background:
+        linear-gradient(90deg, rgba(246,246,246,0.18), transparent 45%),
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.06) 0 1px, transparent 1px 6px);
+      mix-blend-mode: screen;
+    }
+
+    .nn-node[data-variant='scan']::before {
+      opacity: 0.55;
+      background:
+        repeating-linear-gradient(0deg, rgba(0,255,255,0.14) 0 1px, transparent 1px 5px),
+        radial-gradient(circle at 20% 20%, rgba(255,0,0,0.10), transparent 45%);
+      mix-blend-mode: screen;
+    }
+
+    .nn-node.is-on::before,
+    .nn-node:hover::before {
+      opacity: 0.60;
+    }
+
     .nn-node__txt {
       display: grid;
       place-items: center;
@@ -620,15 +807,22 @@ const nodes: NodeData[] = [
       padding: 10px;
       font-weight: 900;
       text-transform: uppercase;
-      letter-spacing: 0.22em;
-      font-size: 10px;
+      letter-spacing: var(--ls, 0.18em);
+      font-size: var(--fs, 11px);
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
       text-shadow: 1px 1px 0 var(--red), -1px -1px 0 var(--red);
+      line-height: 1.1;
+      text-align: center;
+      white-space: normal;
+      word-break: break-word;
+      hyphens: auto;
+      overflow: hidden;
+      text-wrap: balance;
     }
 
     .nn-node--center {
-      width: clamp(72px, 10vw, 92px);
-      height: clamp(72px, 10vw, 92px);
+      width: clamp(88px, 12vw, 112px);
+      height: clamp(88px, 12vw, 112px);
       border-width: 3px;
       background: radial-gradient(circle, #00ffff, #9d00ff);
       color: rgba(0,0,0,0.92);
@@ -644,8 +838,8 @@ const nodes: NodeData[] = [
       text-shadow: 1px 1px 0 rgba(255,0,0,0.35), -1px -1px 0 rgba(255,0,0,0.35);
     }
 
-    .nn-node--main { width: clamp(54px, 7.5vw, 70px); height: clamp(54px, 7.5vw, 70px); }
-    .nn-node--sub { width: clamp(40px, 5.4vw, 52px); height: clamp(40px, 5.4vw, 52px); opacity: 0; }
+    .nn-node--main { width: clamp(64px, 8.8vw, 86px); height: clamp(64px, 8.8vw, 86px); }
+    .nn-node--sub { width: clamp(46px, 6.2vw, 64px); height: clamp(46px, 6.2vw, 64px); opacity: 0; }
 
     .nn-node.is-on { opacity: 1; transform: translate(-50%, -50%) scale(1); animation: nn-pop 520ms cubic-bezier(.17,.84,.28,1) both; }
 
@@ -661,6 +855,11 @@ const nodes: NodeData[] = [
         0 0 0 2px rgba(0,0,0,0.55) inset,
         0 0 20px color-mix(in oklab, var(--c) 75%, transparent),
         12px 12px 0 rgba(0,0,0,0.60);
+    }
+
+    .nn-node.is-opening {
+      transform: translate(-50%, -50%) scale(1.22);
+      filter: brightness(1.18) saturate(1.08);
     }
 
     .nn-node.is-dim { opacity: 0.28; filter: grayscale(0.15) brightness(0.90); }
@@ -699,6 +898,14 @@ const nodes: NodeData[] = [
     }
 
     .nn-modal { border: none; background: transparent; padding: 0; max-width: none; max-height: none; }
+    .nn-modal[open] {
+      position: fixed;
+      inset: 0;
+      margin: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: visible;
+    }
     .nn-modal::backdrop { background: rgba(0,0,0,0.72); }
 
     .nn-modal__backdrop {
@@ -712,14 +919,35 @@ const nodes: NodeData[] = [
     }
 
     .nn-modal__panel {
-      max-width: min(980px, 92vw);
-      width: 100%;
+      max-width: min(860px, 92vw);
+      width: min(860px, 92vw);
       max-height: calc(100vh - 36px);
       overflow: auto;
       background: rgba(0,0,0,0.64);
       padding: 14px;
       box-shadow: 18px 18px 0 rgba(0,0,0,0.60);
       border-color: rgba(246,246,246,0.40);
+      transform-origin: center;
+    }
+
+    /* Modal opening animation: node → centered panel */
+    .nn-modal.nn-modal--anim .nn-modal__panel {
+      transform: translate(var(--from-dx, 0px), var(--from-dy, 0px)) scale(var(--from-s, 0.10));
+      border-radius: 999px;
+      opacity: 0.10;
+      filter: blur(0.5px) saturate(1.08);
+    }
+
+    .nn-modal.nn-modal--anim.nn-modal--open .nn-modal__panel {
+      transform: translate(0px, 0px) scale(1);
+      border-radius: 14px;
+      opacity: 1;
+      filter: none;
+      transition: transform 420ms cubic-bezier(.17,.84,.28,1), border-radius 420ms cubic-bezier(.17,.84,.28,1), opacity 240ms ease, filter 360ms ease;
+    }
+
+    .nn-modal::backdrop {
+      transition: background 260ms ease;
     }
 
     .nn-modal__x {
@@ -774,7 +1002,16 @@ const nodes: NodeData[] = [
 
     @media (max-width: 760px) {
       .nn-modal__title { font-size: 42px; }
-      .nn-stage__inner { height: min(720px, 70vh); }
+      .nn-stage__inner { height: min(760px, 78vh); }
+    }
+
+    @media (max-width: 860px) {
+      .bb-backbtn {
+        top: 12px;
+        left: 12px;
+        width: 40px;
+        height: 40px;
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
