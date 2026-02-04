@@ -17,51 +17,66 @@ type GraffPiece = {
 const pieces: GraffPiece[] = [
   {
     id: 'fresque-1',
-    title: 'Fresque 01',
-    subtitle: 'Lettrage / souffle / béton',
-    year: '2024',
-    city: 'Paris',
-    src: '/assets/images/dice-face-1.svg'
+    title: 'Rève Un Ours !',
+    year: '2025',
+    city: 'Biganos',
+    src: '/assets/images/graffiti/kamen1.JPG'
   },
   {
     id: 'fresque-2',
-    title: 'Fresque 02',
-    subtitle: 'Chromes / contours / vitesse',
-    year: '2023',
-    city: 'Montreuil',
-    src: '/assets/images/dice-face-2.svg'
+    title: 'A la maison',
+    year: '2025',
+    city: 'Gujan-Mestras',
+    src: '/assets/images/graffiti/kamen5.JPG'
   },
   {
     id: 'fresque-3',
-    title: 'Fresque 03',
-    subtitle: 'Wild-ish / éclats / lignes',
-    year: '2022',
-    city: 'Lyon',
-    src: '/assets/images/dice-face-3.svg'
+    title: 'Campulsations',
+    year: '2025',
+    city: 'Pessac',
+    src: '/assets/images/graffiti/kamen3.JPG'
   },
   {
     id: 'fresque-4',
-    title: 'Fresque 04',
-    subtitle: 'Pochoir / couches / grain',
-    year: '2024',
-    city: 'Saint-Ouen',
-    src: '/assets/images/dice-face-4.svg'
+    title: 'Le plus puissant',
+    year: '2025',
+    city: 'Pessac',
+    src: '/assets/images/graffiti/mutin1.JPG'
   },
   {
     id: 'fresque-5',
-    title: 'Fresque 05',
-    subtitle: 'Coupe / masse / contraste',
-    year: '2021',
-    city: 'Marseille',
-    src: '/assets/images/dice-face-5.svg'
+    title: 'Schtroumpfs',
+    year: '2025',
+    city: 'Biganos',
+    src: '/assets/images/graffiti/mutin2.JPG'
   },
   {
     id: 'fresque-6',
-    title: 'Fresque 06',
-    subtitle: 'Tag / throw-up / sale',
-    year: '2020',
-    city: 'Paris',
-    src: '/assets/images/dice-face-6.svg'
+    title: 'Rooooule',
+    year: '2025',
+    city: 'Pessac',
+    src: '/assets/images/graffiti/kamen4.JPG'
+  },
+  {
+    id: 'fresque-7',
+    title: 'Lums Jaune',
+    year: '2025',
+    city: 'Pessac',
+    src: '/assets/images/graffiti/mutin4.JPG'
+  },
+  {
+    id: 'fresque-8',
+    title: 'Take A Look',
+    year: '2025',
+    city: 'Pessac',
+    src: '/assets/images/graffiti/mutin3.JPG'
+  },
+  {
+    id: 'fresque-9',
+    title: 'Violette',
+    year: '2023',
+    city: 'Gujan-Mestras',
+    src: '/assets/images/graffiti/kamen2.JPG'
   }
 ];
 ---
@@ -317,9 +332,9 @@ const pieces: GraffPiece[] = [
         el.className = `bb-blank bb-blank--${side}`;
         if (side === 'left') {
           el.innerHTML = `
-            <div class="blank__mark">HUGO</div>
+            <div class="blank__mark">Kamen</div>
             <div class="blank__sub">BLACKBOOK</div>
-            <div class="blank__fine">tourne / éclaire / gratte</div>
+            <div class="blank__fine">Navigue sur les pages en cliquant, ou en utilisant les flèches ~</div>
           `;
         } else {
           el.innerHTML = `
