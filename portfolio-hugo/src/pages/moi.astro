@@ -7,7 +7,7 @@ const nav: NavItem[] = [
 	{ href: '/', label: 'Accueil' },
 	{ href: '/moi', label: 'Moi' },
 	{ href: '/graffiti', label: 'Graffiti' },
-	{ href: '/hiphop', label: 'Hiphop' },
+	{ href: '/hiphop', label: 'Hip-hop' },
 	{ href: '/informatique', label: 'Informatique' },
 	{ href: '/litterature', label: 'Littérature' },
 	{ href: '/frise', label: 'Frise' }
@@ -38,7 +38,7 @@ const navNodes = nav.map((item, idx) => ({
 type Piece = {
 	id: string;
 	label: string;
-	kind: 'bio' | 'focus' | 'phrase' | 'stamp' | 'note';
+	kind: 'bio' | 'focus' | 'stamp' | 'note';
 	x: number;
 	y: number;
 	r: number;
@@ -50,8 +50,7 @@ type Piece = {
 const piecesCore: Piece[] = [
 	{ id: 'bio', label: 'DESCRIPTION', kind: 'bio', x: 50, y: 14, r: -1.8 },
 	{ id: 'focus', label: 'FOCUS', kind: 'focus', x: 22, y: 64, r: 1.2 },
-	{ id: 'phrase', label: 'PHRASE', kind: 'phrase', x: 44, y: 92, r: -2.2 },
-	{ id: 'stamp', label: 'DOSSIER', kind: 'stamp', x: 5, y: 4, r: -6.0 }
+	{ id: 'stamp', label: '<><><>', kind: 'stamp', x: 5, y: 4, r: -6.0 }
 ];
 
 // One extra note per section label (except Accueil/Moi)
@@ -64,8 +63,7 @@ const piecesNotes: Piece[] = [
 		y: 44,
 		r: 1.4,
 		forKey: '/graffiti',
-		title: 'GRAFFITI',
-		text: 'Je cherche la ligne juste: vitesse + contrôle. Mur = métronome.'
+		text: 'Cette odeur de la 94 Montana, incroyable...'
 	},
 	{
 		id: 'note-hiphop',
@@ -75,8 +73,7 @@ const piecesNotes: Piece[] = [
 		y: 44,
 		r: -1.6,
 		forKey: '/hiphop',
-		title: 'HIP-HOP',
-		text: 'Découpe, boucle, silence. Une idée = un kick.'
+		text: 'Popping, dissociations, et du groove évidemment.'
 	},
 	{
 		id: 'note-ia',
@@ -86,19 +83,17 @@ const piecesNotes: Piece[] = [
 		y: 72,
 		r: 2.2,
 		forKey: '/informatique',
-		title: 'INFORMATIQUE',
-		text: 'Je mets des contraintes pour sortir du style. Le modèle = outil, pas oracle.'
+		text: 'Est-ce vraiment utile de (vibe) coder ça ?'
 	},
 	{
 		id: 'note-litterature',
-		label: 'PHRASE',
+		label: 'NOTE',
 		kind: 'note',
 		x: 10,
 		y: 86,
 		r: -2.6,
 		forKey: '/litterature',
-		title: 'LITTÉRATURE',
-		text: 'Je cadre pour laisser respirer. La phrase fait le montage.'
+		text: 'Quelques auteurs et oeuvres qui m\'inspirent.'
 	},
 	{
 		id: 'note-frise',
@@ -108,8 +103,7 @@ const piecesNotes: Piece[] = [
 		y: 86,
 		r: 1.0,
 		forKey: '/frise',
-		title: 'FRISE',
-		text: 'Trace = preuve. Chrono = récit. Je range le chaos sans l’éteindre.'
+		text: 'Cool ce format !'
 	}
 ];
 
@@ -180,7 +174,7 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 							style={`--x:${item.x}; --y:${item.y}; --r:${item.r}deg;`}
 						>
 							<span class="node__label">{item.label}</span>
-							<span class="node__sub">{(item.href !== '/' && item.href !== '/moi') ? 'ouvrir' : ''}</span>
+							<span class="node__sub">{(item.href !== '/' && item.href !== '/moi') ? 'check ça!' : ''}</span>
 							{(item.href !== '/' && item.href !== '/moi') ? <span class="node__go" aria-hidden="true">↗</span> : null}
 						</a>
 					))}
@@ -216,18 +210,11 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 
 						{p.kind === 'focus' ? (
 							<ul class="node__list">
-								<li><b>Graffiti</b> — structure + souffle</li>
-								<li><b>Hip-hop</b> — coupe + boucle + texture</li>
-								<li><b>Informatique</b> — contrainte + montage + outil</li>
-								<li><b>Code</b> — interface + rythme + obsession</li>
+								<li><b>Brouillon</b> — lettres bâton + outlines</li>
+								<li><b>Fill-in</b> — Lettres + background + 3D</li>
+								<li><b>Détails</b> — Textures + ombres</li>
+								<li><b>Finish</b> — Outline + frog + reflets</li>
 							</ul>
-						) : null}
-
-						{p.kind === 'phrase' ? (
-							<div>
-								<p class="node__quote">« Je prends le chaos. Je le cadre. Je garde le souffle. »</p>
-								<div class="node__micro">(à remplacer quand tu veux)</div>
-							</div>
 						) : null}
 
 						{p.kind === 'note' ? (
@@ -240,7 +227,7 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 						{p.kind === 'stamp' ? (
 							<div class="node__stamp">
 								<div class="stamp__big">DOSSIER</div>
-								<div class="stamp__small">/ identité / matières / outils /</div>
+								<div class="stamp__small">>>>>>>>>>>>>>>>>></div>
 							</div>
 						) : null}
 					</section>
@@ -273,7 +260,6 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 				['bio', '/litterature'],
 				['bio', '/frise'],
 				['focus', '/graffiti'],
-				['phrase', '/litterature'],
 				// Bind each section label to its own note
 				['/graffiti', 'note:/graffiti'],
 				['/hiphop', 'note:/hiphop'],
