@@ -17,6 +17,7 @@ npm run dev
 Projets à rajouter :
 - [x] https://gitlab-ce.iut.u-bordeaux.fr/hretail/mini-rsa-cryptographie
 - [x] https://gitlab-ce.iut.u-bordeaux.fr/maguidi/sae-courbes-elliptiques
-- [ ] ...
-- [ ]
-- [ ]
+- [x] https://gitlab-ce.iut.u-bordeaux.fr/hretail/laby-chan
+- [x] https://gitlab-ce.iut.u-bordeaux.fr/hretail/tfr-tournoi-football-robot
+- [x] https://gitlab-ce.iut.u-bordeaux.fr/hretail/stabilisation_etu
+- [ ] https://gitlab-ce.iut.u-bordeaux.fr/nabe/sae_geodessin_groupeevanrimonteil
