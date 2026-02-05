@@ -36,7 +36,8 @@
       "orm",
       "gitlab",
       "ia"
-    ]
+    ],
+    "image": "/assets/images/informatique/projects/developpement-d-un-systeme-d-ia-2023.webp"
   },
   {
     "id": "configurer-un-poste-de-developpement-2023",
@@ -70,7 +71,8 @@
     "tags": [
       "linux",
       "virtualisation"
-    ]
+    ],
+    "image": "/assets/images/informatique/projects/configurer-un-poste-de-developpement-2023.webp"
   },
   {
     "id": "tutoriel-d-installation-d-un-reseau-2024",
@@ -105,7 +107,8 @@
     ],
     "tags": [
       "reseau"
-    ]
+    ],
+    "image": "/assets/images/informatique/projects/tutoriel-d-installation-d-un-reseau-2024.webp"
   },
   {
     "id": "jeu-video-mise-a-jour-labyrinthe-2024",
@@ -141,7 +144,8 @@
       "visualisation",
       "tests",
       "uml"
-    ]
+    ],
+    "image": "/assets/images/informatique/projects/jeu-video-mise-a-jour-labyrinthe-2024.webp"
   },
   {
     "id": "learning-tool-japanese-conjugator-2024",
@@ -174,7 +178,8 @@
     ],
     "tags": [
       "javascript"
-    ]
+    ],
+    "image": "/assets/images/informatique/projects/learning-tool-japanese-conjugator-2024.webp"
   },
   {
     "id": "software-development-anhydralgo-2024",
@@ -214,11 +219,13 @@
       "visualisation",
       "uml",
       "3d"
-    ]
+    ],
+    "image": "/assets/images/informatique/projects/software-development-anhydralgo-2024.webp"
   },
   {
     "id": "visualisation-de-graphe-java-2024",
-    "title": "Visualisation de Graphe (Java, 2024)",
+    "title": "Visualisation de Graphe",
+    "year": "2024",
     "duration": "13h",
     "description": "Visualiser des données — génération de graphiques (Java)",
     "competences": [
@@ -255,7 +262,8 @@
       "tests",
       "3d",
       "algo"
-    ]
+    ],
+    "image": "/assets/images/informatique/projects/visualisation-de-graphe-java-2024.webp"
   },
   {
     "id": "visualisation-de-graphe-python-2025",
@@ -292,7 +300,8 @@
       "architecture",
       "3d",
       "algo"
-    ]
+    ],
+    "image": "/assets/images/informatique/projects/visualisation-de-graphe-python-2025.webp"
   },
   {
     "id": "mini-rsa-cryptographie-2024",
@@ -333,7 +342,8 @@
       "crypto",
       "tests",
       "algo"
-    ]
+    ],
+    "image": "/assets/images/informatique/projects/mini-rsa-cryptographie-2024.webp"
   },
   {
     "id": "courbes-elliptiques-2025",
@@ -378,7 +388,8 @@
       "crypto",
       "tests",
       "algo"
-    ]
+    ],
+    "image": "/assets/images/informatique/projects/courbes-elliptiques-2025.webp"
   },
   {
     "id": "laby-chan-labyrinthe-en-realite-virtuelle-2025",
@@ -418,7 +429,8 @@
       "orm",
       "git",
       "3d"
-    ]
+    ],
+    "image": "/assets/images/informatique/projects/laby-chan-labyrinthe-en-realite-virtuelle-2025.webp"
   },
   {
     "id": "tournoi-football-robot-2025",
@@ -470,7 +482,8 @@
       "security",
       "tests",
       "architecture"
-    ]
+    ],
+    "image": "/assets/images/informatique/projects/tournoi-football-robot-2025.webp"
   },
   {
     "id": "stabilisation-etude-d-incidents-informatiques-2025",
@@ -534,7 +547,8 @@
       "tests",
       "architecture",
       "3d"
-    ]
+    ],
+    "image": "/assets/images/informatique/projects/stabilisation-etude-d-incidents-informatiques-2025.webp"
   },
   {
     "id": "geodessin-2026",
@@ -542,6 +556,7 @@
     "year": "2026",
     "duration": "25h (travail en groupe de 7)",
     "description": "Application web collaborative permettant de dessiner, annoter et partager des objets géographiques sur une carte interactive.",
+    "image": "/assets/images/informatique/project-placeholder.svg",
     "competences": [
       "Concevoir une architecture fullstack (Django REST, React, Docker)",
       "Implémenter des outils de dessin géographique (points, lignes, cercles, polygones, calculs de distances)",
@@ -588,7 +603,6 @@
       "compose",
       "cicd",
       "git",
-      "nlp",
       "security",
       "tests",
       "architecture"
@@ -600,6 +614,7 @@
     "year": "2026",
     "duration": "28h (travail en équipe de 6)",
     "description": "Audit de performance applicative en apprentissage supervisé pour la détection et la localisation 3D d’objets à partir de caméras RGB et profondeur. Comparaison de YOLOv11 et d’un CNN custom PyTorch, création de dataset, calibration, interface de test, visualisation et analyse des résultats.",
+    "image": "/assets/images/informatique/project-placeholder.svg",
     "competences": [
       "Prise en main de capteurs (caméra RGB, caméra de profondeur RealSense)",
       "Création, annotation et augmentation d’une base de données d’images (Label Studio, scripts Python)",
@@ -640,11 +655,9 @@
     "tags": [
       "python",
       "streamlit",
-      "orm",
       "visualisation",
       "git",
       "deeplearning",
-      "reseau",
       "tests",
       "3d"
     ]
@@ -655,6 +668,7 @@
     "year": "2025",
     "duration": "10h",
     "description": "Développement d’un assistant vocal simple en Python, capable d’enregistrer, traiter et répondre à des commandes vocales via une interface graphique (PyQt). Architecture modulaire avec gestion des threads pour l’enregistrement audio.",
+    "image": "/assets/images/informatique/project-placeholder.svg",
     "competences": [
       "Implémenter l’enregistrement et le traitement de commandes vocales en Python",
       "Concevoir une interface graphique utilisateur (PyQt, Qt Designer)",
@@ -686,8 +700,8 @@
     "tags": [
       "python",
       "git",
-      "nlp",
       "ia",
+      "llm",
       "architecture"
     ]
   },
@@ -736,7 +750,8 @@
       "visualisation",
       "git",
       "tests"
-    ]
+    ],
+    "image": "/assets/images/informatique/projects/my-iut-skills-annuaire-interactif-des-competences-2026.webp"
   },
   {
     "id": "conll-2003-ner-stage-but2-tsukuba-2025",
@@ -782,7 +797,8 @@
       "git",
       "deeplearning",
       "nlp"
-    ]
+    ],
+    "image": "/assets/images/informatique/projects/conll-2003-ner-stage-but2-tsukuba-2025.webp"
   },
   {
     "id": "twitter-sentiment-analysis-2025",
@@ -834,7 +850,8 @@
       "git",
       "deeplearning",
       "architecture"
-    ]
+    ],
+    "image": "/assets/images/informatique/projects/twitter-sentiment-analysis-2025.webp"
   },
   {
     "id": "super-kamen-bot-chatbot-vocal-japonais-2025",
@@ -842,6 +859,7 @@
     "year": "2025",
     "duration": "10h",
     "description": "Chatbot conversationnel vocal optimisé pour le japonais, avec reconnaissance et synthèse vocale, mémoire persistante (SQLite), interface web Streamlit et intégration d’un LLM japonais (Ollama). Pensé pour l’apprentissage et la pratique orale de la langue.",
+    "image": "/assets/images/informatique/project-placeholder.svg",
     "competences": [
       "Intégrer un LLM spécialisé (kangyufei/llama2:japanese via Ollama) pour la génération de texte",
       "Implémenter la reconnaissance vocale (Whisper) et la synthèse vocale (TTS)",
@@ -880,10 +898,10 @@
       "python",
       "streamlit",
       "sqlite",
-      "orm",
       "git",
       "ia",
-      "crypto"
+      "llm",
+      "nlp"
     ]
   },
   {
@@ -932,7 +950,8 @@
       "github-actions",
       "cicd",
       "architecture"
-    ]
+    ],
+    "image": "/assets/images/informatique/projects/eco-presents-recommandation-eco-responsable-2026.webp"
   },
   {
     "id": "portfolio-experiments-laboratoire-de-portfolios-2026",
@@ -978,7 +997,8 @@
       "orm",
       "git",
       "3d"
-    ]
+    ],
+    "image": "/assets/images/informatique/projects/portfolio-experiments-laboratoire-de-portfolios-2026.webp"
   },
   {
     "id": "d2l-tutorial-etude-approfondie-du-deep-learning-2026",
@@ -1020,7 +1040,8 @@
       "reseau",
       "architecture",
       "algo"
-    ]
+    ],
+    "image": "/assets/images/informatique/projects/d2l-tutorial-etude-approfondie-du-deep-learning-2026.webp"
   },
   {
     "id": "portfolio-hugo-portfolio-personnel-authentique-2026",
@@ -1066,6 +1087,7 @@
       "svelte",
       "orm",
       "git"
-    ]
+    ],
+    "image": "/assets/images/informatique/projects/portfolio-hugo-portfolio-personnel-authentique-2026.webp"
   }
 ]

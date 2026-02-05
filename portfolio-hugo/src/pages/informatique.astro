@@ -168,21 +168,11 @@ const safeReadProjectsJson = (): ProjectData[] => {
         const keep = toStrArr((p as any).keep);
         const improve = toStrArr((p as any).improve);
 
-        const tagsRaw = [...toStrArr((p as any).tags), ...toStrArr((p as any).labels)]
-          .map((s) => s.toLowerCase())
-          .filter(Boolean);
-
-        const blob = [
-          title,
-          toStr((p as any).description) ?? '',
-          tools.join(' '),
-          competences.join(' '),
-          cdc.join(' '),
-          keep.join(' '),
-          improve.join(' ')
-        ].join(' \n ');
-
-        const tags = uniq([...tagsRaw, ...tagFromText(blob)]);
+        const tags = uniq(
+          [...toStrArr((p as any).tags), ...toStrArr((p as any).labels)]
+            .map((s) => s.trim().toLowerCase())
+            .filter(Boolean)
+        );
 
         const href = toStr((p as any).href)?.trim();
         const image = toStr((p as any).image)?.trim();
@@ -367,7 +357,7 @@ const nodes: NodeData[] = [
     kind: 'main',
     parent: 'hugo',
     variant: 'scan',
-    tags: ['ia', 'deeplearning', 'nlp'],
+    tags: ['ia', 'deeplearning', 'nlp', 'llm'],
     tip: 'Deep Learning / NLP',
     detailTitle: 'IA / Deep Learning',
     detail: 'Du modèle au pipeline: dataset → entraînement → évaluation → itération.',
@@ -389,7 +379,7 @@ const nodes: NodeData[] = [
     bullets: ['SPA / SSR / statique', 'Design system maison', 'Accessibilité + perf'],
     color: '#ff005d',
     x: 16,
-    y: 26
+    y: 24
   },
   {
     id: 'data',
@@ -403,8 +393,8 @@ const nodes: NodeData[] = [
     detail: 'Modéliser, requêter, visualiser. Les données comme matériau.',
     bullets: ['SQL (PostgreSQL/MySQL/SQLite)', 'Pipelines + migrations', 'Graphes / dashboards'],
     color: '#ffe600',
-    x: 52,
-    y: 88
+    x: 46,
+    y: 86
   },
   {
     id: 'devops',
@@ -418,8 +408,8 @@ const nodes: NodeData[] = [
     detail: 'Le code vit en prod: build → test → run → observe.',
     bullets: ['Docker / compose', 'CI/CD', 'Docs + scripts'],
     color: '#ff7a00',
-    x: 88,
-    y: 66
+    x: 72,
+    y: 70
   },
   {
     id: 'sec',
@@ -433,8 +423,8 @@ const nodes: NodeData[] = [
     detail: 'RSA, ECC, ECDH — du concept à l’implémentation testée.',
     bullets: ['Crypto asymétrique', 'Benchmarks', 'Tests + cas limites'],
     color: '#9d00ff',
-    x: 20,
-    y: 66
+    x: 18,
+    y: 70
   },
   {
     id: 'sys',
@@ -448,8 +438,8 @@ const nodes: NodeData[] = [
     detail: 'Configurer, contraindre, optimiser: poste de dev, VM, environnements propres.',
     bullets: ['Linux (Mint/XFCE)', 'Virtualisation', 'Tooling'],
     color: '#00ff6a',
-    x: 84,
-    y: 28
+    x: 78,
+    y: 22
   },
   {
     id: 'net',
@@ -462,9 +452,9 @@ const nodes: NodeData[] = [
     detailTitle: 'Réseaux / Protocoles',
     detail: 'Client-serveur, REST, protocoles: comprendre et expliquer (tutos).',
     bullets: ['NEmu / infra', 'API REST', 'Docs + pédagogie'],
-    color: '#00ffff',
-    x: 72,
-    y: 40
+    color: '#00a3ff',
+    x: 66,
+    y: 46
   },
   {
     id: '3d',
@@ -477,9 +467,9 @@ const nodes: NodeData[] = [
     detailTitle: '3D / VR / Vision',
     detail: 'VR et détection 3D: capteurs, calibration, visualisation, perf.',
     bullets: ['Unity / C#', 'OpenCV / RealSense', 'Dataset + annotations'],
-    color: '#ff005d',
-    x: 86,
-    y: 44
+    color: '#ff0000',
+    x: 80,
+    y: 52
   },
 
   // Sous-thèmes (autour des gros)
@@ -495,7 +485,7 @@ const nodes: NodeData[] = [
     detail: 'Entraînement, réglage, analyse. Pas de magie — que des courbes.',
     bullets: ['YOLO / CNN', 'Hyperparams', 'Analyse erreurs'],
     color: '#00ffff',
-    x: 40,
+    x: 38,
     y: 26
   },
   {
@@ -510,7 +500,7 @@ const nodes: NodeData[] = [
     detail: 'Extraction d’entités, sentiment analysis, pipelines reproductibles.',
     bullets: ['CoNLL / NER', 'Transformers', 'Évaluation'],
     color: '#00ffff',
-    x: 60,
+    x: 62,
     y: 26
   },
   {
@@ -525,8 +515,8 @@ const nodes: NodeData[] = [
     detail: 'Tests unitaires & intégration: stabilité + confiance pour ship.',
     bullets: ['Pytest / Jest', 'Tests API', 'Qualité'],
     color: '#ff7a00',
-    x: 96,
-    y: 76
+    x: 82,
+    y: 82
   },
   {
     id: 'arch',
@@ -540,8 +530,8 @@ const nodes: NodeData[] = [
     detail: 'MVC, patterns, UML: rendre le code lisible et reprenable.',
     bullets: ['MVC', 'UML', 'Patterns'],
     color: '#ff005d',
-    x: 26,
-    y: 38
+    x: 28,
+    y: 44
   }
 ];
 ---
@@ -608,7 +598,7 @@ const nodes: NodeData[] = [
 
     <dialog id="nnModal" class="nn-modal">
       <form method="dialog" class="nn-modal__backdrop">
-        <button aria-label="Fermer" class="nn-modal__x" value="close" type="submit">✕</button>
+        <button id="nnMX" aria-label="Fermer" class="nn-modal__x" type="button">✕</button>
         <div class="nn-modal__panel brutal-border" role="document">
           <div class="nn-modal__head">
             <div>
@@ -664,6 +654,8 @@ const nodes: NodeData[] = [
 
       if (!page || !stage || !svg || !tip || !tipTitle || !tipSub) return;
 
+      let introDone = false;
+
       /** @type {Array<any>} */
       let projects = [];
       try {
@@ -699,14 +691,21 @@ const nodes: NodeData[] = [
         const head = document.createElement('div');
         head.className = 'nn-proj';
 
-        if (p?.image) {
+        {
+          const placeholderSrc = '/assets/images/informatique/project-placeholder.svg';
           const media = document.createElement('div');
           media.className = 'nn-proj__media brutal-border';
 
           const img = document.createElement('img');
           img.loading = 'lazy';
+          img.decoding = 'async';
           img.alt = p?.title ? String(p.title) : 'Image projet';
-          img.src = String(p.image);
+          img.src = p?.image ? String(p.image) : placeholderSrc;
+          img.addEventListener('error', () => {
+            if (img.getAttribute('data-fallback') === '1') return;
+            img.setAttribute('data-fallback', '1');
+            img.src = placeholderSrc;
+          });
           media.appendChild(img);
 
           head.appendChild(media);
@@ -742,18 +741,6 @@ const nodes: NodeData[] = [
             tools.appendChild(chip);
           });
           head.appendChild(tools);
-        }
-
-        if (Array.isArray(p?.tags) && p.tags.length) {
-          const tags = document.createElement('div');
-          tags.className = 'nn-proj__chips nn-proj__chips--tags';
-          p.tags.slice(0, 16).forEach((t) => {
-            const chip = document.createElement('span');
-            chip.className = 'nn-chip nn-chip--tag';
-            chip.textContent = String(t);
-            tags.appendChild(chip);
-          });
-          head.appendChild(tags);
         }
 
         const mkList = (kicker, items) => {
@@ -821,7 +808,7 @@ const nodes: NodeData[] = [
         if (!scored.length) {
           const empty = document.createElement('div');
           empty.className = 'nn-projs__note';
-          empty.textContent = 'Aucun projet trouvé pour ce thème (auto-tagging trop strict).';
+          empty.textContent = 'Aucun projet trouvé pour ce thème.';
           pList.appendChild(empty);
           return;
         }
@@ -877,6 +864,9 @@ const nodes: NodeData[] = [
         document.body.classList.toggle('is-modal-open', !!on);
       };
 
+      let lastModalFrom = null;
+      let isClosingModal = false;
+
       const fitAllLabels = () => {
         const els = Array.from(stage.querySelectorAll('.nn-node'));
         els.forEach((btn) => {
@@ -915,8 +905,10 @@ const nodes: NodeData[] = [
         const cy = r.top + r.height / 2;
         const dx = cx - vw / 2;
         const dy = cy - vh / 2;
-        const targetW = Math.min(860, vw * 0.92);
+        const targetW = Math.min(1040, vw * 0.94);
         const s = clamp(r.width / Math.max(1, targetW), 0.06, 0.92);
+
+        lastModalFrom = { el: fromEl, dx, dy, s };
 
         modal.style.setProperty('--from-dx', `${dx}px`);
         modal.style.setProperty('--from-dy', `${dy}px`);
@@ -928,14 +920,107 @@ const nodes: NodeData[] = [
         window.setTimeout(() => fromEl.classList.remove('is-opening'), 260);
       };
 
+      const closeModalAnimated = (reason) => {
+        if (!modal) return;
+        if (isClosingModal) return;
+        if (!modal.hasAttribute('open')) return;
+
+        if (prefersReducedMotion || !modal.classList.contains('nn-modal--anim')) {
+          try {
+            modal.close();
+          } catch {
+            modal.removeAttribute('open');
+          }
+          return;
+        }
+
+        isClosingModal = true;
+
+        const panel = modal.querySelector('.nn-modal__panel');
+        const backdrop = modal.querySelector('.nn-modal__backdrop');
+
+        const dx = lastModalFrom?.dx ?? 0;
+        const dy = lastModalFrom?.dy ?? 0;
+        const s = lastModalFrom?.s ?? 0.1;
+
+        if (lastModalFrom?.el) {
+          lastModalFrom.el.classList.add('is-opening');
+          window.setTimeout(() => lastModalFrom?.el?.classList?.remove?.('is-opening'), 260);
+        }
+
+        /** @type {Animation | null} */
+        let pAnim = null;
+        /** @type {Animation | null} */
+        let bAnim = null;
+
+        try {
+          if (panel && typeof panel.animate === 'function') {
+            panel.getAnimations?.().forEach((a) => a.cancel());
+            pAnim = panel.animate(
+              [
+                { transform: 'translate(0px, 0px) scale(1)', borderRadius: '14px', opacity: 1, filter: 'none' },
+                { transform: `translate(${dx}px, ${dy}px) scale(${s})`, borderRadius: '999px', opacity: 0.10, filter: 'blur(0.5px) saturate(1.08)' }
+              ],
+              { duration: 420, easing: 'cubic-bezier(.17,.84,.28,1)', fill: 'forwards' }
+            );
+          }
+
+          if (backdrop && typeof backdrop.animate === 'function') {
+            backdrop.getAnimations?.().forEach((a) => a.cancel());
+            bAnim = backdrop.animate(
+              [{ opacity: 1 }, { opacity: 0 }],
+              { duration: 260, easing: 'ease', fill: 'forwards' }
+            );
+          }
+        } catch {
+          // ignore
+        }
+
+        const done = () => {
+          isClosingModal = false;
+          try {
+            modal.close();
+          } catch {
+            modal.removeAttribute('open');
+          }
+        };
+
+        const waits = [];
+        if (pAnim?.finished) waits.push(pAnim.finished.catch(() => {}));
+        if (bAnim?.finished) waits.push(bAnim.finished.catch(() => {}));
+
+        if (waits.length) Promise.all(waits).then(done);
+        else window.setTimeout(done, 420);
+      };
+
       const openModal = (el) => {
         if (!modal || !mT || !mD || !mB || !mL) return;
+
+        // If the modal was previously closed with WAAPI, ensure no finished animations keep it invisible.
+        {
+          const panel = modal.querySelector('.nn-modal__panel');
+          const backdrop = modal.querySelector('.nn-modal__backdrop');
+          panel?.getAnimations?.().forEach((a) => a.cancel());
+          backdrop?.getAnimations?.().forEach((a) => a.cancel());
+          (panel instanceof HTMLElement) && panel.style.removeProperty('opacity');
+          (panel instanceof HTMLElement) && panel.style.removeProperty('transform');
+          (panel instanceof HTMLElement) && panel.style.removeProperty('filter');
+          (panel instanceof HTMLElement) && panel.style.removeProperty('border-radius');
+          (backdrop instanceof HTMLElement) && backdrop.style.removeProperty('opacity');
+        }
+
         const title = el.getAttribute('data-detail-title') || el.getAttribute('data-label') || 'Détail';
         const detail = el.getAttribute('data-detail') || '';
         const bulletsRaw = el.getAttribute('data-bullets') || '';
         const href = el.getAttribute('data-href') || '';
         const tagsRaw = el.getAttribute('data-tags') || '';
         const nodeTags = tagsRaw.split(',').map((s) => s.trim()).filter(Boolean);
+
+        // Accent = node color (fix: title readability)
+        {
+          const c = (getComputedStyle(el).getPropertyValue('--c') || '').trim();
+          if (c) modal.style.setProperty('--accent', c);
+        }
 
         mT.textContent = title;
         mD.textContent = detail;
@@ -979,15 +1064,53 @@ const nodes: NodeData[] = [
 
       if (modal) {
         const clear = () => {
+          isClosingModal = false;
+
+          // Important: cancel any WAAPI animations (they can persist with fill:forwards and keep opacity 0)
+          const panel = modal.querySelector('.nn-modal__panel');
+          const backdrop = modal.querySelector('.nn-modal__backdrop');
+          panel?.getAnimations?.().forEach((a) => a.cancel());
+          backdrop?.getAnimations?.().forEach((a) => a.cancel());
+          (panel instanceof HTMLElement) && panel.style.removeProperty('opacity');
+          (panel instanceof HTMLElement) && panel.style.removeProperty('transform');
+          (panel instanceof HTMLElement) && panel.style.removeProperty('filter');
+          (panel instanceof HTMLElement) && panel.style.removeProperty('border-radius');
+          (backdrop instanceof HTMLElement) && backdrop.style.removeProperty('opacity');
+
           setModalOpen(false);
           modal.classList.remove('nn-modal--open');
           modal.classList.remove('nn-modal--anim');
           modal.style.removeProperty('--from-dx');
           modal.style.removeProperty('--from-dy');
           modal.style.removeProperty('--from-s');
+          modal.style.removeProperty('--accent');
         };
         modal.addEventListener('close', clear);
-        modal.addEventListener('cancel', clear);
+
+        // Esc closes with reverse animation
+        modal.addEventListener('cancel', (e) => {
+          e.preventDefault();
+          closeModalAnimated('esc');
+        });
+
+        // Click outside panel closes the modal
+        modal.addEventListener('click', (e) => {
+          const panel = modal.querySelector('.nn-modal__panel');
+          const target = e.target;
+          if (panel && target instanceof Node && !panel.contains(target)) {
+            e.preventDefault();
+            closeModalAnimated('outside');
+          }
+        });
+
+        // Close button
+        const xBtn = document.getElementById('nnMX');
+        if (xBtn) {
+          xBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeModalAnimated('x');
+          });
+        }
       }
 
       // Build SVG links
@@ -1136,12 +1259,17 @@ const nodes: NodeData[] = [
 
       nodes.forEach((el) => {
         el.addEventListener('pointerenter', (e) => {
+          if (!introDone) return;
           showTip(el, e);
           const id = el.getAttribute('data-id');
           if (id) setHot(id);
         });
-        el.addEventListener('pointermove', moveTip, { passive: true });
+        el.addEventListener('pointermove', (e) => {
+          if (!introDone) return;
+          moveTip(e);
+        }, { passive: true });
         el.addEventListener('pointerleave', () => {
+          if (!introDone) return;
           hideTip();
           clearHot();
         });
@@ -1179,6 +1307,8 @@ const nodes: NodeData[] = [
         if (prefersReducedMotion) {
           appearOrder.forEach(showNode);
           paths.forEach((p) => p.classList.add('is-on'));
+          introDone = true;
+          stage.classList.remove('is-intro');
           return;
         }
 
@@ -1188,6 +1318,14 @@ const nodes: NodeData[] = [
           window.setTimeout(() => showNode(id), t);
           t += 220;
         });
+
+        introDone = false;
+        stage.classList.add('is-intro');
+        const total = 600 + Math.max(0, (appearOrder.length - 2) * 220) + Math.max(DRAW_MS, NODE_DELAY_MS) + 260;
+        window.setTimeout(() => {
+          introDone = true;
+          stage.classList.remove('is-intro');
+        }, total);
       });
     })();
   </script>
@@ -1378,6 +1516,16 @@ const nodes: NodeData[] = [
       opacity: 0.60;
     }
 
+    /* During intro animation: no hover flare */
+    .nn-stage__inner.is-intro .nn-node:hover::before { opacity: 0; }
+    .nn-stage__inner.is-intro .nn-node:hover {
+      transform: translate(-50%, -50%) scale(1);
+      box-shadow:
+        0 0 0 2px rgba(0,0,0,0.55) inset,
+        0 0 14px color-mix(in oklab, var(--c) 60%, transparent),
+        10px 10px 0 rgba(0,0,0,0.55);
+    }
+
     .nn-node__txt {
       display: grid;
       place-items: center;
@@ -1386,8 +1534,8 @@ const nodes: NodeData[] = [
       padding: 10px;
       font-weight: 900;
       text-transform: uppercase;
-      letter-spacing: var(--ls, 0.18em);
-      font-size: var(--fs, 11px);
+      letter-spacing: var(--ls, 0.16em);
+      font-size: var(--fs, 12px);
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
       text-shadow: 1px 1px 0 var(--red), -1px -1px 0 var(--red);
       line-height: 1.1;
@@ -1498,15 +1646,68 @@ const nodes: NodeData[] = [
     }
 
     .nn-modal__panel {
-      max-width: min(860px, 92vw);
-      width: min(860px, 92vw);
-      max-height: calc(100vh - 36px);
+      max-width: min(1040px, 94vw);
+      width: min(1040px, 94vw);
+      max-height: min(86vh, calc(100vh - 44px));
       overflow: auto;
       background: rgba(0,0,0,0.64);
-      padding: 14px;
+      color: var(--fg);
+      padding: 18px;
       box-shadow: 18px 18px 0 rgba(0,0,0,0.60);
       border-color: rgba(246,246,246,0.40);
       transform-origin: center;
+    }
+
+    /* Brutalist custom scrollbars */
+    .nn-modal__panel,
+    .nn-projs__list,
+    .nn-projs__detail {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,0,0,0.85) rgba(0,0,0,0.22);
+    }
+    .nn-modal__panel::-webkit-scrollbar,
+    .nn-projs__list::-webkit-scrollbar,
+    .nn-projs__detail::-webkit-scrollbar {
+      width: 12px;
+      height: 12px;
+    }
+    .nn-modal__panel::-webkit-scrollbar-track,
+    .nn-projs__list::-webkit-scrollbar-track,
+    .nn-projs__detail::-webkit-scrollbar-track {
+      background:
+        radial-gradient(circle at 50% 30%, rgba(255,0,0,0.08), transparent 60%),
+        repeating-linear-gradient(0deg, rgba(246,246,246,0.04) 0 2px, rgba(0,0,0,0.00) 2px 8px),
+        rgba(0,0,0,0.22);
+      border-left: 2px solid rgba(246,246,246,0.10);
+    }
+    .nn-modal__panel::-webkit-scrollbar-thumb,
+    .nn-projs__list::-webkit-scrollbar-thumb,
+    .nn-projs__detail::-webkit-scrollbar-thumb {
+      background:
+        linear-gradient(180deg, rgba(255,0,0,0.96) 0%, rgba(255,0,93,0.86) 45%, rgba(255,0,0,0.84) 100%),
+        repeating-linear-gradient(90deg, rgba(0,0,0,0.00) 0 3px, rgba(0,0,0,0.28) 3px 5px),
+        repeating-linear-gradient(0deg, rgba(246,246,246,0.08) 0 2px, rgba(0,0,0,0.00) 2px 7px);
+      background-blend-mode: screen, multiply, normal;
+      border: 2px solid rgba(246,246,246,0.16);
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,0.55) inset,
+        0 0 16px rgba(255,0,0,0.22);
+    }
+    .nn-modal__panel::-webkit-scrollbar-thumb:hover,
+    .nn-projs__list::-webkit-scrollbar-thumb:hover,
+    .nn-projs__detail::-webkit-scrollbar-thumb:hover {
+      background:
+        linear-gradient(180deg, rgba(255,0,0,1) 0%, rgba(255,0,93,0.92) 45%, rgba(255,0,0,0.92) 100%),
+        repeating-linear-gradient(90deg, rgba(0,0,0,0.00) 0 3px, rgba(0,0,0,0.24) 3px 5px),
+        repeating-linear-gradient(0deg, rgba(246,246,246,0.10) 0 2px, rgba(0,0,0,0.00) 2px 7px);
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,0.55) inset,
+        0 0 22px rgba(255,0,0,0.28);
+    }
+    .nn-modal__panel::-webkit-scrollbar-corner,
+    .nn-projs__list::-webkit-scrollbar-corner,
+    .nn-projs__detail::-webkit-scrollbar-corner {
+      background: rgba(0,0,0,0.22);
     }
 
     /* Modal opening animation: node → centered panel */
@@ -1543,8 +1744,23 @@ const nodes: NodeData[] = [
 
     .nn-modal__head { display: flex; align-items: start; justify-content: space-between; gap: 12px; }
     .nn-modal__kicker { font-size: 10px; letter-spacing: 0.35em; text-transform: uppercase; font-weight: 900; color: rgba(246,246,246,0.65); }
-    .nn-modal__title { font-family: var(--font-display, 'Bebas Neue', system-ui, sans-serif); font-size: 54px; line-height: 1; margin-top: 6px; }
-    .nn-modal__desc { margin-top: 8px; font-weight: 900; font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,230,0,0.78); max-width: 62ch; }
+    .nn-modal__title {
+      font-family: var(--font-display, 'Bebas Neue', system-ui, sans-serif);
+      font-size: 60px;
+      line-height: 1;
+      margin-top: 6px;
+      color: var(--accent, rgba(246,246,246,0.92));
+      text-shadow: 1px 1px 0 rgba(0,0,0,0.55);
+    }
+    .nn-modal__desc {
+      margin-top: 10px;
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: 0.04em;
+      text-transform: none;
+      color: rgba(255,230,0,0.86);
+      max-width: 70ch;
+    }
 
     .nn-modal__link {
       margin-top: 8px;
@@ -1570,10 +1786,10 @@ const nodes: NodeData[] = [
       gap: 8px;
       padding-left: 18px;
       color: rgba(246,246,246,0.86);
-      font-weight: 800;
-      font-size: 12px;
-      letter-spacing: 0.10em;
-      text-transform: uppercase;
+      font-weight: 750;
+      font-size: 14px;
+      letter-spacing: 0.04em;
+      text-transform: none;
     }
 
     .nn-projs {
@@ -1593,7 +1809,7 @@ const nodes: NodeData[] = [
     .nn-projs__grid {
       margin-top: 10px;
       display: grid;
-      grid-template-columns: 260px 1fr;
+      grid-template-columns: 320px 1fr;
       gap: 12px;
       align-items: start;
     }
@@ -1621,9 +1837,9 @@ const nodes: NodeData[] = [
     .nn-projs__empty,
     .nn-projs__note {
       font-weight: 900;
-      font-size: 11px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: none;
       color: rgba(246,246,246,0.60);
       padding: 10px;
       border: 2px dashed rgba(255,0,0,0.35);
@@ -1655,18 +1871,18 @@ const nodes: NodeData[] = [
 
     .nn-projrow__t {
       font-weight: 900;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: none;
+      font-size: 12px;
       line-height: 1.15;
     }
 
     .nn-projrow__m {
       margin-top: 6px;
       font-weight: 900;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      font-size: 10px;
+      letter-spacing: 0.10em;
+      text-transform: none;
+      font-size: 11px;
       color: rgba(246,246,246,0.60);
     }
 
@@ -1696,18 +1912,18 @@ const nodes: NodeData[] = [
     .nn-proj__meta {
       margin-top: 6px;
       font-weight: 900;
-      letter-spacing: 0.20em;
-      text-transform: uppercase;
-      font-size: 11px;
+      letter-spacing: 0.10em;
+      text-transform: none;
+      font-size: 12px;
       color: rgba(246,246,246,0.62);
     }
 
     .nn-proj__desc {
       margin-top: 10px;
-      font-weight: 800;
-      font-size: 12px;
-      letter-spacing: 0.10em;
-      text-transform: uppercase;
+      font-weight: 750;
+      font-size: 14px;
+      letter-spacing: 0.04em;
+      text-transform: none;
       color: rgba(255,230,0,0.78);
       max-width: 70ch;
     }
@@ -1726,9 +1942,9 @@ const nodes: NodeData[] = [
       border: 2px solid rgba(246,246,246,0.22);
       background: rgba(0,0,0,0.22);
       font-weight: 900;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      font-size: 10px;
+      letter-spacing: 0.10em;
+      text-transform: none;
+      font-size: 11px;
       color: rgba(246,246,246,0.86);
     }
 
@@ -1759,10 +1975,10 @@ const nodes: NodeData[] = [
       gap: 6px;
       padding-left: 18px;
       color: rgba(246,246,246,0.86);
-      font-weight: 800;
-      font-size: 12px;
-      letter-spacing: 0.10em;
-      text-transform: uppercase;
+      font-weight: 720;
+      font-size: 14px;
+      letter-spacing: 0.03em;
+      text-transform: none;
     }
 
     .nn-proj__link {
@@ -1787,7 +2003,7 @@ const nodes: NodeData[] = [
     .nn-modal__hint { font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(246,246,246,0.58); }
 
     @media (max-width: 760px) {
-      .nn-modal__title { font-size: 42px; }
+      .nn-modal__title { font-size: 48px; }
       .nn-stage__inner { height: min(760px, 78vh); }
 
       .nn-projs__grid {

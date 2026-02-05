@@ -104,6 +104,10 @@ const parseProjects = (md) => {
 
   const pushCur = () => {
     if (!cur) return;
+
+    // Default image path (predictable convention). If the file doesn't exist, the UI falls back to a placeholder.
+    if (!cur.image) cur.image = `/assets/images/informatique/projects/${cur.id}.webp`;
+
     const blob = [
       cur.title,
       cur.description ?? '',
