@@ -1,5 +1,22 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { readFileSync } from 'node:fs';
+
+type ProjectData = {
+  id: string;
+  title: string;
+  year?: string;
+  duration?: string;
+  description?: string;
+  competences: string[];
+  tools: string[];
+  cdc: string[];
+  keep: string[];
+  improve: string[];
+  href?: string;
+  image?: string;
+  tags: string[];
+};
 
 type NodeData = {
   id: string;
@@ -7,6 +24,7 @@ type NodeData = {
   kind: 'center' | 'main' | 'sub';
   parent?: string;
   variant?: 'ring' | 'dashed' | 'double' | 'chip' | 'scan';
+  tags?: string[];
   tip: string;
   detailTitle: string;
   detail: string;
@@ -17,96 +35,346 @@ type NodeData = {
   y: number; // percent
 };
 
+const toStr = (v: unknown) => {
+  if (typeof v === 'string') return v;
+  if (typeof v === 'number') return String(v);
+  if (typeof v === 'boolean') return v ? 'true' : 'false';
+  return undefined;
+};
+
+const toStrArr = (v: unknown) => {
+  if (!Array.isArray(v)) return [] as string[];
+  return v.map((x) => String(x).trim()).filter(Boolean);
+};
+
+const safeReadProjects = () => {
+  try {
+    return readFileSync(new URL('../../../PROJECTS.md', import.meta.url), 'utf-8');
+  } catch {
+    return '';
+  }
+};
+
+const slugify = (s: string) =>
+  s
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
+    .slice(0, 60);
+
+const uniq = (arr: string[]) => Array.from(new Set(arr.filter(Boolean)));
+
+const tagFromText = (text: string) => {
+  const t = text.toLowerCase();
+  const tags: string[] = [];
+  const add = (x: string) => tags.push(x);
+
+  // Languages
+  if (/(^|\b)java(\b|$)/.test(t)) add('java');
+  if (/(^|\b)python(\b|$)/.test(t)) add('python');
+  if (/(^|\b)php(\b|$)/.test(t)) add('php');
+  if (/(^|\b)typescript(\b|$)/.test(t)) add('typescript');
+  if (/(^|\b)javascript(\b|$)/.test(t) || /\bjs\b/.test(t)) add('javascript');
+  if (/(^|\b)c#(\b|$)/.test(t) || /\bcsharp\b/.test(t)) add('csharp');
+  if (/(^|\b)bash(\b|$)/.test(t) || /\bshell\b/.test(t)) add('bash');
+  if (/(^|\b)c\b/.test(t) && /programmation\s+syst[eè]me/.test(t)) add('c');
+
+  // Web & frameworks
+  if (/react/.test(t)) add('react');
+  if (/next\.js|nextjs/.test(t)) add('nextjs');
+  if (/astro/.test(t)) add('astro');
+  if (/svelte/.test(t)) add('svelte');
+  if (/symfony/.test(t)) add('symfony');
+  if (/flask/.test(t)) add('flask');
+  if (/django/.test(t)) add('django');
+  if (/streamlit/.test(t)) add('streamlit');
+  if (/tailwind/.test(t)) add('tailwind');
+  if (/bootstrap/.test(t)) add('bootstrap');
+  if (/twig/.test(t)) add('twig');
+  if (/vite/.test(t)) add('vite');
+  if (/node\.js|nodejs/.test(t)) add('nodejs');
+  if (/express/.test(t)) add('express');
+  if (/api\s*rest|rest\b/.test(t)) add('rest');
+
+  // Data / DB
+  if (/postgres/.test(t)) add('postgresql');
+  if (/mysql/.test(t)) add('mysql');
+  if (/sqlite/.test(t)) add('sqlite');
+  if (/prisma/.test(t)) add('prisma');
+  if (/sql\b/.test(t)) add('sql');
+  if (/orm/.test(t)) add('orm');
+  if (/pandas/.test(t)) add('pandas');
+  if (/matplotlib/.test(t)) add('matplotlib');
+  if (/visualisation|graphiques|charts?\.js/.test(t)) add('visualisation');
+
+  // DevOps / tooling
+  if (/docker/.test(t)) add('docker');
+  if (/compose/.test(t)) add('compose');
+  if (/github\s*actions/.test(t)) add('github-actions');
+  if (/gitlab/.test(t)) add('gitlab');
+  if (/ci\/?cd|cicd/.test(t)) add('cicd');
+  if (/jenkins/.test(t)) add('jenkins');
+  if (/git\b/.test(t)) add('git');
+
+  // AI / ML
+  if (/deep\s*learning|apprentissage\s*supervis[eé]|cnn\b|yolo|pytorch|transformers|bert|roberta|lstm|crf/.test(t)) add('deeplearning');
+  if (/nlp|entit[eé]s\s*nomm[eé]es|ner\b/.test(t)) add('nlp');
+  if (/ia\b|intelligence\s*artificielle|min-?max/.test(t)) add('ia');
+
+  // Security / crypto
+  if (/rsa|diffie|hellman|signature|cryptograph|ecc|ecdh|courbes\s*elliptiques/.test(t)) add('crypto');
+  if (/s[eé]curit[eé]|security/.test(t)) add('security');
+
+  // Systems / network
+  if (/linux|unix|mint|xfce/.test(t)) add('linux');
+  if (/vmware|virtual(box)?|qemu|machine\s*virtuelle/.test(t)) add('virtualisation');
+  if (/r[eé]seau|nemu|dns|dhcp|tcp\/ip|osi|routage/.test(t)) add('reseau');
+
+  // Quality / tests
+  if (/tests?\b|tdd|junit|pytest|jest|phpunit|testing\s+library/.test(t)) add('tests');
+
+  // Modeling / architecture
+  if (/uml|winedesign|mod[eé]lisat/.test(t)) add('uml');
+  if (/mvc|architecture\b|couches|patterns?|solid|gasp/.test(t)) add('architecture');
+
+  // 3D / VR
+  if (/unity|vr|r[eé]alit[eé]\s*virtuelle|3d|realsense|opencv|aruco/.test(t)) add('3d');
+
+  // Algo / graph
+  if (/prim\b|graphe|graph\b|complexit[eé]|algorith/.test(t)) add('algo');
+
+  return uniq(tags);
+};
+
+const safeReadProjectsJson = (): ProjectData[] => {
+  try {
+    const raw = readFileSync(new URL('../data/projects.json', import.meta.url), 'utf-8');
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed)) return [];
+
+    const normalized = parsed
+      .map((p) => {
+        if (!p || typeof p !== 'object') return null;
+        const title = toStr((p as any).title)?.trim();
+        if (!title) return null;
+        const year = toStr((p as any).year)?.trim();
+        const id = (toStr((p as any).id)?.trim() || slugify(title + (year ? `-${year}` : ''))).slice(0, 80);
+
+        const competences = toStrArr((p as any).competences);
+        const tools = toStrArr((p as any).tools);
+        const cdc = toStrArr((p as any).cdc);
+        const keep = toStrArr((p as any).keep);
+        const improve = toStrArr((p as any).improve);
+
+        const tagsRaw = [...toStrArr((p as any).tags), ...toStrArr((p as any).labels)]
+          .map((s) => s.toLowerCase())
+          .filter(Boolean);
+
+        const blob = [
+          title,
+          toStr((p as any).description) ?? '',
+          tools.join(' '),
+          competences.join(' '),
+          cdc.join(' '),
+          keep.join(' '),
+          improve.join(' ')
+        ].join(' \n ');
+
+        const tags = uniq([...tagsRaw, ...tagFromText(blob)]);
+
+        const href = toStr((p as any).href)?.trim();
+        const image = toStr((p as any).image)?.trim();
+
+        return {
+          id,
+          title,
+          year,
+          duration: toStr((p as any).duration)?.trim(),
+          description: toStr((p as any).description)?.trim(),
+          competences,
+          tools,
+          cdc,
+          keep,
+          improve,
+          href: href || undefined,
+          image: image || undefined,
+          tags
+        } satisfies ProjectData;
+      })
+      .filter(Boolean) as ProjectData[];
+
+    return normalized;
+  } catch {
+    return [];
+  }
+};
+
+const parseProjects = (md: string): ProjectData[] => {
+  const lines = md.replace(/\r\n/g, '\n').split('\n');
+  const out: ProjectData[] = [];
+  let cur: ProjectData | null = null;
+  let section: 'none' | 'competences' | 'tools' | 'cdc' | 'result' | 'keep' | 'improve' = 'none';
+
+  const pushCur = () => {
+    if (!cur) return;
+    // Auto tags from fields
+    const blob = [
+      cur.title,
+      cur.description ?? '',
+      cur.tools.join(' '),
+      cur.competences.join(' '),
+      cur.cdc.join(' '),
+      cur.keep.join(' '),
+      cur.improve.join(' ')
+    ].join(' \n ');
+    cur.tags = uniq([...(cur.tags || []), ...tagFromText(blob)]);
+    out.push(cur);
+    cur = null;
+    section = 'none';
+  };
+
+  const addBullet = (arr: string[], raw: string) => {
+    const s = raw.replace(/^\s*[-•]\s+/, '').trim();
+    if (!s) return;
+    arr.push(s);
+  };
+
+  for (let i = 0; i < lines.length; i += 1) {
+    const raw = lines[i];
+    const line = raw.trimEnd();
+    const h = line.match(/^####\s+(.+?)\s*(?:\((\d{4})\))?\s*$/);
+    if (h) {
+      pushCur();
+      const title = h[1].trim();
+      const year = h[2] ? h[2].trim() : undefined;
+      cur = {
+        id: slugify(title + (year ? `-${year}` : '')),
+        title,
+        year,
+        duration: undefined,
+        description: undefined,
+        competences: [],
+        tools: [],
+        cdc: [],
+        keep: [],
+        improve: [],
+        href: undefined,
+        image: undefined,
+        tags: []
+      };
+      section = 'none';
+      continue;
+    }
+
+    if (!cur) continue;
+    const t = line.trim();
+    if (!t) continue;
+
+    const kv = t.match(/^(Dur[ée]e|Description|Image|Lien|Repo|Labels?|Tags?)\s*:\s*(.+)\s*$/i);
+    if (kv) {
+      const k = kv[1].toLowerCase();
+      const v = kv[2].trim();
+      if (k.startsWith('dur')) cur.duration = v;
+      else if (k.startsWith('desc')) cur.description = v;
+      else if (k === 'image') cur.image = v;
+      else if (k === 'lien' || k === 'repo') cur.href = v;
+      else if (k.startsWith('label') || k.startsWith('tag')) {
+        const extra = v
+          .split(/[,;|]/g)
+          .map((s) => s.trim().toLowerCase())
+          .filter(Boolean);
+        cur.tags = uniq([...(cur.tags || []), ...extra]);
+      }
+      continue;
+    }
+
+    if (/^Comp[ée]tences\s*:\s*$/i.test(t)) {
+      section = 'competences';
+      continue;
+    }
+    if (/^Outils\s*:\s*$/i.test(t)) {
+      section = 'tools';
+      continue;
+    }
+    if (/^Cahier des Charges\s*:\s*$/i.test(t)) {
+      section = 'cdc';
+      continue;
+    }
+    if (/^R[ée]sultat\s*:\s*$/i.test(t)) {
+      section = 'result';
+      continue;
+    }
+    if (/^[\-•]\s*À\s*garder\s*:\s*$/i.test(t)) {
+      section = 'keep';
+      continue;
+    }
+    if (/^[\-•]\s*À\s*am[ée]liorer\s*:\s*$/i.test(t)) {
+      section = 'improve';
+      continue;
+    }
+
+    // Bullets
+    if (/^\s*[-•]\s+/.test(raw)) {
+      if (section === 'competences') addBullet(cur.competences, raw);
+      else if (section === 'tools') addBullet(cur.tools, raw);
+      else if (section === 'cdc') addBullet(cur.cdc, raw);
+      else if (section === 'keep') addBullet(cur.keep, raw);
+      else if (section === 'improve') addBullet(cur.improve, raw);
+      continue;
+    }
+
+    // Nested bullets often start with indentation + '-'
+    if (/^\s{2,}[-•]\s+/.test(raw)) {
+      if (section === 'keep') addBullet(cur.keep, raw);
+      else if (section === 'improve') addBullet(cur.improve, raw);
+      else if (section === 'cdc') addBullet(cur.cdc, raw);
+      else if (section === 'competences') addBullet(cur.competences, raw);
+      else if (section === 'tools') addBullet(cur.tools, raw);
+      continue;
+    }
+  }
+
+  pushCur();
+  return out;
+};
+
+const projectsJson = safeReadProjectsJson();
+const projectsMd = safeReadProjects();
+const projects: ProjectData[] = projectsJson.length ? projectsJson : projectsMd ? parseProjects(projectsMd) : [];
+
 const nodes: NodeData[] = [
   {
     id: 'hugo',
     label: 'HUGO',
     kind: 'center',
     variant: 'double',
+    tags: [],
     tip: 'Centre · moi / mon stack',
     detailTitle: 'Hugo',
-    detail: 'Le hub. J’assemble et je ship. Le but: des systèmes qui tournent, pas des démos qui clignotent.',
-    bullets: ['Prototypage rapide', 'Code propre + itération', 'UX brute mais précise'],
+    detail: 'Le hub. Clique un thème → tu vois les projets réels + le RETEX. Rien d’abstrait.',
+    bullets: ['Les projets prouvent le niveau', 'Le RETEX montre le recul', 'Les outils = traces concrètes'],
     color: '#00ffff',
     x: 50,
     y: 50
   },
 
-  // Main ring
+  // Thèmes définitifs (basés sur tes projets + compétences BUT)
   {
     id: 'ia',
     label: 'IA',
     kind: 'main',
     parent: 'hugo',
     variant: 'scan',
-    tip: 'Réseaux, DL, NLP',
-    detailTitle: 'IA',
-    detail: 'Réseaux de neurones, deep learning, NLP. L’IA comme outil: contrainte → montage → résultat.',
-    bullets: ['Classification / génération', 'Évaluation & itérations', 'NLP (stage Tsukuba 2026)'],
-    href: 'https://www.github.com/',
+    tags: ['ia', 'deeplearning', 'nlp'],
+    tip: 'Deep Learning / NLP',
+    detailTitle: 'IA / Deep Learning',
+    detail: 'Du modèle au pipeline: dataset → entraînement → évaluation → itération.',
+    bullets: ['PyTorch / Transformers / YOLO', 'Benchmarks + métriques', 'Stages / projets de recherche'],
     color: '#00ffff',
     x: 52,
     y: 14
-  },
-  {
-    id: 'poo',
-    label: 'POO',
-    kind: 'main',
-    parent: 'hugo',
-    variant: 'ring',
-    tip: 'Java / Python / patterns',
-    detailTitle: 'POO / Programmation',
-    detail: 'Objets, patterns, lisibilité, responsabilité. Faire simple, mais solide.',
-    bullets: ['Java / Python', 'Design patterns', 'Tests & refactor'],
-    href: 'https://www.github.com/',
-    color: '#00ff6a',
-    x: 84,
-    y: 28
-  },
-  {
-    id: 'devops',
-    label: 'DEVOPS',
-    kind: 'main',
-    parent: 'hugo',
-    variant: 'chip',
-    tip: 'CI/CD, containers, cloud',
-    detailTitle: 'DevOps / Cloud',
-    detail: 'Déploiement, automatisation, observabilité. Le code vit en prod.',
-    bullets: ['Docker', 'CI/CD', 'Cloud'],
-    href: 'https://www.github.com/',
-    color: '#ff7a00',
-    x: 88,
-    y: 66
-  },
-  {
-    id: 'db',
-    label: 'DB',
-    kind: 'main',
-    parent: 'hugo',
-    variant: 'double',
-    tip: 'SQL, schémas, perf',
-    detailTitle: 'Bases de données',
-    detail: 'Modéliser propre, interroger vite, garder la data lisible.',
-    bullets: ['SQL', 'Modélisation', 'Index / perf'],
-    href: 'https://www.github.com/',
-    color: '#ffe600',
-    x: 52,
-    y: 88
-  },
-  {
-    id: 'algo',
-    label: 'ALGO',
-    kind: 'main',
-    parent: 'hugo',
-    variant: 'dashed',
-    tip: 'structures, complexité',
-    detailTitle: 'Algorithmes',
-    detail: 'Structures, complexité, bonnes primitives. Quand ça rame: on mesure, puis on coupe.',
-    bullets: ['Complexité', 'Structures de données', 'Optimisation'],
-    href: 'https://www.github.com/',
-    color: '#9d00ff',
-    x: 20,
-    y: 66
   },
   {
     id: 'web',
@@ -114,28 +382,118 @@ const nodes: NodeData[] = [
     kind: 'main',
     parent: 'hugo',
     variant: 'ring',
-    tip: 'UI/UX, front, perf',
+    tags: ['react', 'nextjs', 'astro', 'svelte', 'symfony', 'flask', 'streamlit'],
+    tip: 'Interfaces + apps',
     detailTitle: 'Web / Interfaces',
-    detail: 'Interfaces brutales mais claires. Interactions nettes, anims légères.',
-    bullets: ['Astro / Svelte', 'Animations CSS/SVG', 'Perf & a11y'],
-    href: 'https://www.github.com/',
+    detail: 'Front qui claque + logique claire. UX brutale mais lisible.',
+    bullets: ['SPA / SSR / statique', 'Design system maison', 'Accessibilité + perf'],
     color: '#ff005d',
     x: 16,
     y: 26
   },
-
-  // Sub nodes (IA)
   {
-    id: 'nn',
-    label: 'NEURONES',
+    id: 'data',
+    label: 'DATA',
+    kind: 'main',
+    parent: 'hugo',
+    variant: 'double',
+    tags: ['sql', 'postgresql', 'mysql', 'sqlite', 'pandas', 'visualisation'],
+    tip: 'DB / viz / requêtes',
+    detailTitle: 'Data / Bases',
+    detail: 'Modéliser, requêter, visualiser. Les données comme matériau.',
+    bullets: ['SQL (PostgreSQL/MySQL/SQLite)', 'Pipelines + migrations', 'Graphes / dashboards'],
+    color: '#ffe600',
+    x: 52,
+    y: 88
+  },
+  {
+    id: 'devops',
+    label: 'DEVOPS',
+    kind: 'main',
+    parent: 'hugo',
+    variant: 'chip',
+    tags: ['docker', 'compose', 'github-actions', 'gitlab', 'cicd'],
+    tip: 'Docker / CI/CD',
+    detailTitle: 'DevOps / Déploiement',
+    detail: 'Le code vit en prod: build → test → run → observe.',
+    bullets: ['Docker / compose', 'CI/CD', 'Docs + scripts'],
+    color: '#ff7a00',
+    x: 88,
+    y: 66
+  },
+  {
+    id: 'sec',
+    label: 'SÉCU',
+    kind: 'main',
+    parent: 'hugo',
+    variant: 'dashed',
+    tags: ['crypto', 'security'],
+    tip: 'Crypto / robustesse',
+    detailTitle: 'Sécurité / Cryptographie',
+    detail: 'RSA, ECC, ECDH — du concept à l’implémentation testée.',
+    bullets: ['Crypto asymétrique', 'Benchmarks', 'Tests + cas limites'],
+    color: '#9d00ff',
+    x: 20,
+    y: 66
+  },
+  {
+    id: 'sys',
+    label: 'SYSTÈME',
+    kind: 'main',
+    parent: 'hugo',
+    variant: 'ring',
+    tags: ['linux', 'virtualisation'],
+    tip: 'Linux / VM',
+    detailTitle: 'Systèmes / Environnements',
+    detail: 'Configurer, contraindre, optimiser: poste de dev, VM, environnements propres.',
+    bullets: ['Linux (Mint/XFCE)', 'Virtualisation', 'Tooling'],
+    color: '#00ff6a',
+    x: 84,
+    y: 28
+  },
+  {
+    id: 'net',
+    label: 'RÉSEAU',
+    kind: 'main',
+    parent: 'hugo',
+    variant: 'double',
+    tags: ['reseau', 'rest'],
+    tip: 'Protocoles / REST',
+    detailTitle: 'Réseaux / Protocoles',
+    detail: 'Client-serveur, REST, protocoles: comprendre et expliquer (tutos).',
+    bullets: ['NEmu / infra', 'API REST', 'Docs + pédagogie'],
+    color: '#00ffff',
+    x: 72,
+    y: 40
+  },
+  {
+    id: '3d',
+    label: '3D/VR',
+    kind: 'main',
+    parent: 'hugo',
+    variant: 'chip',
+    tags: ['3d'],
+    tip: 'Unity / vision',
+    detailTitle: '3D / VR / Vision',
+    detail: 'VR et détection 3D: capteurs, calibration, visualisation, perf.',
+    bullets: ['Unity / C#', 'OpenCV / RealSense', 'Dataset + annotations'],
+    color: '#ff005d',
+    x: 86,
+    y: 44
+  },
+
+  // Sous-thèmes (autour des gros)
+  {
+    id: 'dl',
+    label: 'DL',
     kind: 'sub',
     parent: 'ia',
     variant: 'double',
-    tip: 'MLP / CNN / attention',
-    detailTitle: 'Réseaux de neurones',
-    detail: 'Représentation, entraînement, régularisation — dataset propre.',
-    bullets: ['Architecture', 'Loss / training loop', 'Overfit → diagnostics'],
-    href: 'https://www.github.com/',
+    tags: ['deeplearning'],
+    tip: 'CNN / YOLO / training',
+    detailTitle: 'Deep Learning',
+    detail: 'Entraînement, réglage, analyse. Pas de magie — que des courbes.',
+    bullets: ['YOLO / CNN', 'Hyperparams', 'Analyse erreurs'],
     color: '#00ffff',
     x: 40,
     y: 26
@@ -146,48 +504,44 @@ const nodes: NodeData[] = [
     kind: 'sub',
     parent: 'ia',
     variant: 'scan',
-    tip: 'Tsukuba 2026',
+    tags: ['nlp', 'deeplearning'],
+    tip: 'NER / BERT / RoBERTa',
     detailTitle: 'NLP',
-    detail: 'Stage au laboratoire du Professeur Inui (Université de Tsukuba, 2026). Sentiment analysis / corpus multilingues.',
-    bullets: ['Prétraitement', 'Évaluation', 'Résultats reproductibles'],
-    href: 'https://www.github.com/',
+    detail: 'Extraction d’entités, sentiment analysis, pipelines reproductibles.',
+    bullets: ['CoNLL / NER', 'Transformers', 'Évaluation'],
     color: '#00ffff',
-    x: 58,
+    x: 60,
     y: 26
   },
-
-  // Sub nodes (DevOps)
   {
-    id: 'docker',
-    label: 'DOCKER',
+    id: 'tests',
+    label: 'TESTS',
     kind: 'sub',
     parent: 'devops',
     variant: 'dashed',
-    tip: 'containers',
-    detailTitle: 'Docker',
-    detail: 'Reproductible, clean, portable. Le même artefact partout.',
-    bullets: ['Images multi-stage', 'Perf build', 'Best practices'],
-    href: 'https://www.github.com/',
+    tags: ['tests'],
+    tip: 'pytest / jest / phpunit',
+    detailTitle: 'Tests / Qualité',
+    detail: 'Tests unitaires & intégration: stabilité + confiance pour ship.',
+    bullets: ['Pytest / Jest', 'Tests API', 'Qualité'],
     color: '#ff7a00',
     x: 96,
-    y: 62
+    y: 76
   },
-
-  // Sub nodes (DB)
   {
-    id: 'sql',
-    label: 'SQL',
+    id: 'arch',
+    label: 'ARCHI',
     kind: 'sub',
-    parent: 'db',
+    parent: 'web',
     variant: 'ring',
-    tip: 'requêtes',
-    detailTitle: 'SQL',
-    detail: 'Requêtes lisibles. Index quand il faut. Mesure avant optimisation.',
-    bullets: ['Joins', 'Indexes', 'EXPLAIN'],
-    href: 'https://www.github.com/',
-    color: '#ffe600',
-    x: 44,
-    y: 80
+    tags: ['architecture', 'uml'],
+    tip: 'MVC / UML / patterns',
+    detailTitle: 'Architecture',
+    detail: 'MVC, patterns, UML: rendre le code lisible et reprenable.',
+    bullets: ['MVC', 'UML', 'Patterns'],
+    color: '#ff005d',
+    x: 26,
+    y: 38
   }
 ];
 ---
@@ -234,6 +588,7 @@ const nodes: NodeData[] = [
                 data-tip={n.tip}
                 data-detail-title={n.detailTitle}
                 data-detail={n.detail}
+                data-tags={(n.tags ?? []).join(',')}
                 data-bullets={(n.bullets ?? []).join('|||')}
                 data-href={n.href ?? ''}
                 aria-label={`${n.detailTitle}: ${n.tip}`}
@@ -264,6 +619,17 @@ const nodes: NodeData[] = [
             <a id="nnML" class="nn-modal__link" target="_blank" rel="noreferrer">Lien ↗</a>
           </div>
           <ul id="nnMB" class="nn-modal__bullets"></ul>
+
+          <div class="nn-projs" aria-label="Projets liés">
+            <div class="nn-projs__kicker">PROJETS LIÉS</div>
+            <div class="nn-projs__grid">
+              <div class="nn-projs__list" id="nnPL" role="list"></div>
+              <div class="nn-projs__detail" id="nnPD">
+                <div class="nn-projs__empty">Clique un projet à gauche.</div>
+              </div>
+            </div>
+          </div>
+
           <div class="nn-modal__foot">
             <div class="nn-modal__hint">Esc pour fermer</div>
             <button class="tool" value="close" type="submit">Fermer</button>
@@ -271,6 +637,12 @@ const nodes: NodeData[] = [
         </div>
       </form>
     </dialog>
+
+    <script
+      type="application/json"
+      id="nnProjectsData"
+      set:html={JSON.stringify(projects).replace(/</g, '\\u003c')}
+    ></script>
   </div>
 
   <script is:inline>
@@ -283,11 +655,214 @@ const nodes: NodeData[] = [
       const mD = document.getElementById('nnMD');
       const mB = document.getElementById('nnMB');
       const mL = document.getElementById('nnML');
+      const pData = document.getElementById('nnProjectsData');
+      const pList = document.getElementById('nnPL');
+      const pDetail = document.getElementById('nnPD');
       const tip = document.getElementById('nnTip');
       const tipTitle = document.getElementById('nnTipTitle');
       const tipSub = document.getElementById('nnTipSub');
 
       if (!page || !stage || !svg || !tip || !tipTitle || !tipSub) return;
+
+      /** @type {Array<any>} */
+      let projects = [];
+      try {
+        projects = JSON.parse((pData && pData.textContent) ? pData.textContent : '[]');
+        if (!Array.isArray(projects)) projects = [];
+      } catch {
+        projects = [];
+      }
+
+      const uniq = (arr) => Array.from(new Set((arr || []).filter(Boolean)));
+      const normTag = (x) => String(x ?? '').trim().toLowerCase();
+      const tagsOf = (p) => {
+        const t = Array.isArray(p?.tags) ? p.tags : [];
+        const l = Array.isArray(p?.labels) ? p.labels : [];
+        return uniq([...t, ...l].map(normTag)).filter(Boolean);
+      };
+      const intersectCount = (a, b) => {
+        const setB = new Set(b);
+        let c = 0;
+        a.forEach((x) => { if (setB.has(x)) c += 1; });
+        return c;
+      };
+
+      const yearToInt = (y) => {
+        const n = parseInt(String(y || '').trim(), 10);
+        return Number.isFinite(n) ? n : 0;
+      };
+
+      const renderProjectDetail = (p) => {
+        if (!pDetail) return;
+        pDetail.replaceChildren();
+
+        const head = document.createElement('div');
+        head.className = 'nn-proj';
+
+        if (p?.image) {
+          const media = document.createElement('div');
+          media.className = 'nn-proj__media brutal-border';
+
+          const img = document.createElement('img');
+          img.loading = 'lazy';
+          img.alt = p?.title ? String(p.title) : 'Image projet';
+          img.src = String(p.image);
+          media.appendChild(img);
+
+          head.appendChild(media);
+        }
+
+        const title = document.createElement('div');
+        title.className = 'nn-proj__title';
+        title.textContent = p?.title || 'Projet';
+        head.appendChild(title);
+
+        const meta = document.createElement('div');
+        meta.className = 'nn-proj__meta';
+        const bits = [];
+        if (p?.year) bits.push(String(p.year));
+        if (p?.duration) bits.push(String(p.duration));
+        meta.textContent = bits.join(' · ') || '—';
+        head.appendChild(meta);
+
+        if (p?.description) {
+          const desc = document.createElement('div');
+          desc.className = 'nn-proj__desc';
+          desc.textContent = String(p.description);
+          head.appendChild(desc);
+        }
+
+        if (Array.isArray(p?.tools) && p.tools.length) {
+          const tools = document.createElement('div');
+          tools.className = 'nn-proj__chips';
+          p.tools.slice(0, 14).forEach((t) => {
+            const chip = document.createElement('span');
+            chip.className = 'nn-chip';
+            chip.textContent = String(t);
+            tools.appendChild(chip);
+          });
+          head.appendChild(tools);
+        }
+
+        if (Array.isArray(p?.tags) && p.tags.length) {
+          const tags = document.createElement('div');
+          tags.className = 'nn-proj__chips nn-proj__chips--tags';
+          p.tags.slice(0, 16).forEach((t) => {
+            const chip = document.createElement('span');
+            chip.className = 'nn-chip nn-chip--tag';
+            chip.textContent = String(t);
+            tags.appendChild(chip);
+          });
+          head.appendChild(tags);
+        }
+
+        const mkList = (kicker, items) => {
+          if (!Array.isArray(items) || !items.length) return;
+          const box = document.createElement('div');
+          box.className = 'nn-proj__box';
+          const k = document.createElement('div');
+          k.className = 'nn-proj__k';
+          k.textContent = kicker;
+          box.appendChild(k);
+          const ul = document.createElement('ul');
+          ul.className = 'nn-proj__ul';
+          items.slice(0, 10).forEach((x) => {
+            const li = document.createElement('li');
+            li.textContent = String(x);
+            ul.appendChild(li);
+          });
+          box.appendChild(ul);
+          head.appendChild(box);
+        };
+
+        mkList('COMPÉTENCES', p?.competences);
+        mkList('CAHIER DES CHARGES', p?.cdc);
+        mkList('À GARDER', p?.keep);
+        mkList('À AMÉLIORER', p?.improve);
+
+        if (p?.href) {
+          const a = document.createElement('a');
+          a.className = 'nn-proj__link';
+          a.target = '_blank';
+          a.rel = 'noreferrer';
+          a.href = String(p.href);
+          a.textContent = 'Ouvrir ↗';
+          head.appendChild(a);
+        }
+
+        pDetail.appendChild(head);
+      };
+
+      const renderProjectsForTags = (nodeTags) => {
+        if (!pList || !pDetail) return;
+        pList.replaceChildren();
+        pDetail.replaceChildren();
+        {
+          const empty = document.createElement('div');
+          empty.className = 'nn-projs__empty';
+          empty.textContent = 'Clique un projet à gauche.';
+          pDetail.appendChild(empty);
+        }
+
+        const tags = Array.isArray(nodeTags) ? uniq(nodeTags.map(normTag)).filter(Boolean) : [];
+        if (!tags.length) {
+          const empty = document.createElement('div');
+          empty.className = 'nn-projs__note';
+          empty.textContent = 'Ce nœud est un hub. Choisis un thème pour afficher des projets.';
+          pList.appendChild(empty);
+          return;
+        }
+
+        const scored = projects
+          .map((p) => ({ p, s: intersectCount(tagsOf(p), tags) }))
+          .filter((x) => x.s > 0)
+          .sort((a, b) => (b.s - a.s) || (yearToInt(b.p?.year) - yearToInt(a.p?.year)) || String(a.p?.title || '').localeCompare(String(b.p?.title || '')));
+
+        if (!scored.length) {
+          const empty = document.createElement('div');
+          empty.className = 'nn-projs__note';
+          empty.textContent = 'Aucun projet trouvé pour ce thème (auto-tagging trop strict).';
+          pList.appendChild(empty);
+          return;
+        }
+
+        const makeBtn = (item) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'nn-projrow';
+          btn.setAttribute('role', 'listitem');
+
+          const t = document.createElement('div');
+          t.className = 'nn-projrow__t';
+          t.textContent = item.p?.title || 'Projet';
+          btn.appendChild(t);
+
+          const m = document.createElement('div');
+          m.className = 'nn-projrow__m';
+          const y = item.p?.year ? String(item.p.year) : '';
+          const dur = item.p?.duration ? String(item.p.duration) : '';
+          const hint = tagsOf(item.p).slice(0, 3).join(' / ');
+          m.textContent = [y, dur, hint].filter(Boolean).join(' · ') || '—';
+          btn.appendChild(m);
+
+          btn.addEventListener('click', () => {
+            pList.querySelectorAll('.nn-projrow').forEach((x) => x.classList.remove('is-active'));
+            btn.classList.add('is-active');
+            renderProjectDetail(item.p);
+          });
+
+          return btn;
+        };
+
+        scored.slice(0, 20).forEach((item, idx) => {
+          const btn = makeBtn(item);
+          pList.appendChild(btn);
+          if (idx === 0) {
+            btn.classList.add('is-active');
+            renderProjectDetail(item.p);
+          }
+        });
+      };
 
       const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false;
 
@@ -359,6 +934,8 @@ const nodes: NodeData[] = [
         const detail = el.getAttribute('data-detail') || '';
         const bulletsRaw = el.getAttribute('data-bullets') || '';
         const href = el.getAttribute('data-href') || '';
+        const tagsRaw = el.getAttribute('data-tags') || '';
+        const nodeTags = tagsRaw.split(',').map((s) => s.trim()).filter(Boolean);
 
         mT.textContent = title;
         mD.textContent = detail;
@@ -377,6 +954,8 @@ const nodes: NodeData[] = [
           mL.removeAttribute('href');
           mL.style.display = 'none';
         }
+
+        renderProjectsForTags(nodeTags);
 
         prepModalAnimationFrom(el);
 
@@ -570,10 +1149,10 @@ const nodes: NodeData[] = [
       });
 
       // Init animation (<5s)
-      const appearOrder = ['hugo','ia','poo','devops','db','algo','web','nn','nlp','docker','sql'];
+      const appearOrder = ['hugo','ia','web','data','devops','sec','sys','net','3d','dl','nlp','tests','arch'];
 
-      const DRAW_MS = prefersReducedMotion ? 0 : 1900;
-      const NODE_DELAY_MS = prefersReducedMotion ? 0 : 560;
+      const DRAW_MS = prefersReducedMotion ? 0 : 1200;
+      const NODE_DELAY_MS = prefersReducedMotion ? 0 : 420;
 
       const showNode = (id) => {
         const el = byId.get(id);
@@ -604,10 +1183,10 @@ const nodes: NodeData[] = [
         }
 
         showNode('hugo');
-        let t = 760;
+        let t = 600;
         appearOrder.slice(1).forEach((id) => {
           window.setTimeout(() => showNode(id), t);
-          t += 360;
+          t += 220;
         });
       });
     })();
@@ -997,12 +1576,228 @@ const nodes: NodeData[] = [
       text-transform: uppercase;
     }
 
+    .nn-projs {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 2px dashed rgba(246,246,246,0.22);
+    }
+
+    .nn-projs__kicker {
+      font-size: 10px;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      font-weight: 900;
+      color: rgba(246,246,246,0.62);
+    }
+
+    .nn-projs__grid {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .nn-projs__list {
+      border: 2px solid rgba(246,246,246,0.25);
+      background: rgba(0,0,0,0.38);
+      box-shadow: 8px 8px 0 rgba(0,0,0,0.55);
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+      max-height: 54vh;
+      overflow: auto;
+    }
+
+    .nn-projs__detail {
+      border: 2px solid rgba(246,246,246,0.25);
+      background: rgba(0,0,0,0.34);
+      box-shadow: 8px 8px 0 rgba(0,0,0,0.55);
+      padding: 12px;
+      max-height: 54vh;
+      overflow: auto;
+    }
+
+    .nn-projs__empty,
+    .nn-projs__note {
+      font-weight: 900;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(246,246,246,0.60);
+      padding: 10px;
+      border: 2px dashed rgba(255,0,0,0.35);
+      background: rgba(0,0,0,0.20);
+    }
+
+    .nn-projrow {
+      text-align: left;
+      border: 2px solid rgba(246,246,246,0.22);
+      background: rgba(0,0,0,0.18);
+      color: rgba(246,246,246,0.92);
+      padding: 10px;
+      cursor: pointer;
+      box-shadow: 6px 6px 0 rgba(0,0,0,0.55);
+      transform: translate(0,0);
+      transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+    }
+
+    .nn-projrow:hover {
+      transform: translate(-1px, -1px);
+      border-color: rgba(0,255,255,0.55);
+      background: rgba(0,0,0,0.26);
+    }
+
+    .nn-projrow.is-active {
+      border-color: rgba(255,230,0,0.70);
+      background: rgba(255,230,0,0.08);
+    }
+
+    .nn-projrow__t {
+      font-weight: 900;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-size: 11px;
+      line-height: 1.15;
+    }
+
+    .nn-projrow__m {
+      margin-top: 6px;
+      font-weight: 900;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      font-size: 10px;
+      color: rgba(246,246,246,0.60);
+    }
+
+    .nn-proj__title {
+      font-family: var(--font-display, 'Bebas Neue', system-ui, sans-serif);
+      font-size: 38px;
+      line-height: 1;
+    }
+
+    .nn-proj__media {
+      margin-bottom: 10px;
+      border-color: rgba(246,246,246,0.22);
+      background: rgba(0,0,0,0.28);
+      box-shadow: 8px 8px 0 rgba(0,0,0,0.55);
+      overflow: hidden;
+    }
+
+    .nn-proj__media img {
+      display: block;
+      width: 100%;
+      height: min(240px, 28vh);
+      object-fit: cover;
+      filter: contrast(1.08) saturate(1.05);
+      opacity: 0.92;
+    }
+
+    .nn-proj__meta {
+      margin-top: 6px;
+      font-weight: 900;
+      letter-spacing: 0.20em;
+      text-transform: uppercase;
+      font-size: 11px;
+      color: rgba(246,246,246,0.62);
+    }
+
+    .nn-proj__desc {
+      margin-top: 10px;
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: rgba(255,230,0,0.78);
+      max-width: 70ch;
+    }
+
+    .nn-proj__chips {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .nn-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 8px;
+      border: 2px solid rgba(246,246,246,0.22);
+      background: rgba(0,0,0,0.22);
+      font-weight: 900;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-size: 10px;
+      color: rgba(246,246,246,0.86);
+    }
+
+    .nn-chip--tag {
+      border-color: rgba(0,255,255,0.30);
+      background: rgba(0,255,255,0.06);
+      color: rgba(0,255,255,0.92);
+      text-shadow: 1px 1px 0 rgba(255,0,0,0.22);
+    }
+
+    .nn-proj__box {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 2px dashed rgba(246,246,246,0.20);
+    }
+
+    .nn-proj__k {
+      font-size: 10px;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      font-weight: 900;
+      color: rgba(246,246,246,0.62);
+    }
+
+    .nn-proj__ul {
+      margin-top: 8px;
+      display: grid;
+      gap: 6px;
+      padding-left: 18px;
+      color: rgba(246,246,246,0.86);
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+    }
+
+    .nn-proj__link {
+      margin-top: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border: 2px solid rgba(0,255,255,0.55);
+      background: transparent;
+      color: rgba(246,246,246,0.92);
+      text-decoration: none;
+      font-weight: 900;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      box-shadow: 8px 8px 0 rgba(0,0,0,0.55);
+    }
+
     .nn-modal__foot { margin-top: 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
     .nn-modal__hint { font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(246,246,246,0.58); }
 
     @media (max-width: 760px) {
       .nn-modal__title { font-size: 42px; }
       .nn-stage__inner { height: min(760px, 78vh); }
+
+      .nn-projs__grid {
+        grid-template-columns: 1fr;
+      }
+
+      .nn-projs__list,
+      .nn-projs__detail {
+        max-height: none;
+      }
     }
 
     @media (max-width: 860px) {

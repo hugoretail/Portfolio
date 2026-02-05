@@ -1,0 +1,1071 @@
+[
+  {
+    "id": "developpement-d-un-systeme-d-ia-2023",
+    "title": "Développement d'un système d'IA",
+    "year": "2023",
+    "duration": "11h",
+    "description": "Jeu de plateau virtuel : Towa",
+    "competences": [
+      "Reprendre un projet existant",
+      "Concevoir et tester une IA",
+      "Implémenter une IA d'algortihme min-max",
+      "Comprendre et s'approprier des échanges de données avec un serveur"
+    ],
+    "tools": [
+      "Java",
+      "NetBeans",
+      "GitLab"
+    ],
+    "cdc": [
+      "Implémentation d'une IA",
+      "Envoi de données vers un Serveur",
+      "Duels contre autres IA"
+    ],
+    "keep": [
+      "IA fonctionnelle et performante",
+      "Mise en commun d’idées dans un duo",
+      "Structure du code classée"
+    ],
+    "improve": [
+      "Structure du code (patrons)",
+      "Versioning",
+      "Lecture des logs de fin de partie"
+    ],
+    "tags": [
+      "java",
+      "orm",
+      "gitlab",
+      "ia"
+    ]
+  },
+  {
+    "id": "configurer-un-poste-de-developpement-2023",
+    "title": "Configurer un poste de développement",
+    "year": "2023",
+    "duration": "8h",
+    "description": "Installer un environnement pour une équipe de développeurs",
+    "competences": [
+      "S’adapter à une contrainte d’utilisation de peu de ressources",
+      "Comprendre les besoins d’utilisateurs",
+      "Paramétrer des logiciels selon des besoins"
+    ],
+    "tools": [
+      "VMware (Machine virtuelle)",
+      "VS Code (Éditeur)",
+      "Haskell (Langage)"
+    ],
+    "cdc": [
+      "Installer une machine virtuelle",
+      "Créer des utilisateurs",
+      "Configurer l’éditeur"
+    ],
+    "keep": [
+      "Un environnement de bureau léger avec interface agréable",
+      "L’utilisation de Linux Mint XFCE"
+    ],
+    "improve": [
+      "L’ajout de fonctionnalités pour les développeurs",
+      "La connaissance du langage Haskell"
+    ],
+    "tags": [
+      "linux",
+      "virtualisation"
+    ]
+  },
+  {
+    "id": "tutoriel-d-installation-d-un-reseau-2024",
+    "title": "Tutoriel d'installation d'un réseau",
+    "year": "2024",
+    "duration": "6h (partagé en duo)",
+    "description": "Création d’un tutoriel pour utiliser l’environnement virtuel NEmu",
+    "competences": [
+      "Rédiger une suite d’instructions pour compléter une étape",
+      "Faire preuve d’empathie pour un tutoriel cohérent",
+      "Expliquer simplement"
+    ],
+    "tools": [
+      "Nextcloud (Suite bureautique)",
+      "NEmu (Émulateur de réseaux)",
+      "Markdown (Langage de balisage)"
+    ],
+    "cdc": [
+      "Rédaction d’un tutoriel :",
+      "Configuration et utilisation d’un réseau",
+      "Paramétrage d’une suite bureautique"
+    ],
+    "keep": [
+      "Tutoriel Français/Anglais",
+      "Étapes détaillées avec des captures d’écran",
+      "Partage des tâches efficace"
+    ],
+    "improve": [
+      "L’ajout de plus de plugins pour Nextcloud",
+      "D’autres langages pour la lecture du tutoriel",
+      "Le graphisme en langage Markdown"
+    ],
+    "tags": [
+      "reseau"
+    ]
+  },
+  {
+    "id": "jeu-video-mise-a-jour-labyrinthe-2024",
+    "title": "Jeu vidéo : Mise à jour Labyrinthe",
+    "year": "2024",
+    "duration": "6h",
+    "description": "Mise à jour d’un jeu de labyrinthe (adaptation graphique et règles)",
+    "competences": [
+      "Employer la programmation objet sur des concepts concrets et abstraits",
+      "Appliquer des relations strictes pour maintenir l’intégrité du code"
+    ],
+    "tools": [
+      "Editeur (type NetBeans)",
+      "UML (Unified Modeling Language)"
+    ],
+    "cdc": [
+      "Mise à jour d’un jeu de labyrinthe :",
+      "Adaptation à une nouvelle interface graphique",
+      "Implémentation des règles du jeu"
+    ],
+    "keep": [
+      "Séparation stricte des éléments graphiques et abstraits",
+      "Documentation exhaustive pour future reprise",
+      "Tests unitaires complets"
+    ],
+    "improve": [
+      "Optimisation des performances",
+      "Interface graphique peu moderne",
+      "Accessibilité du gameplay et de l’affichage"
+    ],
+    "tags": [
+      "orm",
+      "visualisation",
+      "tests",
+      "uml"
+    ]
+  },
+  {
+    "id": "learning-tool-japanese-conjugator-2024",
+    "title": "Learning Tool : Japanese Conjugator",
+    "year": "2024",
+    "duration": "12h",
+    "description": "Création d’un site web de conjugaison japonaise",
+    "competences": [
+      "S’accoutumer à des bibliothèques open source",
+      "Adapter des librairies à un besoin particulier",
+      "Conjuguer des verbes en japonais :)"
+    ],
+    "tools": [
+      "HTML, JavaScript, CSS (Langages)"
+    ],
+    "cdc": [
+      "Création d’un site web de conjugaison japonaise :",
+      "Utilisation simple et intuitive",
+      "Aider à l’apprentissage du langage"
+    ],
+    "keep": [
+      "Autonomie à trouver et filtrer les ressources utiles",
+      "Données cohérentes et authentiques",
+      "Conception adaptable (responsive)"
+    ],
+    "improve": [
+      "Utilisation d’une base de données ou API dynamique",
+      "Jeu de données plus grand",
+      "Augmentation des fonctionnalités / options"
+    ],
+    "tags": [
+      "javascript"
+    ]
+  },
+  {
+    "id": "software-development-anhydralgo-2024",
+    "title": "Software Development : Anhydralgo",
+    "year": "2024",
+    "duration": "68h",
+    "description": "Visualisation de données — logiciel de documentation des émissions de CO2",
+    "competences": [
+      "Full-stack software development",
+      "Identifier et documenter les enjeux environnementaux actuels et futurs",
+      "Collaborer avec une équipe aux compétences variées"
+    ],
+    "tools": [
+      "MySQL (Base de données)",
+      "WinDesign (Modélisation)",
+      "PyCharm / Visual Studio (Environnement de développement)"
+    ],
+    "cdc": [
+      "Développement d’un logiciel de visualisation des émissions de CO2 :",
+      "Générer des cartes et graphiques selon des paramètres",
+      "Fournir une documentation (explication) des données présentées"
+    ],
+    "keep": [
+      "Les besoins identifiés correspondent au produit livré",
+      "Adaptabilité de l’équipe face aux imprévus",
+      "Intégration intuitive de l’interface utilisateur"
+    ],
+    "improve": [
+      "Stockage de données trop volumineux",
+      "Performances de chargement de l’interface",
+      "Optimisation du traitement des requêtes en base"
+    ],
+    "tags": [
+      "mysql",
+      "sql",
+      "orm",
+      "visualisation",
+      "uml",
+      "3d"
+    ]
+  },
+  {
+    "id": "visualisation-de-graphe-java-2024",
+    "title": "Visualisation de Graphe (Java, 2024)",
+    "duration": "13h",
+    "description": "Visualiser des données — génération de graphiques (Java)",
+    "competences": [
+      "Implémenter et tester des algorithmes de Prim et edge building",
+      "Création et structuration en classes (Node, Edge, Graph)",
+      "Évaluation des performances d’algorithmes et proposition d’optimisations"
+    ],
+    "tools": [
+      "Java (Langage)",
+      "GitLab (Versioning)",
+      "Editeur type NetBeans (Environnement)"
+    ],
+    "cdc": [
+      "Implémentation d’une structure polyvalente :",
+      "Générer des graphiques selon des fichiers de données cohérentes",
+      "Adapter des algorithmes de recherche et de parcours"
+    ],
+    "keep": [
+      "Algorithme de Prim fonctionnel et performant",
+      "Structure claire en paquets du projet",
+      "Tests unitaires couvrants différents graphes"
+    ],
+    "improve": [
+      "Manque d’options d’affichage",
+      "Réduction de la complexité algorithmique",
+      "Documentation interne aux fonctions absente"
+    ],
+    "tags": [
+      "java",
+      "orm",
+      "visualisation",
+      "gitlab",
+      "reseau",
+      "tests",
+      "3d",
+      "algo"
+    ]
+  },
+  {
+    "id": "visualisation-de-graphe-python-2025",
+    "title": "Visualisation de Graphe (Python, 2025)",
+    "duration": "10h",
+    "description": "Visualiser des données — génération de graphiques (Python)",
+    "competences": [
+      "Implémentation des algorithmes de recherche les plus populaires",
+      "Respect des règles de l’architecture MVC"
+    ],
+    "tools": [
+      "Python (Langage)",
+      "PyCharm (IDE)",
+      "Qt (Visualisation)"
+    ],
+    "cdc": [
+      "Appliquer des algorithmes de recherche :",
+      "Générer des graphiques selon des fichiers de données cohérentes",
+      "Adapter des algorithmes de recherche et de parcours"
+    ],
+    "keep": [
+      "Documentation exhaustive",
+      "Utilisation des bibliothèques python de hiérarchie et d’héritage",
+      "Exigences de génération de graphiques simples"
+    ],
+    "improve": [
+      "Ouvrir le projet à d’autres contributeurs",
+      "Création d’un design à l’aide d’outils simples et modernes",
+      "Configuration des options de génération d’un graphe"
+    ],
+    "tags": [
+      "python",
+      "visualisation",
+      "architecture",
+      "3d",
+      "algo"
+    ]
+  },
+  {
+    "id": "mini-rsa-cryptographie-2024",
+    "title": "Mini-RSA Cryptographie",
+    "year": "2024",
+    "duration": "15h",
+    "description": "Outil pédagogique de cryptographie asymétrique (Mini-RSA, Diffie-Hellman, signatures, interface Bash et Python)",
+    "competences": [
+      "Comprendre et implémenter les bases de la cryptographie asymétrique (RSA, Diffie-Hellman)",
+      "Automatiser des tests unitaires pour valider les algorithmes",
+      "Concevoir une interface utilisateur simple en Bash et Python",
+      "Gérer la conversion et la manipulation de clés et messages"
+    ],
+    "tools": [
+      "Python (algorithmes, interface)",
+      "Bash (interface shell)",
+      "Pytest (tests unitaires)"
+    ],
+    "cdc": [
+      "Implémenter les algorithmes Mini-RSA, Diffie-Hellman, signature numérique",
+      "Proposer une interface utilisateur simple (Bash et Python)",
+      "Permettre le test et la validation des algorithmes par des scripts"
+    ],
+    "keep": [
+      "Implémentation fonctionnelle de plusieurs algorithmes cryptographiques",
+      "Séparation claire entre logique métier (algos) et interface",
+      "Présence de tests unitaires pour chaque module"
+    ],
+    "improve": [
+      "Interface utilisateur perfectible (ergonomie Bash)",
+      "Documentation technique à enrichir",
+      "Gestion d’erreurs et de cas limites à renforcer"
+    ],
+    "tags": [
+      "python",
+      "bash",
+      "visualisation",
+      "crypto",
+      "tests",
+      "algo"
+    ]
+  },
+  {
+    "id": "courbes-elliptiques-2025",
+    "title": "Courbes Elliptiques",
+    "year": "2025",
+    "duration": "20h",
+    "description": "Étude et implémentation d’algorithmes de cryptographie à courbes elliptiques (ECC, ECDH), visualisation et comparaison avec RSA/Diffie-Hellman.",
+    "competences": [
+      "Comprendre les fondements mathématiques des courbes elliptiques et de la cryptographie ECC",
+      "Implémenter des opérations sur les courbes (addition, doublement, symétrie, ECDH)",
+      "Automatiser des benchmarks et des comparaisons de performances (ECC vs RSA)",
+      "Générer des visualisations pour illustrer les opérations et résultats",
+      "Structurer un projet Python scientifique (modules, tests, documentation)"
+    ],
+    "tools": [
+      "Python (algorithmes, visualisation)",
+      "Matplotlib (graphiques)",
+      "Pytest (tests)",
+      "LaTeX (rapport scientifique)"
+    ],
+    "cdc": [
+      "Implémenter les opérations de base sur courbes elliptiques (point, addition, doublement, ECDH)",
+      "Comparer les performances avec RSA/Diffie-Hellman",
+      "Générer des visualisations et un rapport scientifique"
+    ],
+    "keep": [
+      "Implémentation complète des opérations de base sur courbes elliptiques",
+      "Scripts de benchmark et visualisation des performances",
+      "Comparaison chiffrée avec RSA/Diffie-Hellman",
+      "Documentation scientifique (LaTeX, README)"
+    ],
+    "improve": [
+      "Interface utilisateur (scripts à lancer en ligne de commande)",
+      "Robustesse des tests unitaires",
+      "Optimisation des calculs pour de très grands nombres"
+    ],
+    "tags": [
+      "python",
+      "orm",
+      "matplotlib",
+      "visualisation",
+      "crypto",
+      "tests",
+      "algo"
+    ]
+  },
+  {
+    "id": "laby-chan-labyrinthe-en-realite-virtuelle-2025",
+    "title": "Laby-Chan : Labyrinthe en Réalité Virtuelle",
+    "year": "2025",
+    "duration": "22h (en duo)",
+    "description": "Développement d’un jeu de labyrinthe en réalité virtuelle sous Unity, avec navigation, interaction et adaptation pédagogique.",
+    "competences": [
+      "Découvrir et exploiter un moteur de jeu 3D (Unity)",
+      "Implémenter des mécaniques de déplacement et d’interaction en VR",
+      "Organiser le travail en binôme (gestion de versions, répartition des tâches)",
+      "Structurer un projet complexe (scènes, assets, scripts, configuration XR)",
+      "Adapter le gameplay à des contraintes pédagogiques et techniques"
+    ],
+    "tools": [
+      "Unity (moteur de jeu, XR)",
+      "C# (scripts)",
+      "Git (versioning)",
+      "Visual Studio (IDE)"
+    ],
+    "cdc": [
+      "Concevoir un jeu de labyrinthe jouable en réalité virtuelle",
+      "Implémenter des déplacements et interactions adaptés à la VR",
+      "Structurer le projet pour faciliter l’évolution et la maintenance"
+    ],
+    "keep": [
+      "Fonctionnalités de base VR (déplacement, interaction, navigation dans le labyrinthe)",
+      "Structuration claire du projet Unity (scènes, assets, scripts)",
+      "Collaboration efficace en duo (gestion de projet, communication)"
+    ],
+    "improve": [
+      "Ergonomie et intuitivité de l’interface utilisateur",
+      "Optimisation des performances (chargement, fluidité VR)",
+      "Documentation technique et tutoriels d’utilisation"
+    ],
+    "tags": [
+      "orm",
+      "git",
+      "3d"
+    ]
+  },
+  {
+    "id": "tournoi-football-robot-2025",
+    "title": "Tournoi Football Robot",
+    "year": "2025",
+    "duration": "30h",
+    "description": "Développement d’un site web sous Symfony pour gérer, planifier et organiser des matchs de football de robots (gestion des équipes, inscriptions, calendrier, résultats, classement).",
+    "competences": [
+      "Concevoir une architecture web MVC robuste avec Symfony",
+      "Implémenter la gestion d’entités complexes (équipes, matchs, participants, créneaux…)",
+      "Gérer l’authentification, les rôles et la sécurité d’une application web",
+      "Automatiser les tests unitaires et d’intégration (PHPUnit, tests Python sur la base)",
+      "Adapter l’interface utilisateur avec Twig et Tailwind CSS",
+      "Organiser le travail en équipe (versioning, répartition des tâches)"
+    ],
+    "tools": [
+      "Symfony (PHP, framework MVC)",
+      "Twig (templates)",
+      "Tailwind CSS (styles)",
+      "PHPUnit (tests PHP)",
+      "Python (tests base de données)",
+      "Git (versioning)"
+    ],
+    "cdc": [
+      "Développer un site web pour organiser un tournoi de football de robots",
+      "Gérer les équipes, inscriptions, matchs, résultats et classements",
+      "Permettre la planification automatique et la gestion des conflits",
+      "Sécuriser l’accès et personnaliser l’interface"
+    ],
+    "keep": [
+      "Fonctionnalités complètes de gestion de tournoi (création, planification, résultats, classement)",
+      "Séparation claire entre logique métier, contrôleurs et vues",
+      "Présence de tests unitaires et d’intégration",
+      "Interface utilisateur responsive et personnalisée"
+    ],
+    "improve": [
+      "Optimisation des performances pour de gros tournois",
+      "Documentation technique et guides d’utilisation",
+      "Gestion avancée des conflits de planning et notifications"
+    ],
+    "tags": [
+      "python",
+      "php",
+      "symfony",
+      "tailwind",
+      "twig",
+      "orm",
+      "git",
+      "security",
+      "tests",
+      "architecture"
+    ]
+  },
+  {
+    "id": "stabilisation-etude-d-incidents-informatiques-2025",
+    "title": "Stabilisation  : Etude d'incidents informatiques",
+    "year": "2025",
+    "duration": "Septembre à Décembre (projet long)",
+    "description": "Développer un site et environnement capable de suivre l'évolution d'une salle informatique composée de matériel vieux de plus de 15 ans.",
+    "competences": [
+      "Concevoir une architecture fullstack modulaire (API Node.js/Express, front React, base PostgreSQL)",
+      "Implémenter une API REST sécurisée et documentée (authentification, rôles, routes, tests)",
+      "Développer une interface utilisateur réactive et ergonomique (React, Vite, contextes, hooks)",
+      "Automatiser le déploiement et la gestion des services (Docker, docker-compose, scripts)",
+      "Gérer la persistance et la cohérence des données (SQL, migrations, seed, scripts)",
+      "Mettre en place des tests unitaires et d’intégration (Jest, tests API)",
+      "Générer et utiliser des QR codes pour la traçabilité des postes",
+      "Organiser le travail en équipe (Git, documentation, CI/CD)"
+    ],
+    "tools": [
+      "Node.js, Express (API backend)",
+      "React, Vite (frontend)",
+      "PostgreSQL (base de données)",
+      "Docker, docker-compose (déploiement)",
+      "Jest (tests)",
+      "Axios (client API)",
+      "Git (versioning)"
+    ],
+    "cdc": [
+      "Permettre le signalement et la gestion des incidents informatiques par les étudiants et administrateurs",
+      "Gérer les postes, catégories, gravités, dates, utilisateurs et statistiques",
+      "Générer et utiliser des QR codes pour chaque poste",
+      "Visualiser l'évolution des erreurs provoquées par le matériel sur les années à suivre"
+    ],
+    "keep": [
+      "Architecture modulaire et scalable (API, front, base, scripts)",
+      "Fonctionnalités complètes : signalement, gestion, statistiques, QR codes, rôles",
+      "Interface utilisateur claire pour étudiants et administrateurs",
+      "Automatisation du déploiement et documentation technique",
+      "Couverture de tests sur les routes principales"
+    ],
+    "improve": [
+      "Optimisation des performances pour de gros volumes de données",
+      "Sécurité avancée (audit, logs, gestion des erreurs)",
+      "Expérience utilisateur (feedback, notifications temps réel)",
+      "Documentation utilisateur (tutoriels, FAQ)"
+    ],
+    "tags": [
+      "javascript",
+      "react",
+      "vite",
+      "nodejs",
+      "express",
+      "rest",
+      "postgresql",
+      "sql",
+      "orm",
+      "docker",
+      "compose",
+      "cicd",
+      "git",
+      "security",
+      "tests",
+      "architecture",
+      "3d"
+    ]
+  },
+  {
+    "id": "geodessin-2026",
+    "title": "Geodessin",
+    "year": "2026",
+    "duration": "25h (travail en groupe de 7)",
+    "description": "Application web collaborative permettant de dessiner, annoter et partager des objets géographiques sur une carte interactive.",
+    "competences": [
+      "Concevoir une architecture fullstack (Django REST, React, Docker)",
+      "Implémenter des outils de dessin géographique (points, lignes, cercles, polygones, calculs de distances)",
+      "Gérer l’authentification, les permissions et la collaboration en temps réel",
+      "Développer une interface utilisateur ergonomique et réactive (React, Tailwind)",
+      "Automatiser le déploiement et la gestion des services (Docker, docker-compose)",
+      "Mettre en place des tests unitaires et d’intégration (Django, frontend)",
+      "Organiser le travail en équipe (Git, CI/CD, documentation)"
+    ],
+    "tools": [
+      "Django REST (backend)",
+      "React, Vite, Tailwind CSS (frontend)",
+      "Docker, docker-compose (déploiement)",
+      "Git (versioning)",
+      "PDF export (frontend)"
+    ],
+    "cdc": [
+      "Permettre le dessin, l’annotation et le partage d’objets géographiques sur une carte interactive",
+      "Gérer les utilisateurs, permissions et collaboration en temps réel",
+      "Exporter les zones sélectionnées en PDF"
+    ],
+    "keep": [
+      "Fonctionnalités avancées de dessin et annotation sur carte",
+      "Collaboration multi-utilisateurs (chat, gestion des droits)",
+      "Export PDF des zones sélectionnées",
+      "Architecture modulaire et scalable (API, front, scripts)",
+      "Interface utilisateur claire et réactive"
+    ],
+    "improve": [
+      "Optimisation des performances pour de grandes cartes et nombreux utilisateurs",
+      "Sécurité et robustesse des permissions",
+      "Documentation utilisateur et technique",
+      "Expérience utilisateur (feedback, tutoriels)"
+    ],
+    "tags": [
+      "react",
+      "django",
+      "tailwind",
+      "vite",
+      "rest",
+      "orm",
+      "visualisation",
+      "docker",
+      "compose",
+      "cicd",
+      "git",
+      "nlp",
+      "security",
+      "tests",
+      "architecture"
+    ]
+  },
+  {
+    "id": "audit-et-detection-3d-2026",
+    "title": "Audit et Détection 3D",
+    "year": "2026",
+    "duration": "28h (travail en équipe de 6)",
+    "description": "Audit de performance applicative en apprentissage supervisé pour la détection et la localisation 3D d’objets à partir de caméras RGB et profondeur. Comparaison de YOLOv11 et d’un CNN custom PyTorch, création de dataset, calibration, interface de test, visualisation et analyse des résultats.",
+    "competences": [
+      "Prise en main de capteurs (caméra RGB, caméra de profondeur RealSense)",
+      "Création, annotation et augmentation d’une base de données d’images (Label Studio, scripts Python)",
+      "Implémentation et entraînement de modèles de Deep Learning (YOLOv11, CNN custom PyTorch)",
+      "Calibration spatiale et estimation de position 3D (OpenCV, aruco, spatialisation)",
+      "Optimisation, réglage des hyperparamètres et analyse des performances",
+      "Développement d’interfaces de test et visualisation (webview, scripts, Streamlit/Gradio)",
+      "Organisation et gestion de projet en équipe (Git, documentation, répartition des tâches)"
+    ],
+    "tools": [
+      "Python (PyTorch, OpenCV, scripts)",
+      "YOLOv11 (détection)",
+      "Label Studio (annotation)",
+      "Streamlit/Gradio (interface de test)",
+      "RealSense D435i (caméra)",
+      "Git (versioning)"
+    ],
+    "cdc": [
+      "Comparer les performances de YOLOv11 et d’un CNN custom pour la détection et la localisation 3D d’objets",
+      "Créer, annoter et augmenter un dataset adapté",
+      "Implémenter la calibration spatiale et l’estimation de position",
+      "Développer une interface de test et de visualisation des résultats",
+      "Documenter et automatiser l’ensemble du pipeline"
+    ],
+    "keep": [
+      "Pipeline complet de détection, localisation et évaluation (dataset, entraînement, test, visualisation)",
+      "Comparaison chiffrée et argumentée entre YOLO et CNN custom",
+      "Automatisation des étapes (scripts d’augmentation, calibration, tests)",
+      "Modularité du code (séparation CNN, YOLO, spatial, interface)",
+      "Documentation technique et scripts reproductibles"
+    ],
+    "improve": [
+      "Robustesse de la calibration et de la spatialisation 3D",
+      "Ergonomie et accessibilité de l’interface utilisateur",
+      "Optimisation des temps d’entraînement et d’inférence",
+      "Couverture de tests et gestion des erreurs"
+    ],
+    "tags": [
+      "python",
+      "streamlit",
+      "orm",
+      "visualisation",
+      "git",
+      "deeplearning",
+      "reseau",
+      "tests",
+      "3d"
+    ]
+  },
+  {
+    "id": "kamen-bot-assistant-vocal-python-2025",
+    "title": "Kamen-Bot : Assistant vocal Python",
+    "year": "2025",
+    "duration": "10h",
+    "description": "Développement d’un assistant vocal simple en Python, capable d’enregistrer, traiter et répondre à des commandes vocales via une interface graphique (PyQt). Architecture modulaire avec gestion des threads pour l’enregistrement audio.",
+    "competences": [
+      "Implémenter l’enregistrement et le traitement de commandes vocales en Python",
+      "Concevoir une interface graphique utilisateur (PyQt, Qt Designer)",
+      "Gérer la concurrence et les threads pour l’audio",
+      "Organiser le code en modules réutilisables (interface, logique, enregistrement)",
+      "Documenter et structurer un projet Python"
+    ],
+    "tools": [
+      "Python (langage principal)",
+      "PyQt5, Qt Designer (interface graphique)",
+      "Threading (gestion de l’audio)",
+      "Git (versioning)"
+    ],
+    "cdc": [
+      "Développer un assistant vocal simple avec interface graphique",
+      "Permettre l’enregistrement et le traitement de commandes vocales",
+      "Structurer le code pour faciliter l’ajout de fonctionnalités"
+    ],
+    "keep": [
+      "Fonctionnalités de base d’un assistant vocal (enregistrement, réponse)",
+      "Interface graphique fonctionnelle et claire",
+      "Architecture modulaire (séparation interface, logique, threads)"
+    ],
+    "improve": [
+      "Robustesse de la reconnaissance vocale et gestion des erreurs",
+      "Ajout de fonctionnalités avancées (commandes, intégrations)",
+      "Documentation utilisateur et technique"
+    ],
+    "tags": [
+      "python",
+      "git",
+      "nlp",
+      "ia",
+      "architecture"
+    ]
+  },
+  {
+    "id": "my-iut-skills-annuaire-interactif-des-competences-2026",
+    "title": "My IUT Skills : Annuaire interactif des compétences",
+    "year": "2026",
+    "duration": "21h",
+    "description": "Application web permettant de rechercher, filtrer et visualiser les compétences, ressources et parcours proposés à l’IUT Informatique de Bordeaux. Interface moderne, responsive, recherche dynamique, navigation fluide et accès rapide aux informations clés.",
+    "competences": [
+      "Développer une application web React moderne (SPA)",
+      "Gérer l’état et la navigation (React, hooks, composants)",
+      "Intégrer et manipuler des données structurées (JSON, recherche, filtrage)",
+      "Concevoir une interface utilisateur ergonomique et responsive (Tailwind CSS)",
+      "Organiser le code en composants réutilisables et testables",
+      "Mettre en place des tests unitaires (Jest, React Testing Library)",
+      "Documenter et structurer un projet web"
+    ],
+    "tools": [
+      "React (SPA, composants)",
+      "Tailwind CSS (styles)",
+      "JSON (données)",
+      "Jest, React Testing Library (tests)",
+      "Git (versioning)"
+    ],
+    "cdc": [
+      "Permettre la recherche, le filtrage et la visualisation des compétences et ressources de l’IUT",
+      "Offrir une interface moderne, rapide et responsive",
+      "Organiser le code pour faciliter l’évolution et la maintenance"
+    ],
+    "keep": [
+      "Interface claire, moderne et responsive",
+      "Recherche et filtrage efficaces des compétences et ressources",
+      "Organisation modulaire du code (composants, hooks)",
+      "Présence de tests unitaires"
+    ],
+    "improve": [
+      "Ajout de fonctionnalités avancées (favoris, export, impression)",
+      "Accessibilité et internationalisation",
+      "Documentation utilisateur"
+    ],
+    "tags": [
+      "react",
+      "tailwind",
+      "orm",
+      "visualisation",
+      "git",
+      "tests"
+    ]
+  },
+  {
+    "id": "conll-2003-ner-stage-but2-tsukuba-2025",
+    "title": "CoNLL-2003 NER : Stage BUT2 Tsukuba",
+    "year": "2025",
+    "duration": "8 semaines (stage au Japon)",
+    "description": "Projet de recherche et développement autour de la reconnaissance d’entités nommées (NER) sur le jeu de données CoNLL-2003. Implémentation, entraînement et évaluation de modèles de Deep Learning (LSTM, CRF, BERT) pour l’extraction d’entités dans des textes en anglais. Travail réalisé lors d’un stage à l’Université de Tsukuba (Japon).",
+    "competences": [
+      "Prendre en main un corpus de référence (CoNLL-2003) et préparer les données",
+      "Implémenter et entraîner des modèles NER (LSTM, CRF, BERT, PyTorch, Transformers)",
+      "Évaluer et comparer les performances (précision, rappel, F1-score)",
+      "Automatiser les pipelines d’entraînement et d’évaluation (scripts Python, notebooks)",
+      "Analyser les résultats et rédiger des rapports techniques (anglais)",
+      "Adapter et documenter le code pour la reproductibilité",
+      "Travailler en autonomie dans un contexte international (anglais, Japon)"
+    ],
+    "tools": [
+      "Python (PyTorch, scikit-learn, Transformers)",
+      "Jupyter Notebook (expérimentation)",
+      "Git (versioning)",
+      "CoNLL-2003 (corpus)"
+    ],
+    "cdc": [
+      "Implémenter et comparer plusieurs modèles de NER sur CoNLL-2003",
+      "Automatiser l’entraînement, l’évaluation et la comparaison des résultats",
+      "Documenter le projet pour la recherche et la reproductibilité"
+    ],
+    "keep": [
+      "Implémentation de plusieurs architectures NER (LSTM, CRF, BERT)",
+      "Pipelines reproductibles pour l’entraînement et l’évaluation",
+      "Analyse détaillée des résultats et visualisations",
+      "Documentation technique en anglais"
+    ],
+    "improve": [
+      "Optimisation des temps d’entraînement et gestion des ressources GPU",
+      "Expérimentation sur d’autres langues ou jeux de données",
+      "Interface utilisateur pour la démonstration"
+    ],
+    "tags": [
+      "python",
+      "orm",
+      "visualisation",
+      "git",
+      "deeplearning",
+      "nlp"
+    ]
+  },
+  {
+    "id": "twitter-sentiment-analysis-2025",
+    "title": "Twitter Sentiment Analysis",
+    "year": "2025",
+    "duration": "14h",
+    "description": "Application avancée d’analyse de sentiments basée sur un modèle RoBERTa, avec scoring continu (1-5 étoiles), interface web Flask moderne, visualisations interactives et API REST. Prédiction rapide, analyse de confiance, export de résultats et dashboard analytique.",
+    "competences": [
+      "Implémenter et déployer un modèle de Deep Learning (RoBERTa, Transformers) pour l’analyse de sentiments",
+      "Concevoir une API RESTful et une interface web moderne (Flask, Bootstrap)",
+      "Gérer le scoring continu, la confiance et l’interprétation des résultats",
+      "Visualiser et explorer les résultats (charts, dashboard, export JSON)",
+      "Structurer un projet modulaire et documenté (Python, Flask, architecture MVC)",
+      "Automatiser l’évaluation et la reproductibilité (scripts, notebooks)"
+    ],
+    "tools": [
+      "Python (Transformers, RoBERTa, Flask)",
+      "Bootstrap 5 (interface)",
+      "Matplotlib, charts.js (visualisation)",
+      "Jupyter Notebook (évaluation)",
+      "Git (versioning)"
+    ],
+    "cdc": [
+      "Déployer une application web d’analyse de sentiments avec scoring continu",
+      "Fournir une API REST pour l’inférence et l’analyse de lots",
+      "Visualiser, exporter et interpréter les résultats",
+      "Documenter l’architecture et les performances du modèle"
+    ],
+    "keep": [
+      "Prédiction rapide et scoring continu (1-5 étoiles)",
+      "Interface web responsive et dashboard interactif",
+      "API REST complète et documentation claire",
+      "Modularité du code et robustesse de l’inférence"
+    ],
+    "improve": [
+      "Optimisation de la gestion mémoire pour de très gros lots",
+      "Accessibilité et internationalisation de l’interface",
+      "Ajout de modèles alternatifs ou de fonctionnalités avancées"
+    ],
+    "tags": [
+      "python",
+      "javascript",
+      "flask",
+      "bootstrap",
+      "rest",
+      "orm",
+      "matplotlib",
+      "visualisation",
+      "git",
+      "deeplearning",
+      "architecture"
+    ]
+  },
+  {
+    "id": "super-kamen-bot-chatbot-vocal-japonais-2025",
+    "title": "Super Kamen Bot : Chatbot vocal japonais",
+    "year": "2025",
+    "duration": "10h",
+    "description": "Chatbot conversationnel vocal optimisé pour le japonais, avec reconnaissance et synthèse vocale, mémoire persistante (SQLite), interface web Streamlit et intégration d’un LLM japonais (Ollama). Pensé pour l’apprentissage et la pratique orale de la langue.",
+    "competences": [
+      "Intégrer un LLM spécialisé (kangyufei/llama2:japanese via Ollama) pour la génération de texte",
+      "Implémenter la reconnaissance vocale (Whisper) et la synthèse vocale (TTS)",
+      "Concevoir une interface web moderne et responsive (Streamlit)",
+      "Gérer la persistance des conversations (SQLite, gestion de session)",
+      "Organiser le code en modules réutilisables (composants Python)",
+      "Adapter l’UX à la pratique du japonais (UI, prompts, audio)"
+    ],
+    "tools": [
+      "Python (langage principal)",
+      "Streamlit (web app)",
+      "Ollama (LLM japonais)",
+      "Whisper (speech-to-text)",
+      "TTS (text-to-speech)",
+      "SQLite (base de données)",
+      "Git (versioning)"
+    ],
+    "cdc": [
+      "Développer un chatbot vocal japonais avec interface web",
+      "Permettre la conversation naturelle (voix et texte) et la mémorisation des échanges",
+      "Intégrer un LLM japonais et des modules audio performants",
+      "Structurer le projet pour l’extensibilité et la personnalisation"
+    ],
+    "keep": [
+      "Interaction vocale fluide et naturelle (speech-to-text, text-to-speech)",
+      "Mémoire persistante des conversations",
+      "Interface web claire et adaptée à la pratique du japonais",
+      "Modularité et extensibilité du code"
+    ],
+    "improve": [
+      "Robustesse de la reconnaissance vocale sur bruit de fond",
+      "Optimisation des performances pour de longues sessions",
+      "Ajout de fonctionnalités avancées (statistiques, export, personnalisation)"
+    ],
+    "tags": [
+      "python",
+      "streamlit",
+      "sqlite",
+      "orm",
+      "git",
+      "ia",
+      "crypto"
+    ]
+  },
+  {
+    "id": "eco-presents-recommandation-eco-responsable-2026",
+    "title": "Eco-Presents : Recommandation éco-responsable",
+    "year": "2026",
+    "duration": "20h (projet personnel)",
+    "description": "Plateforme web de recommandation de cadeaux éco-responsables, axée sur la curation de produits et entreprises locales, l’explicabilité des scores éco, et la transparence des données. Architecture Next.js/TypeScript, base PostgreSQL, ingestion de données open data et API, déploiement cloud/local.",
+    "competences": [
+      "Concevoir une architecture web moderne (Next.js, TypeScript, Prisma, PostgreSQL)",
+      "Structurer et ingérer des données hétérogènes (open data, scraping, curation manuelle)",
+      "Développer des filtres, scores et règles de transparence pour l’éco-responsabilité",
+      "Déployer et automatiser (GitHub Actions, cloud/local, scripts)",
+      "Documenter, auditer et assurer la conformité légale (licences, RGPD)"
+    ],
+    "tools": [
+      "Next.js, TypeScript (frontend/backend)",
+      "Prisma (ORM)",
+      "PostgreSQL (base de données)",
+      "GitHub Actions (CI/CD)",
+      "Docker (déploiement)"
+    ],
+    "cdc": [
+      "Référencer et recommander des produits/entreprises éco-responsables",
+      "Garantir la transparence des scores et des sources",
+      "Automatiser l’ingestion, l’audit et la conformité des données"
+    ],
+    "keep": [
+      "Architecture modulaire et scalable (Next.js, Prisma, PostgreSQL)",
+      "Transparence des scores et des sources de données",
+      "Documentation détaillée et conformité légale"
+    ],
+    "improve": [
+      "Automatisation de l’ingestion et de la curation de données",
+      "UX pour la recherche et la personnalisation des recommandations"
+    ],
+    "tags": [
+      "typescript",
+      "javascript",
+      "nextjs",
+      "postgresql",
+      "prisma",
+      "sql",
+      "orm",
+      "docker",
+      "github-actions",
+      "cicd",
+      "architecture"
+    ]
+  },
+  {
+    "id": "portfolio-experiments-laboratoire-de-portfolios-2026",
+    "title": "Portfolio Experiments : Laboratoire de portfolios",
+    "year": "2026",
+    "duration": "continu (projet personnel expérimental)",
+    "description": "Atelier d’expérimentation front-end pour tester des idées d’UX/UI, d’animations et de stacks techniques avant intégration sur le portfolio principal. Prototypes de scènes 3D interactives (Three.js), navigation, traductions, et gestion d’assets avancée.",
+    "competences": [
+      "Concevoir des prototypes front-end avancés (HTML, CSS, JS, Three.js)",
+      "Intégrer et manipuler des scènes 3D temps réel (Three.js, GLTFLoader, PBR, lumières)",
+      "Gérer la navigation, les animations et les transitions (GSAP, OrbitControls)",
+      "Organiser le code pour la modularité et la réutilisabilité (scripts, assets, styles)",
+      "Mettre en place un système de traductions multilingue (JSON, structure de dossiers)",
+      "Documenter et itérer sur des idées d’UX/UI"
+    ],
+    "tools": [
+      "HTML, CSS, JavaScript (base)",
+      "Three.js (3D)",
+      "GSAP (animations)",
+      "GLTFLoader (import modèles)",
+      "Live Server, http-server (dev local)",
+      "Git (versioning)"
+    ],
+    "cdc": [
+      "Prototyper et tester des idées d’UX/UI et d’animations",
+      "Évaluer des stacks techniques pour le portfolio principal",
+      "Concevoir des scènes 3D interactives et modulaires",
+      "Documenter les expérimentations et les choix techniques"
+    ],
+    "keep": [
+      "Scène 3D interactive et optimisée (Three.js, textures, lumières)",
+      "Modularité du code et gestion claire des assets",
+      "Système de traductions multilingue",
+      "Documentation et roadmap d’expérimentation"
+    ],
+    "improve": [
+      "Optimisation des performances (textures, draw calls)",
+      "Navigation entre projets et intégration de mini-systèmes",
+      "Ajout de post-process et d’effets avancés"
+    ],
+    "tags": [
+      "javascript",
+      "orm",
+      "git",
+      "3d"
+    ]
+  },
+  {
+    "id": "d2l-tutorial-etude-approfondie-du-deep-learning-2026",
+    "title": "D2L-Tutorial : Étude approfondie du Deep Learning",
+    "year": "2026",
+    "duration": "en cours (auto-formation)",
+    "description": "Projet d’étude et de mise en pratique du cours Dive into Deep Learning (D2L, https://d2l.ai/). Reproduction, annotation et expérimentation des chapitres fondamentaux (préliminaires, régression, classification, réseaux linéaires, différentiation automatique, etc.) pour acquérir une compréhension solide des bases du deep learning.",
+    "competences": [
+      "Assimiler les concepts fondamentaux du deep learning (régression, classification, réseaux linéaires)",
+      "Implémenter et expérimenter les algorithmes vus dans D2L (PyTorch, NumPy)",
+      "Manipuler les données, la différentiation automatique, la régularisation, etc.",
+      "Approfondir la compréhension mathématique (algèbre linéaire, statistiques, calcul différentiel)",
+      "Documenter et annoter les expériences pour la révision"
+    ],
+    "tools": [
+      "Python (NumPy, PyTorch)",
+      "Jupyter Notebook (expérimentation)",
+      "Git (versioning)"
+    ],
+    "cdc": [
+      "Étudier et reproduire les chapitres du cours D2L",
+      "Implémenter et annoter les algorithmes fondamentaux",
+      "Structurer les scripts pour la pédagogie et la réutilisation"
+    ],
+    "keep": [
+      "Implémentations claires et reproductibles des algorithmes D2L",
+      "Compréhension approfondie des bases du deep learning",
+      "Scripts annotés et structurés pour la révision"
+    ],
+    "improve": [
+      "Ajout d’expériences sur des datasets réels (à venir)",
+      "Visualisation et interprétation avancée des résultats"
+    ],
+    "tags": [
+      "python",
+      "visualisation",
+      "git",
+      "deeplearning",
+      "reseau",
+      "architecture",
+      "algo"
+    ]
+  },
+  {
+    "id": "portfolio-hugo-portfolio-personnel-authentique-2026",
+    "title": "Portfolio Hugo : Portfolio personnel authentique",
+    "year": "2026",
+    "duration": "continu (projet personnel principal)",
+    "description": "Création d’un portfolio web sur-mesure pour présenter mon parcours, mes projets, mes compétences et ma personnalité de façon authentique. Design, contenu, navigation et animations pensés pour refléter mon identité, mes valeurs et ma créativité, avec une forte attention à l’expérience utilisateur et à la cohérence visuelle.",
+    "competences": [
+      "Concevoir et développer un site web statique moderne (Astro, Svelte, TypeScript)",
+      "Créer des composants interactifs et des animations personnalisées (Svelte, CSS, SVG)",
+      "Organiser et valoriser des contenus variés (projets, textes, images, médias)",
+      "Travailler l’UX/UI pour une navigation fluide, accessible et originale",
+      "Structurer le code pour la maintenabilité et l’évolutivité",
+      "Mettre en avant l’authenticité et la singularité dans la présentation"
+    ],
+    "tools": [
+      "Astro (framework statique)",
+      "Svelte (composants dynamiques)",
+      "TypeScript (robustesse)",
+      "CSS, SVG (styles et animations)",
+      "Git (versioning)"
+    ],
+    "cdc": [
+      "Créer un portfolio web qui me représente authentiquement",
+      "Valoriser mes projets, compétences et personnalité",
+      "Offrir une expérience utilisateur unique et mémorable",
+      "Permettre l’évolution et l’ajout facile de nouveaux contenus"
+    ],
+    "keep": [
+      "Identité visuelle forte et cohérente",
+      "Expérience utilisateur personnalisée et immersive",
+      "Modularité des composants et facilité d’ajout de contenu",
+      "Présentation fidèle de mon parcours et de mes valeurs"
+    ],
+    "improve": [
+      "Accessibilité et performance sur tous supports",
+      "Internationalisation et adaptation à d’autres contextes",
+      "Automatisation de la mise à jour des contenus"
+    ],
+    "tags": [
+      "typescript",
+      "astro",
+      "svelte",
+      "orm",
+      "git"
+    ]
+  }
+]
