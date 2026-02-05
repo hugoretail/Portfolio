@@ -52,7 +52,6 @@ const tagFromText = (text) => {
   if (/sqlite/.test(t)) add('sqlite');
   if (/prisma/.test(t)) add('prisma');
   if (/sql\b/.test(t)) add('sql');
-  if (/orm/.test(t)) add('orm');
   if (/pandas/.test(t)) add('pandas');
   if (/matplotlib/.test(t)) add('matplotlib');
   if (/visualisation|graphiques|charts?\.js/.test(t)) add('visualisation');
@@ -78,7 +77,9 @@ const tagFromText = (text) => {
   // Systems / network
   if (/linux|unix|mint|xfce/.test(t)) add('linux');
   if (/vmware|virtual(box)?|qemu|machine\s*virtuelle/.test(t)) add('virtualisation');
-  if (/r[eé]seau|nemu|dns|dhcp|tcp\/ip|osi|routage/.test(t)) add('reseau');
+  // Avoid tagging neural-network contexts ("réseaux linéaires", "réseau de neurones") as networking.
+  // Only tag networking when protocol/infrastructure keywords are present.
+  if (/nemu|dns|dhcp|tcp\/ip|\bip\b|osi|routage|ethernet|wi-?fi|\bhttp\b|\bhttps\b|\bsocket\b/.test(t)) add('reseau');
 
   // Quality / tests
   if (/tests?\b|tdd|junit|pytest|jest|phpunit|testing\s+library/.test(t)) add('tests');
@@ -88,7 +89,7 @@ const tagFromText = (text) => {
   if (/mvc|architecture\b|couches|patterns?|solid|gasp/.test(t)) add('architecture');
 
   // 3D / VR
-  if (/unity|vr|r[eé]alit[eé]\s*virtuelle|3d|realsense|opencv|aruco/.test(t)) add('3d');
+  if (/unity|three\.js|vr|r[eé]alit[eé]\s*virtuelle|\b3d\b|realsense|aruco|gltf|glb|pbr/.test(t)) add('3d');
 
   // Algo / graph
   if (/prim\b|graphe|graph\b|complexit[eé]|algorith/.test(t)) add('algo');

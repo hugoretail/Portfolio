@@ -828,8 +828,7 @@ const nodes: NodeData[] = [
           m.className = 'nn-projrow__m';
           const y = item.p?.year ? String(item.p.year) : '';
           const dur = item.p?.duration ? String(item.p.duration) : '';
-          const hint = tagsOf(item.p).slice(0, 3).join(' / ');
-          m.textContent = [y, dur, hint].filter(Boolean).join(' · ') || '—';
+          m.textContent = [y, dur].filter(Boolean).join(' · ') || '—';
           btn.appendChild(m);
 
           btn.addEventListener('click', () => {

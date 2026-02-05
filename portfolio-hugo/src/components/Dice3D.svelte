@@ -49,7 +49,7 @@
   let lastSample = { x: 0, y: 0, t: 0 };
   let throwVel = { x: 0, y: 0 };
 
-  let pos = { x: 0, y: 0 };
+  let pos = { x: -1200, y: -1200 };
   let vel = { x: 0, y: 0 };
   let physicsRaf: number | null = null;
   let lastT = 0;
@@ -57,6 +57,25 @@
 
   let angularVel = new THREE.Vector3(0, 0, 0); // rad/s
   let throwSpeed0 = 0;
+
+  let isReady = false;
+  let lastResultFace: number | null = null;
+  let resultFaceHistory: number[] = [];
+
+  function rememberResultFace(idx: number) {
+    // Keep a short history to reduce streaks.
+    resultFaceHistory = [...resultFaceHistory, idx].slice(-3);
+  }
+
+  const stableQuats: THREE.Quaternion[] = [];
+  const angles = [0, Math.PI / 2, Math.PI, (3 * Math.PI) / 2];
+  for (const ax of angles) {
+    for (const ay of angles) {
+      for (const az of angles) {
+        stableQuats.push(new THREE.Quaternion().setFromEuler(new THREE.Euler(ax, ay, az, 'XYZ')));
+      }
+    }
+  }
 
   let pendingLabel: string | null = null;
   let pendingHref: string | null = null;
@@ -88,6 +107,23 @@
     let bestDot = -Infinity;
     for (let i = 0; i < faceNormals.length; i++) {
       const n = faceNormals[i].clone().applyQuaternion(cube.quaternion);
+      const d = n.dot(dir);
+      if (d > bestDot) {
+        bestDot = d;
+        bestIdx = i;
+      }
+    }
+    return bestIdx;
+  }
+
+  function faceIndexForQuaternion(q: THREE.Quaternion) {
+    if (!camera) return 0;
+    const dir = new THREE.Vector3().subVectors(camera.position, new THREE.Vector3(0, 0, 0)).normalize();
+
+    let bestIdx = 0;
+    let bestDot = -Infinity;
+    for (let i = 0; i < faceNormals.length; i++) {
+      const n = faceNormals[i].clone().applyQuaternion(q);
       const d = n.dot(dir);
       if (d > bestDot) {
         bestDot = d;
@@ -338,6 +374,25 @@
     return best;
   }
 
+  function pickStableQuaternion(from: THREE.Quaternion) {
+    // Snap to a stable cube orientation, but avoid short streaks.
+    // We keep the stop feeling “close to where it was going”, while letting the landing vary.
+    const ranked = stableQuats
+      .map((cand) => ({ cand, d: Math.abs(cand.dot(from)) }))
+      .sort((a, b) => b.d - a.d);
+
+    const top = ranked.slice(0, 16);
+    const avoid = new Set<number>(resultFaceHistory.slice(-2));
+    if (lastResultFace != null) avoid.add(lastResultFace);
+
+    const filtered = top.filter((t) => !avoid.has(faceIndexForQuaternion(t.cand)));
+    const poolSource = filtered.length ? filtered : top;
+    const pool = poolSource.slice(0, Math.min(4, poolSource.length));
+    const pick = pool[Math.floor(Math.random() * pool.length)];
+
+    return pick?.cand ?? ranked[0]?.cand ?? from;
+  }
+
   function settleLanding() {
     if (!cube) return;
 
@@ -355,7 +410,7 @@
     ensureLoop();
 
     const from = cube.quaternion.clone();
-    const to = nearestStableQuaternion(from);
+    const to = pickStableQuaternion(from);
     const q = from.clone();
 
     const proxy = { t: 0 };
@@ -444,6 +499,8 @@
     if (!cube) return;
 
     const idx = faceIndexFromOrientation();
+    lastResultFace = idx;
+    rememberResultFace(idx);
     pendingLabel = sides[idx]?.label ?? '...';
     pendingHref = sides[idx]?.href ?? null;
     resultShown = true;
@@ -594,11 +651,11 @@
     throwSpeed0 = Math.max(1, vmag);
 
     // Initial tumble is derived from throw direction + speed.
-    const spin = clamp(2.2 + vmag * 0.016, 3.5, 16.5);
-    const ax = clamp((vel.y / 900) + 0.18 + (Math.random() - 0.5) * 0.22, -1, 1);
-    const ay = clamp((-vel.x / 900) + 0.42 + (Math.random() - 0.5) * 0.22, -1, 1);
-    const az = (Math.random() - 0.5) * 0.18;
-    const axis = new THREE.Vector3(ax, ay, az);
+    const spin = clamp(2.4 + vmag * 0.018, 4.2, 18.5);
+    // More variety: mix throw-direction torque with a random axis so outcomes don't bias.
+    const throwAxis = new THREE.Vector3(vel.y / 900, -vel.x / 900, 0);
+    const randAxis = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, (Math.random() - 0.5) * 1.2);
+    const axis = throwAxis.multiplyScalar(0.55).add(randAxis.multiplyScalar(0.85));
     if (axis.lengthSq() < 0.0001) axis.set(0.2, 1, 0.1);
     axis.normalize();
     angularVel.copy(axis.multiplyScalar(spin));
@@ -623,9 +680,18 @@
         pos.y = Math.max(padding, window.innerHeight - diceSize - padding);
       }
       keepInBounds();
+
+      // Avoid the initial top-left empty-frame flash: reveal once positioned.
+      isReady = true;
     });
 
     setupThree();
+
+    // Hide until WebGL canvas is appended and sized at least once.
+    requestAnimationFrame(() => {
+      resize();
+      renderOnce();
+    });
 
     resizeObserver = new ResizeObserver(() => {
       computeDiceSize();
@@ -749,7 +815,7 @@
     on:pointermove={onPointerMove}
     on:pointerup={onPointerUp}
     on:pointercancel={onPointerUp}
-    style={`width:${diceSize}px;height:${diceSize}px;transform:translate3d(${pos.x}px, ${pos.y}px, 0) rotate(${clamp((vel.x + vel.y) * 0.0016, -6, 6)}deg);`}
+    style={`width:${diceSize}px;height:${diceSize}px;opacity:${isReady ? 1 : 0};transform:translate3d(${pos.x}px, ${pos.y}px, 0) rotate(${clamp((vel.x + vel.y) * 0.0016, -6, 6)}deg);`}
     class:cursor-grab={!dragging && !prefersReducedMotion}
     class:cursor-grabbing={dragging}
   >
@@ -771,6 +837,10 @@
 </div>
 
 <style>
+  button {
+    transition: opacity 180ms ease;
+  }
+
   .aura {
     position: absolute;
     inset: -10px;

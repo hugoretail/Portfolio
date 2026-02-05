@@ -33,7 +33,6 @@
     ],
     "tags": [
       "java",
-      "orm",
       "gitlab",
       "ia"
     ],
@@ -140,7 +139,6 @@
       "Accessibilité du gameplay et de l’affichage"
     ],
     "tags": [
-      "orm",
       "visualisation",
       "tests",
       "uml"
@@ -215,7 +213,6 @@
     "tags": [
       "mysql",
       "sql",
-      "orm",
       "visualisation",
       "uml",
       "3d"
@@ -255,10 +252,8 @@
     ],
     "tags": [
       "java",
-      "orm",
       "visualisation",
       "gitlab",
-      "reseau",
       "tests",
       "3d",
       "algo"
@@ -382,7 +377,6 @@
     ],
     "tags": [
       "python",
-      "orm",
       "matplotlib",
       "visualisation",
       "crypto",
@@ -426,7 +420,6 @@
       "Documentation technique et tutoriels d’utilisation"
     ],
     "tags": [
-      "orm",
       "git",
       "3d"
     ],
@@ -477,7 +470,6 @@
       "symfony",
       "tailwind",
       "twig",
-      "orm",
       "git",
       "security",
       "tests",
@@ -538,7 +530,6 @@
       "rest",
       "postgresql",
       "sql",
-      "orm",
       "docker",
       "compose",
       "cicd",
@@ -597,7 +588,6 @@
       "tailwind",
       "vite",
       "rest",
-      "orm",
       "visualisation",
       "docker",
       "compose",
@@ -746,7 +736,6 @@
     "tags": [
       "react",
       "tailwind",
-      "orm",
       "visualisation",
       "git",
       "tests"
@@ -792,7 +781,6 @@
     ],
     "tags": [
       "python",
-      "orm",
       "visualisation",
       "git",
       "deeplearning",
@@ -844,7 +832,6 @@
       "flask",
       "bootstrap",
       "rest",
-      "orm",
       "matplotlib",
       "visualisation",
       "git",
@@ -945,7 +932,6 @@
       "postgresql",
       "prisma",
       "sql",
-      "orm",
       "docker",
       "github-actions",
       "cicd",
@@ -994,7 +980,6 @@
     ],
     "tags": [
       "javascript",
-      "orm",
       "git",
       "3d"
     ],
@@ -1037,7 +1022,6 @@
       "visualisation",
       "git",
       "deeplearning",
-      "reseau",
       "architecture",
       "algo"
     ],
@@ -1085,7 +1069,6 @@
       "typescript",
       "astro",
       "svelte",
-      "orm",
       "git"
     ],
     "image": "/assets/images/informatique/projects/portfolio-hugo-portfolio-personnel-authentique-2026.webp"
