@@ -14,21 +14,23 @@ npm run dev
 
 ## TODO :
 
-On va rajouter des logos à la place des noms des technologies. Donc à la place, ce sera au survol du logo que le nom de la techno apparait
+[ACCUEIL] Animation lorsque l'on arrive sur la page.
 
-Projets à rajouter :
-- [ ] https://gitlab-ce.iut.u-bordeaux.fr/hretail/mini-rsa-cryptographie
-- [ ] https://gitlab-ce.iut.u-bordeaux.fr/maguidi/sae-courbes-elliptiques
-- [ ] https://gitlab-ce.iut.u-bordeaux.fr/hretail/laby-chan
-- [ ] https://gitlab-ce.iut.u-bordeaux.fr/hretail/tfr-tournoi-football-robot
-- [ ] https://gitlab-ce.iut.u-bordeaux.fr/hretail/stabilisation_etu
-- [ ] https://gitlab-ce.iut.u-bordeaux.fr/nabe/sae_geodessin_groupeevanrimonteil
-- [ ] https://gitlab-ce.iut.u-bordeaux.fr/hretail/sae-deep-learning
-- [ ] https://github.com/hugoretail/Kamen-Bot
-- [ ] https://github.com/hugoretail/My-IUT-Skills
-- [ ] https://github.com/hugoretail/CoNLL-2003-NER
-- [ ] https://github.com/hugoretail/Twitter-Sentiment-Analysis
-- [ ] https://github.com/hugoretail/Super-Kamen-Bot
+[INFORMATIQUE] On va rajouter des logos à la place des noms des technologies. Donc à la place, ce sera au survol du logo que le nom de la techno apparait
+
+Photos des projets à rajouter :
+- [x] https://gitlab-ce.iut.u-bordeaux.fr/hretail/mini-rsa-cryptographie
+- [x] https://gitlab-ce.iut.u-bordeaux.fr/maguidi/sae-courbes-elliptiques
+- [x] https://gitlab-ce.iut.u-bordeaux.fr/hretail/laby-chan
+- [x] https://gitlab-ce.iut.u-bordeaux.fr/hretail/tfr-tournoi-football-robot
+- [x] https://gitlab-ce.iut.u-bordeaux.fr/hretail/stabilisation_etu
+- [x] https://gitlab-ce.iut.u-bordeaux.fr/nabe/sae_geodessin_groupeevanrimonteil
+- [x] https://gitlab-ce.iut.u-bordeaux.fr/hretail/sae-deep-learning
+- [x] https://github.com/hugoretail/Kamen-Bot
+- [x] https://github.com/hugoretail/My-IUT-Skills
+- [x] https://github.com/hugoretail/CoNLL-2003-NER
+- [x] https://github.com/hugoretail/Twitter-Sentiment-Analysis
+- [x] https://github.com/hugoretail/Super-Kamen-Bot
 - [ ] https://github.com/hugoretail/Eco-Presents
 - [ ] https://github.com/hugoretail/Portfolio-Experiments
 - [ ] https://github.com/hugoretail/D2L-Tutorial
