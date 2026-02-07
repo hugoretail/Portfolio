@@ -547,7 +547,7 @@
     "year": "2026",
     "duration": "25h (travail en groupe de 7)",
     "description": "Application web collaborative permettant de dessiner, annoter et partager des objets géographiques sur une carte interactive.",
-    "image": "/assets/images/informatique/geodessin-2026.png",
+    "image": "/assets/images/informatique/projects/geodessin-2026.png",
     "competences": [
       "Concevoir une architecture fullstack (Django REST, React, Docker)",
       "Implémenter des outils de dessin géographique (points, lignes, cercles, polygones, calculs de distances)",
@@ -604,7 +604,7 @@
     "year": "2026",
     "duration": "28h (travail en équipe de 6)",
     "description": "Audit de performance applicative en apprentissage supervisé pour la détection et la localisation 3D d’objets à partir de caméras RGB et profondeur. Comparaison de YOLOv11 et d’un CNN custom PyTorch, création de dataset, calibration, interface de test, visualisation et analyse des résultats.",
-    "image": "/assets/images/informatique/audit-et-detection-3d-2026.png",
+    "image": "/assets/images/informatique/projects/audit-et-detection-3d-2026.png",
     "competences": [
       "Prise en main de capteurs (caméra RGB, caméra de profondeur RealSense)",
       "Création, annotation et augmentation d’une base de données d’images (Label Studio, scripts Python)",
@@ -658,7 +658,7 @@
     "year": "2025",
     "duration": "10h",
     "description": "Développement d’un assistant vocal simple en Python, capable d’enregistrer, traiter et répondre à des commandes vocales via une interface graphique (PyQt). Architecture modulaire avec gestion des threads pour l’enregistrement audio.",
-    "image": "/assets/images/informatique/kamen-bot-assistant-vocal-python-2025.png",
+    "image": "/assets/images/informatique/projects/kamen-bot-assistant-vocal-python-2025.png",
     "competences": [
       "Implémenter l’enregistrement et le traitement de commandes vocales en Python",
       "Concevoir une interface graphique utilisateur (PyQt, Qt Designer)",
@@ -846,7 +846,7 @@
     "year": "2025",
     "duration": "10h",
     "description": "Chatbot conversationnel vocal optimisé pour le japonais, avec reconnaissance et synthèse vocale, mémoire persistante (SQLite), interface web Streamlit et intégration d’un LLM japonais (Ollama). Pensé pour l’apprentissage et la pratique orale de la langue.",
-    "image": "/assets/images/informatique/super-kamen-bot-chatbot-vocal-japonais-2025.png",
+    "image": "/assets/images/informatique/projects/super-kamen-bot-chatbot-vocal-japonais-2025.png",
     "competences": [
       "Intégrer un LLM spécialisé (kangyufei/llama2:japanese via Ollama) pour la génération de texte",
       "Implémenter la reconnaissance vocale (Whisper) et la synthèse vocale (TTS)",
@@ -937,7 +937,7 @@
       "cicd",
       "architecture"
     ],
-    "image": "/assets/images/informatique/projects/eco-presents-recommandation-eco-responsable-2026.webp"
+    "image": "/assets/images/informatique/projects/eco-presents-recommandation-eco-responsable-2026.png"
   },
   {
     "id": "portfolio-experiments-laboratoire-de-portfolios-2026",
@@ -983,7 +983,7 @@
       "git",
       "3d"
     ],
-    "image": "/assets/images/informatique/projects/portfolio-experiments-laboratoire-de-portfolios-2026.webp"
+    "image": "/assets/images/informatique/projects/portfolio-experiments-laboratoire-de-portfolios-2026.png"
   },
   {
     "id": "d2l-tutorial-etude-approfondie-du-deep-learning-2026",
@@ -1025,7 +1025,7 @@
       "architecture",
       "algo"
     ],
-    "image": "/assets/images/informatique/projects/d2l-tutorial-etude-approfondie-du-deep-learning-2026.webp"
+    "image": "/assets/images/informatique/projects/d2l-tutorial-etude-approfondie-du-deep-learning-2026.png"
   },
   {
     "id": "portfolio-hugo-portfolio-personnel-authentique-2026",
@@ -1071,6 +1071,6 @@
       "svelte",
       "git"
     ],
-    "image": "/assets/images/informatique/projects/portfolio-hugo-portfolio-personnel-authentique-2026.webp"
+    "image": "/assets/images/informatique/projects/portfolio-hugo-portfolio-personnel-authentique-2026.png"
   }
 ]

@@ -31,7 +31,7 @@ Photos des projets à rajouter :
 - [x] https://github.com/hugoretail/CoNLL-2003-NER
 - [x] https://github.com/hugoretail/Twitter-Sentiment-Analysis
 - [x] https://github.com/hugoretail/Super-Kamen-Bot
-- [ ] https://github.com/hugoretail/Eco-Presents
-- [ ] https://github.com/hugoretail/Portfolio-Experiments
-- [ ] https://github.com/hugoretail/D2L-Tutorial
+- [x] https://github.com/hugoretail/Eco-Presents
+- [x] https://github.com/hugoretail/Portfolio-Experiments
+- [x] https://github.com/hugoretail/D2L-Tutorial
 - [ ] https://github.com/hugoretail/Portfolio
