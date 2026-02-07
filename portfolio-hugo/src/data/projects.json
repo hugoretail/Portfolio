@@ -143,7 +143,7 @@
       "tests",
       "uml"
     ],
-    "image": "/assets/images/informatique/projects/jeu-video-mise-a-jour-labyrinthe-2024.webp"
+    "image": "/assets/images/informatique/projects/jeu-video-mise-a-jour-labyrinthe-2024.png"
   },
   {
     "id": "learning-tool-japanese-conjugator-2024",
@@ -215,7 +215,6 @@
       "sql",
       "visualisation",
       "uml",
-      "3d",
       "environnement",
       "co2"
     ],
@@ -257,7 +256,6 @@
       "visualisation",
       "gitlab",
       "tests",
-      "3d",
       "algo"
     ],
     "image": "/assets/images/informatique/projects/visualisation-de-graphe-java-2024.png"
@@ -296,7 +294,6 @@
       "python",
       "visualisation",
       "architecture",
-      "3d",
       "algo"
     ],
     "image": "/assets/images/informatique/projects/visualisation-de-graphe-python-2025.png"
@@ -539,8 +536,7 @@
       "git",
       "security",
       "tests",
-      "architecture",
-      "3d"
+      "architecture"
     ],
     "image": "/assets/images/informatique/projects/stabilisation-etude-d-incidents-informatiques-2025.png"
   },
@@ -647,12 +643,10 @@
     ],
     "tags": [
       "python",
-      "streamlit",
       "visualisation",
       "git",
       "deeplearning",
       "tests",
-      "3d",
       "computer-vision",
       "opencv",
       "yolov11",
@@ -837,7 +831,6 @@
     "tags": [
       "python",
       "javascript",
-      "flask",
       "bootstrap",
       "rest",
       "matplotlib",
@@ -891,7 +884,6 @@
     ],
     "tags": [
       "python",
-      "streamlit",
       "sqlite",
       "git",
       "ia",
@@ -902,7 +894,7 @@
   {
     "id": "eco-presents-recommandation-eco-responsable-2026",
     "title": "Eco-Presents : Recommandation éco-responsable",
-    "year": "2026",
+    "year": "2025",
     "duration": "20h (projet personnel)",
     "description": "Plateforme web de recommandation de cadeaux éco-responsables, axée sur la curation de produits et entreprises locales, l’explicabilité des scores éco, et la transparence des données. Architecture Next.js/TypeScript, base PostgreSQL, ingestion de données open data et API, déploiement cloud/local.",
     "competences": [
@@ -954,7 +946,7 @@
   {
     "id": "portfolio-experiments-laboratoire-de-portfolios-2026",
     "title": "Portfolio Experiments : Laboratoire de portfolios",
-    "year": "2026",
+    "year": "2025",
     "duration": "continu (projet personnel expérimental)",
     "description": "Atelier d’expérimentation front-end pour tester des idées d’UX/UI, d’animations et de stacks techniques avant intégration sur le portfolio principal. Prototypes de scènes 3D interactives (Three.js), navigation, traductions, et gestion d’assets avancée.",
     "competences": [
@@ -991,6 +983,7 @@
       "Ajout de post-process et d’effets avancés"
     ],
     "tags": [
+      "web",
       "javascript",
       "git",
       "3d"
