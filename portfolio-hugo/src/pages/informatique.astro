@@ -397,6 +397,21 @@ const nodes: NodeData[] = [
     y: 86
   },
   {
+    id: 'env',
+    label: 'ENV',
+    kind: 'main',
+    parent: 'hugo',
+    variant: 'dashed',
+    tags: ['environnement', 'ecologie', 'eco', 'eco-responsable', 'durable', 'climat', 'co2', 'carbone', 'emission', 'emissions'],
+    tip: 'Climat / CO2 / impact',
+    detailTitle: 'Environnement',
+    detail: 'Projets orientés climat/enjeux environnementaux: mesurer, visualiser, expliquer.',
+    bullets: ['Émissions (CO2) & indicateurs', 'Viz + documentation', 'Contrainte: impact réel'],
+    color: '#b6ff00',
+    x: 30,
+    y: 90
+  },
+  {
     id: 'devops',
     label: 'DEVOPS',
     kind: 'main',
@@ -666,7 +681,14 @@ const nodes: NodeData[] = [
       }
 
       const uniq = (arr) => Array.from(new Set((arr || []).filter(Boolean)));
-      const normTag = (x) => String(x ?? '').trim().toLowerCase();
+      const normTag = (x) =>
+        String(x ?? '')
+          .trim()
+          .toLowerCase()
+          .normalize('NFKD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)/g, '');
       const tagsOf = (p) => {
         const t = Array.isArray(p?.tags) ? p.tags : [];
         const l = Array.isArray(p?.labels) ? p.labels : [];
@@ -1276,7 +1298,7 @@ const nodes: NodeData[] = [
       });
 
       // Init animation (<5s)
-      const appearOrder = ['hugo','ia','web','data','devops','sec','sys','net','3d','dl','nlp','tests','arch'];
+      const appearOrder = ['hugo','ia','web','data','env','devops','sec','sys','net','3d','dl','nlp','tests','arch'];
 
       const DRAW_MS = prefersReducedMotion ? 0 : 1200;
       const NODE_DELAY_MS = prefersReducedMotion ? 0 : 420;
@@ -1742,19 +1764,19 @@ const nodes: NodeData[] = [
     }
 
     .nn-modal__head { display: flex; align-items: start; justify-content: space-between; gap: 12px; }
-    .nn-modal__kicker { font-size: 10px; letter-spacing: 0.35em; text-transform: uppercase; font-weight: 900; color: rgba(246,246,246,0.65); }
+    .nn-modal__kicker { font-size: 9px; letter-spacing: 0.35em; text-transform: uppercase; font-weight: 900; color: rgba(246,246,246,0.65); }
     .nn-modal__title {
       font-family: var(--font-display, 'Bebas Neue', system-ui, sans-serif);
-      font-size: 60px;
+      font-size: 48px;
       line-height: 1;
-      margin-top: 6px;
+      margin-top: 4px;
       color: var(--accent, rgba(246,246,246,0.92));
       text-shadow: 1px 1px 0 rgba(0,0,0,0.55);
     }
     .nn-modal__desc {
-      margin-top: 10px;
+      margin-top: 6px;
       font-weight: 800;
-      font-size: 14px;
+      font-size: 13px;
       letter-spacing: 0.04em;
       text-transform: none;
       color: rgba(255,230,0,0.86);
@@ -1780,20 +1802,20 @@ const nodes: NodeData[] = [
     }
 
     .nn-modal__bullets {
-      margin-top: 14px;
+      margin-top: 10px;
       display: grid;
-      gap: 8px;
+      gap: 6px;
       padding-left: 18px;
       color: rgba(246,246,246,0.86);
       font-weight: 750;
-      font-size: 14px;
+      font-size: 13px;
       letter-spacing: 0.04em;
       text-transform: none;
     }
 
     .nn-projs {
-      margin-top: 14px;
-      padding-top: 12px;
+      margin-top: 10px;
+      padding-top: 10px;
       border-top: 2px dashed rgba(246,246,246,0.22);
     }
 
@@ -1808,7 +1830,7 @@ const nodes: NodeData[] = [
     .nn-projs__grid {
       margin-top: 10px;
       display: grid;
-      grid-template-columns: 320px 1fr;
+      grid-template-columns: 260px 1fr;
       gap: 12px;
       align-items: start;
     }
@@ -1820,7 +1842,7 @@ const nodes: NodeData[] = [
       padding: 10px;
       display: grid;
       gap: 8px;
-      max-height: 54vh;
+      max-height: 60vh;
       overflow: auto;
     }
 
@@ -1829,7 +1851,7 @@ const nodes: NodeData[] = [
       background: rgba(0,0,0,0.34);
       box-shadow: 8px 8px 0 rgba(0,0,0,0.55);
       padding: 12px;
-      max-height: 54vh;
+      max-height: 60vh;
       overflow: auto;
     }
 
@@ -1902,7 +1924,7 @@ const nodes: NodeData[] = [
     .nn-proj__media img {
       display: block;
       width: 100%;
-      height: min(240px, 28vh);
+      height: min(360px, 40vh);
       object-fit: cover;
       filter: contrast(1.08) saturate(1.05);
       opacity: 0.92;

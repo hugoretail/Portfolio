@@ -215,7 +215,9 @@
       "sql",
       "visualisation",
       "uml",
-      "3d"
+      "3d",
+      "environnement",
+      "co2"
     ],
     "image": "/assets/images/informatique/projects/software-development-anhydralgo-2024.png"
   },
@@ -935,7 +937,11 @@
       "docker",
       "github-actions",
       "cicd",
-      "architecture"
+      "architecture",
+      "environnement",
+      "ecologie",
+      "eco-responsable",
+      "durable"
     ],
     "image": "/assets/images/informatique/projects/eco-presents-recommandation-eco-responsable-2026.png"
   },
