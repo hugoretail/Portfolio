@@ -264,7 +264,8 @@
   },
   {
     "id": "visualisation-de-graphe-python-2025",
-    "title": "Visualisation de Graphe (Python, 2025)",
+    "title": "Visualisation de Graphe (Python)",
+    "year": "2025",
     "duration": "10h",
     "description": "Visualiser des données — génération de graphiques (Python)",
     "competences": [
@@ -651,7 +652,12 @@
       "git",
       "deeplearning",
       "tests",
-      "3d"
+      "3d",
+      "computer-vision",
+      "opencv",
+      "yolov11",
+      "realsense",
+      "aruco"
     ]
   },
   {
