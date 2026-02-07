@@ -73,7 +73,7 @@ const piecesNotes: Piece[] = [
 		y: 44,
 		r: -1.6,
 		forKey: '/hiphop',
-		text: 'Popping, dissociations, et du groove évidemment.'
+		text: 'Popping, dissociations, et du groove!'
 	},
 	{
 		id: 'note-ia',
@@ -142,7 +142,9 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 				Une façon d'organiser ma <span class="text-[color:var(--acid-yellow)]">personne</span>.
 				Visitez les pages <span class="text-[color:var(--red-thread)]">jaunes</span> !
 			</p>
-			<div class="moi-help" aria-hidden="true">Tous les post-it sont déplaçables.</div>
+			<p class="moi-help">
+				<span class="help-chip">Jaune</span> = pages visitables · <span class="help-chip help-chip--note">Post-it</span> = notes · Drag pour bouger.
+			</p>
 		</header>
 
 		<!-- Scattered board (broken layout) -->
@@ -168,13 +170,13 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 							href={item.href}
 							class:list={[
 								'node node--nav',
-								(item.href !== '/' && item.href !== '/moi') ? 'node--linkout' : '',
+								(item.href !== '/moi') ? 'node--linkout' : '',
 								isActive(item.href) ? 'node--active' : ''
 							]}
 							style={`--x:${item.x}; --y:${item.y}; --r:${item.r}deg;`}
 						>
 							<span class="node__label">{item.label}</span>
-							<span class="node__sub">{(item.href !== '/' && item.href !== '/moi') ? 'check ça!' : ''}</span>
+							<span class="node__sub">{(item.href !== '/' && item.href !== '/moi') ? 'visiter' : ''}</span>
 							{(item.href !== '/' && item.href !== '/moi') ? <span class="node__go" aria-hidden="true">↗</span> : null}
 						</a>
 					))}
@@ -749,7 +751,7 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 		}
 
 		.node--nav {
-			padding: 10px 12px;
+			padding: 14px 16px;
 			max-width: none;
 			text-decoration: none;
 			background: rgba(0, 0, 0, 0.48);
@@ -807,14 +809,14 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 			font-weight: 900;
 			letter-spacing: 0.22em;
 			text-transform: uppercase;
-			font-size: 11px;
+			font-size: 13px;
 			display: block;
 		}
 
 		.node--nav .node__sub {
 			display: block;
 			margin-top: 4px;
-			font-size: 10px;
+			font-size: 11px;
 			color: rgba(246, 246, 246, 0.7);
 			letter-spacing: 0.12em;
 			text-transform: uppercase;
@@ -870,15 +872,16 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 		}
 
 		.node--focus {
-			width: min(420px, 86vw);
+			width: min(360px, 84vw);
+			padding: 12px 12px 10px;
 			background: rgba(0, 0, 0, 0.48);
 		}
 
 		.node__list {
-			margin-top: 12px;
+			margin-top: 10px;
 			font-family: 'Patrick Hand', ui-rounded, system-ui, sans-serif;
-			font-size: 22px;
-			line-height: 1.2;
+			font-size: 19px;
+			line-height: 1.18;
 			color: rgba(246, 246, 246, 0.88);
 		}
 
@@ -895,7 +898,7 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 		.node--note {
 			width: min(280px, 76vw);
 			max-width: min(300px, 80vw);
-			padding: 12px 12px 10px;
+			padding: 10px 10px 8px;
 			background: rgba(0, 0, 0, 0.44);
 			border-color: rgba(246, 246, 246, 0.75);
 			box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.58);
@@ -907,7 +910,7 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 			font-weight: 900;
 			letter-spacing: 0.22em;
 			text-transform: uppercase;
-			font-size: 12px;
+			font-size: 11px;
 			color: rgba(246, 246, 246, 0.92);
 		}
 
@@ -915,7 +918,7 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 			margin-top: 8px;
 			margin-bottom: 0;
 			font-family: 'Patrick Hand', ui-rounded, system-ui, sans-serif;
-			font-size: 19px;
+			font-size: 16px;
 			line-height: 1.15;
 			color: rgba(246, 246, 246, 0.84);
 		}
@@ -1008,6 +1011,23 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 			text-transform: uppercase;
 			color: rgba(246, 246, 246, 0.58);
 			max-width: 740px;
+		}
+
+		.help-chip {
+			display: inline-flex;
+			align-items: center;
+			padding: 4px 6px;
+			border: 2px solid rgba(255, 230, 0, 0.75);
+			background: rgba(255, 230, 0, 0.08);
+			color: rgba(255, 230, 0, 0.95);
+			font-weight: 900;
+			margin-right: 6px;
+		}
+
+		.help-chip--note {
+			border-color: rgba(246, 246, 246, 0.25);
+			background: rgba(0, 0, 0, 0.28);
+			color: rgba(246, 246, 246, 0.75);
 		}
 
 		.moi-8bit {
