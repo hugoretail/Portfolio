@@ -8,7 +8,45 @@ import { withBase } from '../lib/withBase';
 ---
 
 <BaseLayout title="Hugo Retail">
-	<main class="relative min-h-screen overflow-hidden">
+	<script is:inline>
+		// Homepage intro animation state (self-cleaning).
+		(() => {
+			try {
+				const root = document.documentElement;
+				const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+				if (reduced) {
+					root.classList.add('intro-done');
+					return;
+				}
+				root.classList.add('intro-running');
+				window.addEventListener(
+					'load',
+					() => {
+						const TOTAL_MS = 3200; // draw + reveal
+						window.setTimeout(() => {
+							root.classList.add('intro-done');
+							root.classList.remove('intro-running');
+						}, TOTAL_MS);
+						window.setTimeout(() => {
+							document.getElementById('homeIntro')?.remove();
+						}, TOTAL_MS + 700);
+					},
+					{ once: true }
+				);
+			} catch {
+				document.documentElement.classList.add('intro-done');
+				document.documentElement.classList.remove('intro-running');
+			}
+		})();
+	</script>
+
+	<div id="homeIntro" class="home-intro" aria-hidden="true">
+		<svg class="home-intro__svg" viewBox="0 0 120 120" role="presentation" focusable="false">
+			<circle class="home-intro__ring" cx="60" cy="60" r="44" />
+		</svg>
+	</div>
+
+	<main class="home-main relative min-h-screen overflow-hidden">
 		<div class="pointer-events-none absolute inset-0 bg-graffiti opacity-[0.10]" aria-hidden="true"></div>
 		<div class="pointer-events-none absolute inset-0 bg-nature opacity-[0.06]" aria-hidden="true"></div>
 		<div class="paper-grain" aria-hidden="true"></div>
@@ -71,4 +109,70 @@ import { withBase } from '../lib/withBase';
 			</div>
 		</section>
 	</main>
+
+	<style>
+		/* Main content reveal */
+		.home-main {
+			opacity: 1;
+			transform: none;
+			transition: opacity 650ms ease, transform 650ms ease;
+		}
+		html.intro-running .home-main {
+			opacity: 0;
+			transform: translateY(10px);
+		}
+
+		/* Fullscreen intro overlay */
+		.home-intro {
+			position: fixed;
+			inset: 0;
+			z-index: 9999;
+			display: none;
+			place-items: center;
+			background: #000;
+			pointer-events: none;
+			opacity: 1;
+			clip-path: circle(150% at 50% 50%);
+			will-change: clip-path, opacity;
+		}
+		html.intro-running .home-intro {
+			display: grid;
+			animation: homeIntroReveal 900ms cubic-bezier(0.2, 0.9, 0.2, 1) 2300ms forwards;
+		}
+		@keyframes homeIntroReveal {
+			to {
+				clip-path: circle(0% at 50% 50%);
+				opacity: 0;
+			}
+		}
+
+		.home-intro__svg {
+			width: min(46vmin, 320px);
+			height: auto;
+			filter: drop-shadow(0 0 14px rgba(246, 246, 246, 0.10));
+		}
+		.home-intro__ring {
+			fill: none;
+			stroke: rgba(246, 246, 246, 0.92);
+			stroke-width: 2.25;
+			stroke-linecap: round;
+			stroke-dasharray: 276;
+			stroke-dashoffset: 276;
+			animation: homeIntroDraw 2100ms cubic-bezier(0.2, 0.8, 0.2, 1) 120ms forwards;
+		}
+		@keyframes homeIntroDraw {
+			to {
+				stroke-dashoffset: 0;
+			}
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			.home-intro {
+				display: none !important;
+			}
+			.home-main {
+				transition: none;
+			}
+		}
+	</style>
 </BaseLayout>
