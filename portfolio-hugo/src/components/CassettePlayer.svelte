@@ -28,8 +28,9 @@
 
   const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
 
-  let currentIndex = 0;
-  $: currentTrack = tracks[currentIndex] ?? tracks[0];
+  // No track selected by default (prevents the UI from looking "already clicked").
+  let currentIndex: number | null = null;
+  $: currentTrack = currentIndex == null ? null : (tracks[currentIndex] ?? null);
 
   let inserted = true;
   let isPlaying = false;
@@ -141,6 +142,10 @@
   function resumeAndPlay() {
     if (!inserted) return;
     if (!audioEl) return;
+
+    if (currentIndex == null) {
+      setTrack(0);
+    }
 
     errorMsg = null;
     ensureAudioGraph();
@@ -316,14 +321,22 @@
   }
 
   function prev() {
-    setTrack(currentIndex - 1);
+    if (currentIndex == null) {
+      setTrack(tracks.length - 1);
+    } else {
+      setTrack(currentIndex - 1);
+    }
     if (isPlaying) {
       resumeAndPlay();
     }
   }
 
   function next() {
-    setTrack(currentIndex + 1);
+    if (currentIndex == null) {
+      setTrack(0);
+    } else {
+      setTrack(currentIndex + 1);
+    }
     if (isPlaying) {
       resumeAndPlay();
     }
@@ -418,7 +431,7 @@
     if (volStepIdx < 0) volStepIdx = 2;
     audioEl.volume = volume;
 
-    setTrack(0);
+    // Do not auto-select a track on page load.
 
     if (cassetteSolidEl) {
       gsap.set(cassetteSolidEl, { rotateX: 8, rotateY: -12, transformOrigin: '50% 50%' });
@@ -685,7 +698,7 @@
       {#each tracks as t, i (t.id)}
         <button
           type="button"
-          class={`tracknote__item ${i === currentIndex ? '' : ''}`}
+          class={`tracknote__item ${i === currentIndex ? 'is-active' : ''}`}
           on:click={() => {
             setTrack(i);
             resumeAndPlay();

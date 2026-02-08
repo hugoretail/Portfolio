@@ -32,9 +32,9 @@
       href={url === 'LIEN_SPOTIFY_PLAYLIST' ? '#' : url}
       target="_blank"
       rel="noreferrer"
-      aria-label="Ouvrir la playlist dans un nouvel onglet"
+      aria-label="Ouvrir dans un nouvel onglet"
     >
-      Ouvrir la playlist
+      Ouvrir
     </a>
   </div>
 </div>

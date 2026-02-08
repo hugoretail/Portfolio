@@ -1,8 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { readFileSync } from 'node:fs';
 import { withBase } from '../lib/withBase';
 import { getBaseUrl } from '../lib/withBase';
+import projectsJsonRaw from '../data/projects.json';
+import projectsMdRaw from '../../../PROJECTS.md?raw';
 
 const baseUrl = getBaseUrl();
 
@@ -53,7 +54,7 @@ const toStrArr = (v: unknown) => {
 
 const safeReadProjects = () => {
   try {
-    return readFileSync(new URL('../../../PROJECTS.md', import.meta.url), 'utf-8');
+    return typeof projectsMdRaw === 'string' ? projectsMdRaw : '';
   } catch {
     return '';
   }
@@ -153,8 +154,7 @@ const tagFromText = (text: string) => {
 
 const safeReadProjectsJson = (): ProjectData[] => {
   try {
-    const raw = readFileSync(new URL('../data/projects.json', import.meta.url), 'utf-8');
-    const parsed = JSON.parse(raw) as unknown;
+    const parsed = projectsJsonRaw as unknown;
     if (!Array.isArray(parsed)) return [];
 
     const normalized = parsed
