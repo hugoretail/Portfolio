@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import gsap from 'gsap';
+  import { onMount } from 'svelte';
   import { withBase } from '../lib/withBase';
 
   export let href = '/graffiti';

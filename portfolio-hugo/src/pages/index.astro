@@ -58,7 +58,16 @@ import { withBase } from '../lib/withBase';
 					</p>
 				</div>
 
-				<QRCode client:load url="LIEN_SPOTIFY_PLAYLIST" />
+				<div class="brutal-border relative bg-white/90 p-4 text-black">
+					<div class="absolute -left-2 -top-2 brutal-border-red bg-[color:var(--acid-yellow)] px-3 py-2 text-xs font-black uppercase tracking-widest">
+						LinkedIn
+					</div>
+					<div class="pt-6">
+						<div class="mt-4">
+							<QRCode client:load url="https://www.linkedin.com/in/hugo-retail/" />
+						</div>
+					</div>
+				</div>
 			</div>
 		</section>
 	</main>

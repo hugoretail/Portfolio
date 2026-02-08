@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { onDestroy, onMount } from 'svelte';
   import gsap from 'gsap';
+  import { onDestroy, onMount } from 'svelte';
   import { withBase } from '../lib/withBase';
 
   export let href = '/frise';
