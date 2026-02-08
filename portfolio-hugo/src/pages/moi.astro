@@ -9,7 +9,7 @@ const nav: NavItem[] = [
 	{ href: '/graffiti', label: 'Graffiti' },
 	{ href: '/hiphop', label: 'Hip-hop' },
 	{ href: '/informatique', label: 'Informatique' },
-	{ href: '/litterature', label: 'Littérature' },
+	{ href: '/environnement', label: 'Environnement' },
 	{ href: '/frise', label: 'Frise' }
 ];
 
@@ -26,7 +26,7 @@ const navPositions: Array<{ x: number; y: number; r: number }> = [
 	{ x: 12, y: 44, r: -2.0 }, // Graffiti
 	{ x: 90, y: 44, r: 2.0 },  // Hiphop
 	{ x: 54, y: 70, r: 2.8 },  // Informatique
-	{ x: 18, y: 74, r: -1.4 }, // Littérature
+	{ x: 18, y: 74, r: -1.4 }, // Environnement
 	{ x: 88, y: 66, r: 1.1 }   // Frise
 ];
 
@@ -86,14 +86,14 @@ const piecesNotes: Piece[] = [
 		text: 'Est-ce vraiment utile de (vibe) coder ça ?'
 	},
 	{
-		id: 'note-litterature',
+		id: 'note-environnement',
 		label: 'NOTE',
 		kind: 'note',
 		x: 10,
 		y: 86,
 		r: -2.6,
-		forKey: '/litterature',
-		text: 'Quelques auteurs et oeuvres qui m\'inspirent.'
+		forKey: '/environnement',
+		text: "Ma motivation écologique."
 	},
 	{
 		id: 'note-frise',
@@ -259,14 +259,14 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 				['bio', '/graffiti'],
 				['bio', '/informatique'],
 				['bio', '/hiphop'],
-				['bio', '/litterature'],
+				['bio', '/environnement'],
 				['bio', '/frise'],
 				['focus', '/graffiti'],
 				// Bind each section label to its own note
 				['/graffiti', 'note:/graffiti'],
 				['/hiphop', 'note:/hiphop'],
 				['/informatique', 'note:/informatique'],
-				['/litterature', 'note:/litterature'],
+				['/environnement', 'note:/environnement'],
 				['/frise', 'note:/frise']
 			];
 

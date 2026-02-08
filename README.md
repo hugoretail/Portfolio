@@ -18,9 +18,9 @@ npm run dev
 
 [INFORMATIQUE] On va rajouter des logos à la place des noms des technologies. Donc à la place, ce sera au survol du logo que le nom de la techno apparait
 
-[HIP-HOP] Refonte totale de la page : un lecteur cassette sur lequel on peut cliquer les boutons. Le but qu'on y a mis une cassette dedans qui contient une douzaine de sons, et l'utilisateur peut utiliser le lecteur pour jouer les sons (ou les pauser, skip, etc). Lorsqu'un son joue, on veut que la page aussi soit animée : des effets doivent être joués, les éléments bougent, etc... Pour faire ça, tu peux utiliser des librairies ou le coder toi-même. Cela dépend juste de si les performances seront bonnes et si le rendu sera propre. Rend les effets vraiment super beaux et détaillés.
+[HIP-HOP] Mettre à jour le QR Code pour qu'il renvoie vers la playlist Youtube Music : https://music.youtube.com/playlist?list=PLyMcm67aKG0ZoMSzRv
 
-[HIP-HOP] Mettre à jour le QR Code pour qu'il renvoie vers la playlist Youtube Music : https://music.youtube.com/playlist?list=PLyMcm67aKG0ZoMSzRv8IX9B8Q0q_g7Nnp&si=FjbUm6wr0smFvaZq
+[ENVIRONNEMENT] Supprimer la page littérature et la remplacer par une page Environnement où je parle de mon investissement écologique (ADT, etc...)
 
 ## SONGS TO DOWNLOAD
 

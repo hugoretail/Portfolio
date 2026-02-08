@@ -1,79 +1,51 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import BookExcerpt from '../components/BookExcerpt.svelte';
+
+const to = '/environnement';
 ---
 
-<BaseLayout title="Hugo — Littérature" description="Extraits et pages qui tournent.">
-  <div class="relative min-h-screen overflow-hidden">
+<BaseLayout title="Redirect — Environnement" description="Redirection vers /environnement.">
+  <main class="relative min-h-screen overflow-hidden">
     <div class="absolute inset-0 bg-black" aria-hidden="true"></div>
-    <div class="pointer-events-none absolute inset-0 bg-graffiti opacity-14" aria-hidden="true"></div>
-    <div class="pointer-events-none absolute inset-0 bg-nature opacity-[0.06]" aria-hidden="true"></div>
+    <div class="pointer-events-none absolute inset-0 bg-nature opacity-[0.08]" aria-hidden="true"></div>
     <div class="paper-grain" aria-hidden="true"></div>
     <div class="noise-overlay" aria-hidden="true"></div>
 
-    <a class="bb-backbtn brutal-border" href="/moi" aria-label="Retour à /moi" title="Retour">
-      <span aria-hidden="true">←</span>
-    </a>
+    <div class="relative z-10 mx-auto max-w-3xl px-4 py-14">
+      <h1 class="font-display text-5xl md:text-6xl">Cette page a bougé.</h1>
+      <p class="mt-4 font-hand text-2xl text-[color:var(--muted)]">
+        Littérature → Environnement.
+      </p>
+      <p class="mt-6">
+        <a class="go brutal-border" href={to} aria-label="Aller vers /environnement">Aller vers /environnement →</a>
+      </p>
+    </div>
 
-    <main class="relative z-10 mx-auto max-w-6xl px-4 py-10">
-      <header class="mb-8">
-        <h1 class="font-display text-6xl md:text-7xl">Littérature</h1>
-        <p class="mt-3 max-w-2xl font-hand text-2xl text-[color:var(--muted)]">
-          Les phrases comme des tags : courtes, vivantes, impossibles à ignorer.
-        </p>
-      </header>
-
-      <BookExcerpt client:load />
-
-      <div class="mt-10 brutal-border max-w-3xl bg-black/30 p-4">
-        <div class="font-display text-2xl tracking-wide">Projet phare</div>
-        <p class="mt-2 font-hand text-2xl text-[color:var(--muted)]">
-          Un recueil hybride : ville, nature, machines — même fil.
-        </p>
-        <a
-          class="mt-3 inline-block text-sm font-black uppercase tracking-widest underline"
-          href="#"
-          aria-label="Lire un extrait complet"
-        >
-          Lire un extrait
-        </a>
-      </div>
-    </main>
-  </div>
+    <meta http-equiv="refresh" content={`0; url=${to}`} />
+    <script is:inline>
+      window.location.replace('/environnement');
+    </script>
+  </main>
 </BaseLayout>
 
 <style>
-  .bb-backbtn {
-    position: fixed;
-    top: 18px;
-    left: 18px;
-    z-index: 60;
-    display: inline-grid;
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    background: rgba(0, 0, 0, 0.6);
-    border: 2px solid rgba(246, 246, 246, 0.45);
-    color: rgba(246, 246, 246, 0.88);
+  .go {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
     font-weight: 900;
-    font-size: 18px;
-    line-height: 1;
-    text-decoration: none;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    background: rgba(0, 0, 0, 0.55);
+    border: 2px solid var(--fg);
     box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.6);
-    transition: background 140ms ease, transform 140ms ease;
+    color: rgba(246, 246, 246, 0.92);
+    text-decoration: none;
   }
 
-  .bb-backbtn:hover {
-    background: rgba(0, 0, 0, 0.72);
-    transform: translateY(-1px);
-  }
-
-  @media (max-width: 860px) {
-    .bb-backbtn {
-      top: 12px;
-      left: 12px;
-      width: 40px;
-      height: 40px;
-    }
+  .go:hover {
+    background: rgba(0, 0, 0, 0.75);
   }
 </style>

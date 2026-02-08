@@ -1,7 +1,7 @@
 <script lang="ts">
+  import gsap from 'gsap';
   import { onDestroy, onMount } from 'svelte';
   import * as THREE from 'three';
-  import gsap from 'gsap';
 
   export type DiceSide = {
     label: string;
@@ -13,7 +13,7 @@
     { label: 'Informatique', textureUrl: '/assets/images/dice-face-1.svg', href: '/informatique' },
     { label: 'Fresque 2023', textureUrl: '/assets/images/dice-face-2.svg', href: '/graffiti' },
     { label: 'Playlist Boom Bap', textureUrl: '/assets/images/dice-face-3.svg', href: '/hiphop' },
-    { label: 'Extrait Litté', textureUrl: '/assets/images/dice-face-4.svg', href: '/litterature' },
+    { label: 'Forêt Num.', textureUrl: '/assets/images/dice-face-4.svg', href: '/environnement' },
     { label: 'Tooling / Code', textureUrl: '/assets/images/dice-face-5.svg', href: '/moi' },
     { label: 'Live / Jam', textureUrl: '/assets/images/dice-face-6.svg', href: '/hiphop' }
   ];

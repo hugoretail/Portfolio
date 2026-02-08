@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { onDestroy, onMount } from 'svelte';
   import gsap from 'gsap';
+  import { onDestroy, onMount } from 'svelte';
 
   type Track = { id: string; title: string; src: string };
 
@@ -22,7 +22,7 @@
     { id: '13', title: 'What They Do — The Roots', src: musicSrc('What They Do - The Roots.mp3') },
   ];
 
-  export let title = 'BOOM BAP DECK';
+  export let title = 'LECTEUR CASSETTE';
   export let tracks: Track[] = DEFAULT_TRACKS;
 
   const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
@@ -480,7 +480,6 @@
 <div bind:this={hostEl} class="deck-host relative">
   <div class="mb-3 flex items-end gap-3">
     <div class="font-display text-xl tracking-wide">{title}</div>
-    <div class="font-hand text-lg text-[color:var(--muted)]">13 sons • bounce au beat</div>
     <div class="ml-auto text-xs font-black uppercase tracking-wide text-[color:var(--acid-yellow)]">
       {fmt(current)} / {fmt(duration)}
     </div>

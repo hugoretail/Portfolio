@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-const INSTAGRAM_URL = 'https://www.instagram.com/';
+const INSTAGRAM_URL = 'https://www.instagram.com/kamen___n/';
 
 type GraffPiece = {
   id: string;
@@ -170,7 +170,7 @@ const pieces: GraffPiece[] = [
             <img id="mImg" alt="" loading="lazy" />
           </div>
           <div class="modal__foot">
-            <div class="modal__hint">Esc pour fermer • Clique la photo pour zoom.</div>
+            <div class="modal__hint">Esc pour fermer</div>
             <button class="tool" value="close" type="submit">Fermer</button>
           </div>
         </div>
@@ -309,7 +309,7 @@ const pieces: GraffPiece[] = [
         const ig = el.getAttribute('data-ig') || '';
         mTitle.textContent = title;
         mSub.textContent = [subtitle, city, year].filter(Boolean).join(' · ');
-        mIG.setAttribute('href', ig || 'https://www.instagram.com/');
+        mIG.setAttribute('href', ig || 'https://www.instagram.com/kamen___n/');
         mImg.src = src || '/assets/images/graffiti-wall.svg';
         mImg.alt = title;
         try {

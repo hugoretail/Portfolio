@@ -20,7 +20,7 @@ npm run dev
 - [src/pages/hiphop.astro](src/pages/hiphop.astro)
 - [src/pages/informatique.astro](src/pages/informatique.astro)
 - [src/pages/ia.astro](src/pages/ia.astro) (redirection)
-- [src/pages/litterature.astro](src/pages/litterature.astro)
+- [src/pages/environnement.astro](src/pages/environnement.astro)
 
 Composants clés :
 
