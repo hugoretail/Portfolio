@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte';
   import gsap from 'gsap';
+  import { withBase } from '../lib/withBase';
 
   export let href = '/frise';
 
@@ -178,7 +179,7 @@
 </script>
 
 <!-- Accessible fallback link (keyboard / screen readers) -->
-<a class="thread-access" href={href}>Ouvrir la frise chronologique</a>
+<a class="thread-access" href={withBase(href)}>Ouvrir la frise chronologique</a>
 
 <!-- Click zone: ONLY the stroke is interactive (rest of the page stays clickable) -->
 <div class="thread-hit fixed inset-0 z-30" aria-hidden="true">

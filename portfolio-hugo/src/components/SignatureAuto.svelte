@@ -1,8 +1,9 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte';
   import gsap from 'gsap';
+  import { withBase } from '../lib/withBase';
 
-  export let src = '/assets/images/signature.svg';
+  export let src = withBase('/assets/images/signature.svg');
   export let stroke = '#FF0000';
   export let duration = 1.8;
 

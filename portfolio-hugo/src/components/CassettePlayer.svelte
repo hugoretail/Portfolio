@@ -1,10 +1,11 @@
 <script lang="ts">
   import gsap from 'gsap';
   import { onDestroy, onMount } from 'svelte';
+  import { withBase } from '../lib/withBase';
 
   type Track = { id: string; title: string; src: string };
 
-  const musicSrc = (filename: string) => `/assets/music/${encodeURIComponent(filename)}`;
+  const musicSrc = (filename: string) => withBase(`/assets/music/${encodeURIComponent(filename)}`);
 
   const DEFAULT_TRACKS: Track[] = [
     { id: '01', title: "Ain't No Half-Steppin — Big Daddy Kane", src: musicSrc("Aint No Half-Steppin - Big Daddy Kane.mp3") },

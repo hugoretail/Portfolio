@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import gsap from 'gsap';
+  import { withBase } from '../lib/withBase';
 
   export let href = '/graffiti';
   export let label = 'Explorer';
@@ -88,7 +89,7 @@
 
   <a
     bind:this={el}
-    href={href}
+    href={withBase(href)}
     class="brutal-border-red relative z-10 inline-flex items-center gap-3 bg-[color:var(--bg)] px-5 py-3 text-base font-black uppercase tracking-widest"
     aria-label={label}
   >

@@ -1,7 +1,14 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { getBaseUrl, withBase } from '../lib/withBase';
+
+const baseUrl = getBaseUrl();
+const basePrefix = baseUrl === '/' ? '' : baseUrl.slice(0, -1);
 
 const pathname = Astro.url?.pathname ?? '/';
+const pathnameNoBase = basePrefix && pathname.startsWith(basePrefix)
+	? (pathname.slice(basePrefix.length) || '/')
+	: pathname;
 type NavItem = { href: string; label: string };
 const nav: NavItem[] = [
 	{ href: '/', label: 'Accueil' },
@@ -14,8 +21,8 @@ const nav: NavItem[] = [
 ];
 
 function isActive(href: string) {
-	if (href === '/') return pathname === '/';
-	return pathname.startsWith(href);
+	if (href === '/') return pathnameNoBase === '/';
+	return pathnameNoBase.startsWith(href);
 }
 
 const navPositions: Array<{ x: number; y: number; r: number }> = [
@@ -167,7 +174,7 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 						<a
 							data-node={item.href}
 							data-draggable="true"
-							href={item.href}
+								href={withBase(item.href)}
 							class:list={[
 								'node node--nav',
 								(item.href !== '/moi') ? 'node--linkout' : '',

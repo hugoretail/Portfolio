@@ -1,4 +1,6 @@
 ---
+import { withBase } from '../lib/withBase';
+
 const links = [
   { href: '/', label: 'Accueil' },
   { href: '/graffiti', label: 'Graffiti' },
@@ -10,7 +12,7 @@ const links = [
 <nav class="relative z-10 mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-4 pt-6">
   {links.map((l) => (
     <a
-      href={l.href}
+      href={withBase(l.href)}
       class="brutal-border inline-flex bg-black/30 px-3 py-2 text-xs font-black uppercase tracking-widest hover:bg-black/50"
       aria-label={l.label}
     >

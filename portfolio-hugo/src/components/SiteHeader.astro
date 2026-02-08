@@ -1,5 +1,13 @@
 ---
+import { getBaseUrl, withBase } from '../lib/withBase';
+
+const baseUrl = getBaseUrl();
+const basePrefix = baseUrl === '/' ? '' : baseUrl.slice(0, -1);
+
 const pathname = Astro.url?.pathname ?? '/';
+const pathnameNoBase = basePrefix && pathname.startsWith(basePrefix)
+  ? (pathname.slice(basePrefix.length) || '/')
+  : pathname;
 
 type NavItem = { href: string; label: string };
 const nav: NavItem[] = [
@@ -13,8 +21,8 @@ const nav: NavItem[] = [
 ];
 
 function isActive(href: string) {
-  if (href === '/') return pathname === '/';
-  return pathname.startsWith(href);
+  if (href === '/') return pathnameNoBase === '/';
+  return pathnameNoBase.startsWith(href);
 }
 ---
 
@@ -28,7 +36,7 @@ function isActive(href: string) {
       <nav class="mt-3 flex flex-wrap gap-2" aria-label="Navigation principale">
         {nav.map((item) => (
           <a
-            href={item.href}
+            href={withBase(item.href)}
             class:list={[
               'brutal-border bg-black/40 px-3 py-2 text-xs font-black uppercase tracking-widest transition',
               'hover:bg-black/60 focus:outline-none focus:ring-2 focus:ring-[color:var(--acid-yellow)]/40',

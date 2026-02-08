@@ -2,6 +2,9 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { readFileSync } from 'node:fs';
 import { withBase } from '../lib/withBase';
+import { getBaseUrl } from '../lib/withBase';
+
+const baseUrl = getBaseUrl();
 
 type ProjectData = {
   id: string;
@@ -649,7 +652,7 @@ const nodes: NodeData[] = [
     ></script>
   </div>
 
-  <script is:inline>
+  <script is:inline define:vars={{ baseUrl }}>
     (() => {
       const page = document.getElementById('nnPage');
       const stage = document.getElementById('nnStage');
@@ -709,7 +712,7 @@ const nodes: NodeData[] = [
         head.className = 'nn-proj';
 
         {
-          const placeholderSrc = '/assets/images/informatique/project-placeholder.svg';
+          const placeholderSrc = `${baseUrl}assets/images/informatique/project-placeholder.svg`;
           const media = document.createElement('div');
           media.className = 'nn-proj__media brutal-border';
 
