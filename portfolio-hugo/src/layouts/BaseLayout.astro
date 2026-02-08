@@ -3,6 +3,7 @@ import '../styles/global.css';
 import RedThread from '../components/RedThread.svelte';
 import SiteHeader from '../components/SiteHeader.astro';
 import BrutalAnimatedBackground from '../components/BrutalAnimatedBackground.svelte';
+import { withBase } from '../lib/withBase';
 
 type Props = {
   title?: string;
@@ -21,6 +22,13 @@ const {
   showAnimatedBackground = true,
   backgroundTint = 'fire'
 } = Astro.props;
+
+const baseImages = {
+  graffitiWall: withBase('/assets/images/graffiti-wall.svg'),
+  natureLoops: withBase('/assets/images/nature-loops.svg'),
+  signature: withBase('/assets/images/signature.svg'),
+  graffitiTexture: withBase('/assets/images/graffiti-texture.svg'),
+};
 ---
 <!doctype html>
 <html lang="fr">
@@ -30,7 +38,7 @@ const {
     <meta name="description" content={description} />
     <title>{title}</title>
 
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -39,25 +47,28 @@ const {
       rel="stylesheet"
     />
 
-    <link rel="preload" as="image" href="/assets/images/graffiti-wall.svg" />
-    <link rel="preload" as="image" href="/assets/images/nature-loops.svg" />
-    <link rel="preload" as="image" href="/assets/images/signature.svg" />
-    <link rel="preload" as="image" href="/assets/images/dice-face-1.svg" />
-    <link rel="preload" as="image" href="/assets/images/dice-face-2.svg" />
-    <link rel="preload" as="image" href="/assets/images/dice-face-3.svg" />
-    <link rel="preload" as="image" href="/assets/images/dice-face-4.svg" />
-    <link rel="preload" as="image" href="/assets/images/dice-face-5.svg" />
-    <link rel="preload" as="image" href="/assets/images/dice-face-6.svg" />
-    <link rel="preload" as="image" href="/assets/images/dice-bump-1.svg" />
-    <link rel="preload" as="image" href="/assets/images/dice-bump-2.svg" />
-    <link rel="preload" as="image" href="/assets/images/dice-bump-3.svg" />
-    <link rel="preload" as="image" href="/assets/images/dice-bump-4.svg" />
-    <link rel="preload" as="image" href="/assets/images/dice-bump-5.svg" />
-    <link rel="preload" as="image" href="/assets/images/dice-bump-6.svg" />
+    <link rel="preload" as="image" href={baseImages.graffitiWall} />
+    <link rel="preload" as="image" href={baseImages.natureLoops} />
+    <link rel="preload" as="image" href={baseImages.signature} />
+    <link rel="preload" as="image" href={withBase('/assets/images/dice-face-1.svg')} />
+    <link rel="preload" as="image" href={withBase('/assets/images/dice-face-2.svg')} />
+    <link rel="preload" as="image" href={withBase('/assets/images/dice-face-3.svg')} />
+    <link rel="preload" as="image" href={withBase('/assets/images/dice-face-4.svg')} />
+    <link rel="preload" as="image" href={withBase('/assets/images/dice-face-5.svg')} />
+    <link rel="preload" as="image" href={withBase('/assets/images/dice-face-6.svg')} />
+    <link rel="preload" as="image" href={withBase('/assets/images/dice-bump-1.svg')} />
+    <link rel="preload" as="image" href={withBase('/assets/images/dice-bump-2.svg')} />
+    <link rel="preload" as="image" href={withBase('/assets/images/dice-bump-3.svg')} />
+    <link rel="preload" as="image" href={withBase('/assets/images/dice-bump-4.svg')} />
+    <link rel="preload" as="image" href={withBase('/assets/images/dice-bump-5.svg')} />
+    <link rel="preload" as="image" href={withBase('/assets/images/dice-bump-6.svg')} />
   </head>
-  <body class={`min-h-screen bg-[color:var(--bg)] text-[color:var(--fg)] ${showAnimatedBackground ? 'has-animated-bg' : ''}`}>
+  <body
+    style={`--img-graffiti-wall: url('${baseImages.graffitiWall}'); --img-nature-loops: url('${baseImages.natureLoops}'); --img-graffiti-texture: url('${baseImages.graffitiTexture}');`}
+    class={`min-h-screen bg-[color:var(--bg)] text-[color:var(--fg)] ${showAnimatedBackground ? 'has-animated-bg' : ''}`}
+  >
     {showAnimatedBackground ? <BrutalAnimatedBackground client:only="svelte" tint={backgroundTint} /> : null}
-    {showThread ? <RedThread client:load href="/frise" /> : null}
+    {showThread ? <RedThread client:load href={withBase('/frise')} /> : null}
 
     {showHeaderNav ? <SiteHeader /> : null}
 

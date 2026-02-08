@@ -1,5 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { getBaseUrl, withBase } from '../lib/withBase';
+
+const baseUrl = getBaseUrl();
 
 type NodeData = {
   id: string;
@@ -270,15 +273,18 @@ const edges = nodes
     <div class="paper-grain" aria-hidden="true"></div>
     <div class="noise-overlay" aria-hidden="true"></div>
 
-    <a class="bb-backbtn brutal-border" href="/moi" aria-label="Retour à /moi" title="Retour">
+    <a class="bb-backbtn brutal-border" href={withBase('/moi')} aria-label="Retour à /moi" title="Retour">
       <span aria-hidden="true">←</span>
     </a>
 
-    <script is:inline>
+    <script is:inline define:vars={{ baseUrl }}>
       (() => {
         // Keep the old typo route working, but redirect to the correct page.
         try {
-          if (window.location?.pathname === '/informaitque') window.location.replace('/informatique');
+          const p = window.location?.pathname;
+          if (p === `${baseUrl}informaitque` || p === '/informaitque') {
+            window.location.replace(`${baseUrl}informatique`);
+          }
         } catch {
           // ignore
         }

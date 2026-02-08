@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import CassettePlayer from '../components/CassettePlayer.svelte';
 import QRCode from '../components/QRCode.svelte';
 import BrutalAnimatedBackground from '../components/BrutalAnimatedBackground.svelte';
+import { withBase } from '../lib/withBase';
 
 const PLAYLIST_URL = 'https://music.youtube.com/playlist?list=PLyMcm67aKG0ZoMSzRv8IX9B8Q0q_g7Nnp&si=FjbUm6wr0smFvaZq';
 ---
@@ -19,7 +20,7 @@ const PLAYLIST_URL = 'https://music.youtube.com/playlist?list=PLyMcm67aKG0ZoMSzR
       <BrutalAnimatedBackground client:load density={10} tint="fire" cycleSeconds={22} />
     </div>
 
-    <a class="bb-backbtn brutal-border" href="/moi" aria-label="Retour à /moi" title="Retour">
+    <a class="bb-backbtn brutal-border" href={withBase('/moi')} aria-label="Retour à /moi" title="Retour">
       <span aria-hidden="true">←</span>
     </a>
 

@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { withBase } from '../lib/withBase';
 ---
 
 <BaseLayout title="Hugo — Environnement" description="Page en construction.">
@@ -10,7 +11,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <div class="noise-overlay" aria-hidden="true"></div>
     <div class="river-vignette" aria-hidden="true"></div>
 
-    <a class="bb-backbtn" href="/moi" aria-label="Retour à Moi">←</a>
+    <a class="bb-backbtn" href={withBase('/moi')} aria-label="Retour à Moi">←</a>
 
     <div class="relative z-10 px-4 py-14">
       <section class="wip" aria-label="Work In Progress">

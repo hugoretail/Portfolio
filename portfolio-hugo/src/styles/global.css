@@ -36,7 +36,7 @@ body {
 
 .bg-graffiti {
 	background-image:
-		url('/assets/images/graffiti-wall.svg'),
+		var(--img-graffiti-wall),
 		radial-gradient(circle at 18% 22%, rgba(255, 0, 0, 0.07), transparent 46%),
 		radial-gradient(circle at 76% 78%, rgba(246, 246, 246, 0.06), transparent 52%),
 		repeating-linear-gradient(90deg, rgba(246, 246, 246, 0.03) 0 1px, transparent 1px 140px);
@@ -60,7 +60,7 @@ body {
 
 .bg-nature {
 	background-image:
-		url('/assets/images/nature-loops.svg'),
+		var(--img-nature-loops),
 		radial-gradient(circle at 20% 70%, rgba(25, 255, 122, 0.05), transparent 55%),
 		radial-gradient(circle at 80% 30%, rgba(10, 127, 59, 0.04), transparent 60%);
 	background-repeat: no-repeat;

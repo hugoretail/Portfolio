@@ -1,7 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { getBaseUrl, withBase } from '../lib/withBase';
 
-const to = '/environnement';
+const baseUrl = getBaseUrl();
+const to = withBase('/environnement');
 ---
 
 <BaseLayout title="Redirect — Environnement" description="Redirection vers /environnement.">
@@ -22,8 +24,8 @@ const to = '/environnement';
     </div>
 
     <meta http-equiv="refresh" content={`0; url=${to}`} />
-    <script is:inline>
-      window.location.replace('/environnement');
+    <script is:inline define:vars={{ baseUrl }}>
+      window.location.replace(`${baseUrl}environnement`);
     </script>
   </main>
 </BaseLayout>

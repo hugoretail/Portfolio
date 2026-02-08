@@ -1,7 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { withBase } from '../lib/withBase';
 
 const INSTAGRAM_URL = 'https://www.instagram.com/kamen___n/';
+
+const fallbackImg = withBase('/assets/images/graffiti-wall.svg');
 
 type GraffPiece = {
   id: string;
@@ -20,63 +23,63 @@ const pieces: GraffPiece[] = [
     title: 'Rève Un Ours !',
     year: '2025',
     city: 'Biganos',
-    src: '/assets/images/graffiti/kamen1.JPG'
+    src: withBase('/assets/images/graffiti/kamen1.JPG')
   },
   {
     id: 'fresque-2',
     title: 'A la maison',
     year: '2025',
     city: 'Gujan-Mestras',
-    src: '/assets/images/graffiti/kamen5.JPG'
+    src: withBase('/assets/images/graffiti/kamen5.JPG')
   },
   {
     id: 'fresque-3',
     title: 'Campulsations',
     year: '2025',
     city: 'Pessac',
-    src: '/assets/images/graffiti/kamen3.JPG'
+    src: withBase('/assets/images/graffiti/kamen3.JPG')
   },
   {
     id: 'fresque-4',
     title: 'Le plus puissant',
     year: '2025',
     city: 'Pessac',
-    src: '/assets/images/graffiti/mutin1.JPG'
+    src: withBase('/assets/images/graffiti/mutin1.JPG')
   },
   {
     id: 'fresque-5',
     title: 'Schtroumpfs',
     year: '2025',
     city: 'Biganos',
-    src: '/assets/images/graffiti/mutin2.JPG'
+    src: withBase('/assets/images/graffiti/mutin2.JPG')
   },
   {
     id: 'fresque-6',
     title: 'Rooooule',
     year: '2025',
     city: 'Pessac',
-    src: '/assets/images/graffiti/kamen4.JPG'
+    src: withBase('/assets/images/graffiti/kamen4.JPG')
   },
   {
     id: 'fresque-7',
     title: 'Lums Jaune',
     year: '2025',
     city: 'Pessac',
-    src: '/assets/images/graffiti/mutin4.JPG'
+    src: withBase('/assets/images/graffiti/mutin4.JPG')
   },
   {
     id: 'fresque-8',
     title: 'Take A Look',
     year: '2025',
     city: 'Pessac',
-    src: '/assets/images/graffiti/mutin3.JPG'
+    src: withBase('/assets/images/graffiti/mutin3.JPG')
   },
   {
     id: 'fresque-9',
     title: 'Violette',
     year: '2023',
     city: 'Gujan-Mestras',
-    src: '/assets/images/graffiti/kamen2.JPG'
+    src: withBase('/assets/images/graffiti/kamen2.JPG')
   }
 ];
 ---
@@ -90,7 +93,7 @@ const pieces: GraffPiece[] = [
     <div class="graffiti-wallpaper" aria-hidden="true"></div>
     <div id="torch" class="torch" aria-hidden="true"></div>
 
-    <a class="bb-backbtn brutal-border" href="/moi" aria-label="Retour à /moi" title="Retour">
+    <a class="bb-backbtn brutal-border" href={withBase('/moi')} aria-label="Retour à /moi" title="Retour">
       <span aria-hidden="true">←</span>
     </a>
 
@@ -178,7 +181,7 @@ const pieces: GraffPiece[] = [
     </dialog>
   </div>
 
-  <script is:inline>
+  <script is:inline define:vars={{ fallbackImg }}>
     (() => {
       const page = document.getElementById('graffitiPage');
       const book = document.getElementById('bbBook');
@@ -310,7 +313,7 @@ const pieces: GraffPiece[] = [
         mTitle.textContent = title;
         mSub.textContent = [subtitle, city, year].filter(Boolean).join(' · ');
         mIG.setAttribute('href', ig || 'https://www.instagram.com/kamen___n/');
-        mImg.src = src || '/assets/images/graffiti-wall.svg';
+        mImg.src = src || fallbackImg;
         mImg.alt = title;
         try {
           if (typeof modal.showModal === 'function') modal.showModal();
@@ -669,7 +672,7 @@ const pieces: GraffPiece[] = [
       inset: 0;
       pointer-events: none;
       background:
-        url('/assets/images/graffiti-texture.svg') center / cover no-repeat,
+        var(--img-graffiti-texture) center / cover no-repeat,
         radial-gradient(1100px 800px at 12% 22%, rgba(255, 0, 0, 0.09), transparent 62%),
         radial-gradient(900px 780px at 85% 30%, rgba(255, 230, 0, 0.05), transparent 60%),
         radial-gradient(1100px 800px at 68% 84%, rgba(0, 209, 255, 0.05), transparent 65%);
