@@ -1,41 +1,97 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import SiteNav from '../components/SiteNav.astro';
 import CassettePlayer from '../components/CassettePlayer.svelte';
 import QRCode from '../components/QRCode.svelte';
+import BrutalAnimatedBackground from '../components/BrutalAnimatedBackground.svelte';
+
+const PLAYLIST_URL = 'https://music.youtube.com/playlist?list=PLyMcm67aKG0ZoMSzRv8IX9B8Q0q_g7Nnp&si=FjbUm6wr0smFvaZq';
 ---
 
-<BaseLayout title="Hugo — Hip-Hop" description="Boom bap, loops, playlist.">
-  <div class="relative min-h-screen overflow-hidden">
+<BaseLayout title="Hugo — Hip-Hop" description="Boom bap, loops, bounce au beat.">
+  <div id="hiphopPage" class="hiphop-page relative min-h-screen overflow-hidden">
     <div class="absolute inset-0 bg-black" aria-hidden="true"></div>
-    <div class="pointer-events-none absolute inset-0 bg-graffiti opacity-15" aria-hidden="true"></div>
+    <div class="pointer-events-none absolute inset-0 bg-graffiti opacity-20" aria-hidden="true"></div>
     <div class="pointer-events-none absolute inset-0 bg-nature opacity-[0.06]" aria-hidden="true"></div>
     <div class="paper-grain" aria-hidden="true"></div>
     <div class="noise-overlay" aria-hidden="true"></div>
 
-    <SiteNav />
+    <div class="pointer-events-none absolute inset-0 opacity-80" aria-hidden="true">
+      <BrutalAnimatedBackground client:load density={10} tint="fire" cycleSeconds={22} />
+    </div>
 
-    <main class="relative z-10 mx-auto max-w-6xl px-4 py-10">
-      <header class="mb-8">
-        <h1 class="font-display text-6xl md:text-7xl">Hip-Hop</h1>
-        <p class="mt-3 max-w-2xl font-hand text-2xl text-[color:var(--muted)]">
-          Boom bap 90–2000. Des kicks secs. Des samples qui sentent la poussière.
-        </p>
-      </header>
+    <a class="bb-backbtn brutal-border" href="/moi" aria-label="Retour à /moi" title="Retour">
+      <span aria-hidden="true">←</span>
+    </a>
 
-      <div class="grid gap-8 lg:grid-cols-[1.4fr_0.6fr]">
-        <CassettePlayer client:load />
-
-        <div class="brutal-border bg-white/90 p-4 text-black">
-          <div class="text-sm font-black uppercase tracking-widest">QR playlist</div>
-          <p class="mt-2 font-hand text-xl">
-            Scanne → playlist Boom Bap.
-          </p>
-          <div class="mt-4">
-            <QRCode client:load url="LIEN_SPOTIFY_PLAYLIST" />
+    <main class="relative z-10 mx-auto max-w-6xl px-4 pb-16 pt-10">
+      <div id="hiphopVibe" class="hiphop-vibe">
+        <header class="mb-8">
+          <div class="flex flex-wrap items-end gap-4">
+            <h1 class="font-display text-6xl md:text-7xl">Hip-Hop</h1>
           </div>
+          <p class="mt-3 max-w-3xl font-hand text-2xl text-[color:var(--muted)]">
+            Ma vibe old-school ! Sélectionne un son sur la tracklist en bas de la page.
+          </p>
+        </header>
+
+        <div class="grid gap-8 lg:grid-cols-[1.55fr_0.45fr] lg:items-start">
+          <CassettePlayer client:load />
+
+          <aside class="grid gap-6">
+            <div class="brutal-border relative bg-white/90 p-4 text-black">
+              <div class="absolute -left-2 -top-2 brutal-border-red bg-[color:var(--acid-yellow)] px-3 py-2 text-xs font-black uppercase tracking-widest">
+                HIP-HOP PLAYLIST
+              </div>
+              <div class="pt-6">
+                <div class="mt-4">
+                  <QRCode client:load url={PLAYLIST_URL} />
+                </div>
+              </div>
+            </div>
+          </aside>
         </div>
       </div>
     </main>
   </div>
 </BaseLayout>
+
+<style>
+  .hiphop-vibe {
+    will-change: transform;
+    transform: translateZ(0);
+  }
+
+  .bb-backbtn {
+    position: fixed;
+    top: 18px;
+    left: 18px;
+    z-index: 60;
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid rgba(246, 246, 246, 0.45);
+    color: rgba(246, 246, 246, 0.88);
+    font-weight: 900;
+    font-size: 18px;
+    line-height: 1;
+    text-decoration: none;
+    box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.6);
+    transition: background 140ms ease, transform 140ms ease;
+  }
+
+  .bb-backbtn:hover {
+    background: rgba(0, 0, 0, 0.72);
+    transform: translateY(-1px);
+  }
+
+  @media (max-width: 860px) {
+    .bb-backbtn {
+      top: 12px;
+      left: 12px;
+      width: 40px;
+      height: 40px;
+    }
+  }
+</style>

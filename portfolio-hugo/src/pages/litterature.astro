@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import SiteNav from '../components/SiteNav.astro';
 import BookExcerpt from '../components/BookExcerpt.svelte';
 ---
 
@@ -12,7 +11,9 @@ import BookExcerpt from '../components/BookExcerpt.svelte';
     <div class="paper-grain" aria-hidden="true"></div>
     <div class="noise-overlay" aria-hidden="true"></div>
 
-    <SiteNav />
+    <a class="bb-backbtn brutal-border" href="/moi" aria-label="Retour à /moi" title="Retour">
+      <span aria-hidden="true">←</span>
+    </a>
 
     <main class="relative z-10 mx-auto max-w-6xl px-4 py-10">
       <header class="mb-8">
@@ -40,3 +41,39 @@ import BookExcerpt from '../components/BookExcerpt.svelte';
     </main>
   </div>
 </BaseLayout>
+
+<style>
+  .bb-backbtn {
+    position: fixed;
+    top: 18px;
+    left: 18px;
+    z-index: 60;
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid rgba(246, 246, 246, 0.45);
+    color: rgba(246, 246, 246, 0.88);
+    font-weight: 900;
+    font-size: 18px;
+    line-height: 1;
+    text-decoration: none;
+    box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.6);
+    transition: background 140ms ease, transform 140ms ease;
+  }
+
+  .bb-backbtn:hover {
+    background: rgba(0, 0, 0, 0.72);
+    transform: translateY(-1px);
+  }
+
+  @media (max-width: 860px) {
+    .bb-backbtn {
+      top: 12px;
+      left: 12px;
+      width: 40px;
+      height: 40px;
+    }
+  }
+</style>

@@ -18,20 +18,22 @@ npm run dev
 
 [INFORMATIQUE] On va rajouter des logos à la place des noms des technologies. Donc à la place, ce sera au survol du logo que le nom de la techno apparait
 
-Photos des projets à rajouter :
-- [x] https://gitlab-ce.iut.u-bordeaux.fr/hretail/mini-rsa-cryptographie
-- [x] https://gitlab-ce.iut.u-bordeaux.fr/maguidi/sae-courbes-elliptiques
-- [x] https://gitlab-ce.iut.u-bordeaux.fr/hretail/laby-chan
-- [x] https://gitlab-ce.iut.u-bordeaux.fr/hretail/tfr-tournoi-football-robot
-- [x] https://gitlab-ce.iut.u-bordeaux.fr/hretail/stabilisation_etu
-- [x] https://gitlab-ce.iut.u-bordeaux.fr/nabe/sae_geodessin_groupeevanrimonteil
-- [x] https://gitlab-ce.iut.u-bordeaux.fr/hretail/sae-deep-learning
-- [x] https://github.com/hugoretail/Kamen-Bot
-- [x] https://github.com/hugoretail/My-IUT-Skills
-- [x] https://github.com/hugoretail/CoNLL-2003-NER
-- [x] https://github.com/hugoretail/Twitter-Sentiment-Analysis
-- [x] https://github.com/hugoretail/Super-Kamen-Bot
-- [x] https://github.com/hugoretail/Eco-Presents
-- [x] https://github.com/hugoretail/Portfolio-Experiments
-- [x] https://github.com/hugoretail/D2L-Tutorial
-- [ ] https://github.com/hugoretail/Portfolio
+[HIP-HOP] Refonte totale de la page : un lecteur cassette sur lequel on peut cliquer les boutons. Le but qu'on y a mis une cassette dedans qui contient une douzaine de sons, et l'utilisateur peut utiliser le lecteur pour jouer les sons (ou les pauser, skip, etc). Lorsqu'un son joue, on veut que la page aussi soit animée : des effets doivent être joués, les éléments bougent, etc... Pour faire ça, tu peux utiliser des librairies ou le coder toi-même. Cela dépend juste de si les performances seront bonnes et si le rendu sera propre. Rend les effets vraiment super beaux et détaillés.
+
+[HIP-HOP] Mettre à jour le QR Code pour qu'il renvoie vers la playlist Youtube Music : https://music.youtube.com/playlist?list=PLyMcm67aKG0ZoMSzRv8IX9B8Q0q_g7Nnp&si=FjbUm6wr0smFvaZq
+
+## SONGS TO DOWNLOAD
+
+- https://music.youtube.com/watch?v=ijYcnszH0Fk&si=r0teSdU0PB3CcIIo
+- https://music.youtube.com/watch?v=zAuCbjLviJY&si=bRr23b1piZYnkHKf
+- https://music.youtube.com/watch?v=xqgJfFbOKnU&si=VABoUUsWwl7bE6jm
+- https://music.youtube.com/watch?v=Vy9gZIFImNg&si=FckwHFPb_pkFEUDX
+- https://music.youtube.com/watch?v=14H2VEugN4s&si=BavniYr5FY0NTGOp
+- https://music.youtube.com/watch?v=0yn8WTRghDo&si=NUunHNSOAb_iffXs
+- https://music.youtube.com/watch?v=e-EJzhsqMBA&si=paMZlZX1LBNouEq6
+- https://music.youtube.com/watch?v=U5Tp8aEmkYk&si=uBxI27fjiJ6-tiBd
+- https://music.youtube.com/watch?v=_Epx5FMQP7c&si=f5a1Vd3Uxg8s3vyY
+- https://music.youtube.com/watch?v=GxlmSj_cKSs&si=QvCecIG3TG3qO5yZ
+- https://music.youtube.com/watch?v=jBknsqfFERE&si=MEPPM-R5fA7H3DvS
+- https://music.youtube.com/watch?v=nqPlF5Mn32M&si=k_1CNvTtXQA0TCkD
+- https://music.youtube.com/watch?v=EK8-EOvY8kY&si=pSmq9QwBKGwMl3cp
