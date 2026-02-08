@@ -192,7 +192,7 @@ const safeReadProjectsJson = (): ProjectData[] => {
           keep,
           improve,
           href: href || undefined,
-          image: image || undefined,
+          image: image ? withBase(image) : undefined,
           tags
         } satisfies ProjectData;
       })
@@ -271,7 +271,7 @@ const parseProjects = (md: string): ProjectData[] => {
       const v = kv[2].trim();
       if (k.startsWith('dur')) cur.duration = v;
       else if (k.startsWith('desc')) cur.description = v;
-      else if (k === 'image') cur.image = v;
+      else if (k === 'image') cur.image = withBase(v);
       else if (k === 'lien' || k === 'repo') cur.href = v;
       else if (k.startsWith('label') || k.startsWith('tag')) {
         const extra = v

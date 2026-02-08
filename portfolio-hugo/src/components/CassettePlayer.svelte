@@ -685,7 +685,7 @@
       {#each tracks as t, i (t.id)}
         <button
           type="button"
-          class={`tracknote__item ${i === currentIndex ? 'is-active' : ''}`}
+          class={`tracknote__item ${i === currentIndex ? '' : ''}`}
           on:click={() => {
             setTrack(i);
             resumeAndPlay();
