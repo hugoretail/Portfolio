@@ -124,7 +124,7 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 		<div class="paper-grain" aria-hidden="true"></div>
 		<div class="noise-overlay" aria-hidden="true"></div>
 		<div class="moi-strata" aria-hidden="true"></div>
-		<div id="sprayLayer" class="spray-layer" aria-hidden="true"></div>
+
 
 		<!-- Typography shards (bigger / more disrespectful) -->
 		<div class="pointer-events-none absolute left-[-10vw] top-[4vh] rotate-[-10deg] font-display text-[24vw] leading-none text-[color:var(--fg)] opacity-[0.05]" aria-hidden="true">
@@ -150,7 +150,7 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 				Visitez les pages <span class="text-[color:var(--red-thread)]">jaunes</span> !
 			</p>
 			<p class="moi-help">
-				<span class="help-chip">Jaune</span> = pages visitables · <span class="help-chip help-chip--note">Post-it</span> = notes · Drag pour bouger.
+				<span class="help-chip">Jaune</span> = pages visitables · <span class="help-chip help-chip--note">Post-it</span> = notes.
 			</p>
 		</header>
 
@@ -173,7 +173,6 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 						// eslint-disable-next-line astro/no-set-html-directive
 						<a
 							data-node={item.href}
-							data-draggable="true"
 								href={withBase(item.href)}
 							class:list={[
 								'node node--nav',
@@ -194,7 +193,6 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 					<section
 						data-piece={p.id}
 						data-node={p.kind === 'note' ? `note:${p.forKey}` : p.id}
-						data-draggable="true"
 						tabindex="0"
 						class:list={[`node node--${p.kind}`]}
 						style={`--x:${p.x}; --y:${p.y}; --r:${p.r}deg;`}
@@ -252,9 +250,7 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 			const board = document.getElementById('moiBoard');
 			const wiresSvg = document.getElementById('moiWires');
 			const wireGroup = document.getElementById('wirePaths');
-			const sprayLayer = document.getElementById('sprayLayer');
 			if (!page || !board || !wiresSvg || !wireGroup) return;
-			const STORAGE_KEY = 'moi.board.v4';
 
 			const nodes = Array.from(board.querySelectorAll('[data-node]'));
 			const getCenter = (el) => {
@@ -279,38 +275,6 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 
 			const byKey = new Map();
 			nodes.forEach((el) => byKey.set(el.getAttribute('data-node'), el));
-
-			const readSaved = () => {
-				try {
-					const raw = window.localStorage.getItem(STORAGE_KEY);
-					if (!raw) return {};
-					return JSON.parse(raw);
-				} catch {
-					return {};
-				}
-			};
-
-			const writeSaved = (obj) => {
-				try {
-					window.localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
-				} catch {
-					// ignore
-				}
-			};
-
-			const applyOffsetsFromStorage = () => {
-				const saved = readSaved();
-				nodes.forEach((el) => {
-					const key = el.getAttribute('data-node');
-					const o = saved?.[key];
-					const dx = Number.isFinite(o?.dx) ? o.dx : 0;
-					const dy = Number.isFinite(o?.dy) ? o.dy : 0;
-					el.style.setProperty('--dx', `${dx}px`);
-					el.style.setProperty('--dy', `${dy}px`);
-				});
-			};
-
-			applyOffsetsFromStorage();
 
 			// Pre-create wire paths once, then only update geometry (much cheaper).
 			const paths = edges.map(([a, b], i) => {
@@ -387,12 +351,6 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 				raf = window.requestAnimationFrame(render);
 			};
 
-			const setScrollVar = () => {
-				if (prefersReducedMotion) return;
-				const s = Math.max(-40, Math.min(140, (window.scrollY || 0) * 0.08));
-				board.style.setProperty('--scroll', String(s));
-			};
-
 			// Highlight connected wires/nodes on hover/focus
 			const setHot = (key) => {
 				const hotKeys = new Set([key]);
@@ -436,152 +394,6 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 				el.addEventListener('focusout', clearHot);
 			});
 
-			// Dragging (persisted per node)
-			const DRAG_THRESHOLD = 6;
-			let drag = null;
-			let dragIntent = null;
-			let suppressClickUntil = 0;
-
-			// Cancel native click navigation right after a drag.
-			board.addEventListener('click', (e) => {
-				if (performance.now() < suppressClickUntil) {
-					e.preventDefault();
-					e.stopPropagation();
-				}
-			}, true);
-
-			const startDrag = (el, e) => {
-				const key = el.getAttribute('data-node');
-				if (!key) return;
-				const saved = readSaved();
-				const cur = saved?.[key] ?? {};
-				const dx0 = Number.isFinite(cur.dx) ? cur.dx : 0;
-				const dy0 = Number.isFinite(cur.dy) ? cur.dy : 0;
-				drag = { el, key, x0: e.clientX, y0: e.clientY, dx0, dy0 };
-				el.classList.add('is-dragging');
-				try { el.setPointerCapture?.(e.pointerId); } catch {}
-			};
-
-			const moveDrag = (e) => {
-				if (!drag) return;
-				const dx = drag.dx0 + (e.clientX - drag.x0);
-				const dy = drag.dy0 + (e.clientY - drag.y0);
-				drag.el.style.setProperty('--dx', `${dx}px`);
-				drag.el.style.setProperty('--dy', `${dy}px`);
-				requestRender();
-			};
-
-			const endDrag = () => {
-				if (!drag) return;
-				drag.el.classList.remove('is-dragging');
-				const key = drag.key;
-				const style = getComputedStyle(drag.el);
-				const dx = parseFloat(style.getPropertyValue('--dx')) || 0;
-				const dy = parseFloat(style.getPropertyValue('--dy')) || 0;
-				const saved = readSaved();
-				saved[key] = { dx, dy };
-				writeSaved(saved);
-				drag = null;
-				requestRender();
-			};
-
-			board.addEventListener('pointerdown', (e) => {
-				if (e.button !== 0) return;
-				if (e.ctrlKey || e.metaKey || e.shiftKey) return;
-				const target = e.target;
-				const el = target?.closest?.('[data-node]');
-				if (!el || !board.contains(el)) return;
-				const dragMode = el.getAttribute('data-draggable');
-				if (!dragMode) return;
-
-				// Block default click so click/drag is consistent and we can drag nav without Alt.
-				e.preventDefault();
-				const a = target?.closest?.('a[href]');
-				dragIntent = {
-					el,
-					x0: e.clientX,
-					y0: e.clientY,
-					pointerId: e.pointerId,
-					href: a?.getAttribute?.('href') ?? null
-				};
-				try { el.setPointerCapture?.(e.pointerId); } catch {}
-			});
-
-			board.addEventListener('pointermove', (e) => {
-				if (drag) return moveDrag(e);
-				if (!dragIntent) return;
-				const dist = Math.hypot(e.clientX - dragIntent.x0, e.clientY - dragIntent.y0);
-				if (dist < DRAG_THRESHOLD) return;
-				e.preventDefault();
-				suppressClickUntil = performance.now() + 600;
-				startDrag(dragIntent.el, {
-					clientX: dragIntent.x0,
-					clientY: dragIntent.y0,
-					pointerId: dragIntent.pointerId
-				});
-				moveDrag(e);
-			});
-
-			const endPointer = (e) => {
-				if (drag) {
-					suppressClickUntil = performance.now() + 600;
-					endDrag();
-					dragIntent = null;
-					return;
-				}
-				if (!dragIntent) return;
-				const href = dragIntent.href;
-				const moved = Math.hypot(e.clientX - dragIntent.x0, e.clientY - dragIntent.y0) >= DRAG_THRESHOLD;
-				dragIntent = null;
-				if (!moved && href) window.location.assign(href);
-			};
-
-			board.addEventListener('pointerup', endPointer);
-			board.addEventListener('pointercancel', () => {
-				suppressClickUntil = performance.now() + 600;
-				dragIntent = null;
-				endDrag();
-			});
-
-			// Keyboard nudge (focused node)
-			board.addEventListener('keydown', (e) => {
-				const el = e.target?.closest?.('[data-node]');
-				if (!el || !board.contains(el)) return;
-				const key = e.key;
-				if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) return;
-				e.preventDefault();
-				const step = e.shiftKey ? 12 : 3;
-				const style = getComputedStyle(el);
-				let dx = parseFloat(style.getPropertyValue('--dx')) || 0;
-				let dy = parseFloat(style.getPropertyValue('--dy')) || 0;
-				if (key === 'ArrowLeft') dx -= step;
-				if (key === 'ArrowRight') dx += step;
-				if (key === 'ArrowUp') dy -= step;
-				if (key === 'ArrowDown') dy += step;
-				el.style.setProperty('--dx', `${dx}px`);
-				el.style.setProperty('--dy', `${dy}px`);
-				const saved = readSaved();
-				saved[el.getAttribute('data-node')] = { dx, dy };
-				writeSaved(saved);
-				requestRender();
-			});
-
-			// Spray cursor trail (lightweight)
-			if (!prefersReducedMotion && sprayLayer) {
-				let last = 0;
-				window.addEventListener('pointermove', (e) => {
-					const now = performance.now();
-					if (now - last < 60) return;
-					last = now;
-					const dot = document.createElement('span');
-					dot.className = 'spray-dot';
-					dot.style.left = `${e.clientX}px`;
-					dot.style.top = `${e.clientY}px`;
-					dot.style.transform = `translate(-50%,-50%) rotate(${(Math.random() * 50 - 25).toFixed(1)}deg)`;
-					sprayLayer.appendChild(dot);
-					window.setTimeout(() => dot.remove(), 900);
-				}, { passive: true });
-			}
 
 			// Konami easter egg: 8-bit mode
 			const konami = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
@@ -603,12 +415,7 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 			});
 
 			window.addEventListener('resize', requestRender);
-			window.addEventListener('scroll', () => {
-				setScrollVar();
-				requestRender();
-			}, { passive: true });
-
-			setScrollVar();
+			document.fonts?.ready?.then?.(requestRender);
 			requestRender();
 		})();
 	</script>
@@ -617,30 +424,6 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 		.moi-page {
 			--paper: rgba(0, 0, 0, 0.55);
 			--paper2: rgba(0, 0, 0, 0.42);
-		}
-
-		.spray-layer {
-			position: fixed;
-			inset: 0;
-			pointer-events: none;
-			z-index: 18;
-			mix-blend-mode: screen;
-		}
-
-		.spray-dot {
-			position: absolute;
-			width: 14px;
-			height: 14px;
-			border-radius: 999px;
-			background: radial-gradient(circle at 35% 35%, rgba(255, 0, 0, 0.55), rgba(255, 0, 0, 0.0) 68%);
-			filter: blur(0.2px);
-			opacity: 0.9;
-			animation: sprayFade 0.9s ease-out forwards;
-		}
-
-		@keyframes sprayFade {
-			0% { opacity: 0.9; transform: translate(-50%,-50%) scale(1); }
-			100% { opacity: 0; transform: translate(-50%,-50%) scale(1.9); }
 		}
 
 		.moi-strata {
@@ -716,9 +499,8 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 			position: absolute;
 			left: calc(var(--x) * 1%);
 			top: calc(var(--y) * 1%);
-			touch-action: none;
 			cursor: pointer;
-			transform: translate(-50%, -50%) rotate(var(--r, 0deg)) translateY(calc(var(--scroll, 0) * 1px)) translate(var(--dx, 0px), var(--dy, 0px));
+			transform: translate(-50%, -50%) rotate(var(--r, 0deg));
 			transform-origin: center;
 			max-width: min(520px, 86vw);
 			color: var(--fg);
@@ -727,16 +509,11 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 			box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.55);
 			padding: 14px 14px 12px;
 			clip-path: polygon(2% 2%, 98% 0, 100% 86%, 94% 100%, 2% 98%, 0 18%);
-			backdrop-filter: blur(2px);
+			backdrop-filter: none;
 		}
 
 		.node:hover {
 			filter: drop-shadow(0 0 12px rgba(255, 0, 0, 0.22));
-		}
-
-		.is-dragging {
-			cursor: grabbing;
-			z-index: 60;
 		}
 
 		.is-hot {
@@ -1084,14 +861,13 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 		}
 
 		@keyframes moiGlitchJitter {
-			0% { transform: translate(-50%, -50%) rotate(var(--r, 0deg)) translateY(calc(var(--scroll, 0) * 1px)) translate(var(--dx, 0px), var(--dy, 0px)) translate(0, 0); }
-			50% { transform: translate(-50%, -50%) rotate(var(--r, 0deg)) translateY(calc(var(--scroll, 0) * 1px)) translate(var(--dx, 0px), var(--dy, 0px)) translate(1px, -1px); }
-			100% { transform: translate(-50%, -50%) rotate(var(--r, 0deg)) translateY(calc(var(--scroll, 0) * 1px)) translate(var(--dx, 0px), var(--dy, 0px)) translate(-1px, 1px); }
+			0% { transform: translate(-50%, -50%) rotate(var(--r, 0deg)) translate(0, 0); }
+			50% { transform: translate(-50%, -50%) rotate(var(--r, 0deg)) translate(1px, -1px); }
+			100% { transform: translate(-50%, -50%) rotate(var(--r, 0deg)) translate(-1px, 1px); }
 		}
 
 		@media (prefers-reduced-motion: reduce) {
-			.node { transform: translate(-50%, -50%) rotate(var(--r, 0deg)) translate(var(--dx, 0px), var(--dy, 0px)); }
-			.spray-layer { display: none; }
+			.node { transform: translate(-50%, -50%) rotate(var(--r, 0deg)); }
 			.moi-glitch .node { animation: none; }
 		}
 	</style>
