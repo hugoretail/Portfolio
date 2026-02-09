@@ -10,6 +10,11 @@
 	--leaf: #19ff7a;
 	--moss: #0a7f3b;
 	--red-thread: #ff0000;
+
+	--font-body: 'Special Gothic', 'Manrope', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+	--font-ui: 'Manrope', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+	--font-display: 'Acme', 'Manrope', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+	--font-secret: 'Atomic Age', 'Acme', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
 html,
@@ -17,6 +22,7 @@ body {
 	height: 100%;
 	background: var(--bg);
 	color: var(--fg);
+	font-family: var(--font-body);
 }
 
 ::selection {
@@ -80,12 +86,24 @@ body {
 }
 
 .font-display {
-	font-family: 'Bebas Neue', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+	font-family: var(--font-display);
 	letter-spacing: 0.02em;
 }
 
 .font-hand {
-	font-family: 'Patrick Hand', ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+	font-family: var(--font-ui);
+}
+
+.font-body {
+	font-family: var(--font-body);
+}
+
+.font-ui {
+	font-family: var(--font-ui);
+}
+
+.font-secret {
+	font-family: var(--font-secret);
 }
 
 .noise-overlay {

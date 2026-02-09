@@ -14,6 +14,8 @@ npm run dev
 
 ## TODO :
 
+[ALL] Changer la police (Comic Sans MS c'est pas beau du tout)
+
 [GRAFFITI] Bruit de page qui se tourne lors du clic
 
 [ENVIRONNEMENT] TODO

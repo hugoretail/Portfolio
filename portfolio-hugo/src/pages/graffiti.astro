@@ -85,6 +85,10 @@ const pieces: GraffPiece[] = [
 ---
 
 <BaseLayout title="Hugo — Graffiti" description="Blackbook interactif (flashlight + pages à tourner).">
+  <Fragment slot="head">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Patrick+Hand&display=swap" rel="stylesheet" />
+  </Fragment>
+
   <div id="graffitiPage" class="graffiti-page relative min-h-screen overflow-hidden">
     <div class="pointer-events-none absolute inset-0 bg-graffiti opacity-25" aria-hidden="true"></div>
     <div class="pointer-events-none absolute inset-0 bg-nature opacity-[0.08]" aria-hidden="true"></div>
@@ -656,6 +660,9 @@ const pieces: GraffPiece[] = [
       --accent: #ff0000;
       --neon: #ffe600;
       --steel: rgba(246,246,246,0.65);
+      /* Keep the original blackbook vibe on this page only */
+      --font-display: 'Bebas Neue', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      --font-ui: 'Patrick Hand', ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       /* wider flashlight */
       --torch-hole: 680px;
       --torch-soft: 1480px;
@@ -1041,7 +1048,7 @@ const pieces: GraffPiece[] = [
         radial-gradient(2px 2px at 68% 76%, rgba(0,0,0,0.08), transparent 62%);
     }
     .blank__mark {
-      font-family: var(--font-display, 'Bebas Neue', system-ui, sans-serif);
+      font-family: var(--font-display, 'Acme', system-ui, sans-serif);
       font-size: clamp(64px, 7vw, 120px);
       letter-spacing: 0.08em;
       text-transform: uppercase;
@@ -1101,7 +1108,7 @@ const pieces: GraffPiece[] = [
 
     .sheet__tag {
       margin-top: 4px;
-      font-family: var(--font-display, 'Bebas Neue', system-ui, sans-serif);
+      font-family: var(--font-display, 'Acme', system-ui, sans-serif);
       font-size: clamp(44px, 5.2vw, 72px);
       line-height: 0.92;
       letter-spacing: 0.04em;
@@ -1201,7 +1208,7 @@ const pieces: GraffPiece[] = [
     .modal__x { position: fixed; right: 16px; top: 16px; width: 44px; height: 44px; border: 2px solid var(--fg); background: rgba(0,0,0,0.55); color: var(--fg); font-weight: 900; }
     .modal__head { display: flex; align-items: start; justify-content: space-between; gap: 12px; }
     .modal__kicker { font-size: 10px; letter-spacing: 0.35em; text-transform: uppercase; font-weight: 900; color: rgba(246,246,246,0.65); }
-    .modal__title { font-family: var(--font-display, 'Bebas Neue', system-ui, sans-serif); font-size: 54px; line-height: 1; margin-top: 6px; }
+    .modal__title { font-family: var(--font-display, 'Acme', system-ui, sans-serif); font-size: 54px; line-height: 1; margin-top: 6px; }
     .modal__sub { margin-top: 6px; font-weight: 900; font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: rgba(255,230,0,0.78); }
     .modal__ig {
       margin-top: 8px;
@@ -1273,4 +1280,5 @@ const pieces: GraffPiece[] = [
       .bb-flip { transition: none; }
     }
   </style>
+
 </BaseLayout>

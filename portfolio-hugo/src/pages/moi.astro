@@ -312,21 +312,59 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 
 			applyOffsetsFromStorage();
 
+			// Pre-create wire paths once, then only update geometry (much cheaper).
+			const paths = edges.map(([a, b], i) => {
+				const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+				p.setAttribute('data-a', a);
+				p.setAttribute('data-b', b);
+				p.setAttribute('fill', 'none');
+				p.setAttribute('stroke', i % 3 === 0 ? 'rgba(255,0,0,0.55)' : 'rgba(255,0,0,0.28)');
+				p.setAttribute('stroke-width', i % 4 === 0 ? '2.2' : '1.4');
+				p.setAttribute('stroke-linecap', 'round');
+				p.setAttribute('stroke-linejoin', 'round');
+				p.setAttribute('stroke-dasharray', i % 2 === 0 ? '10 9' : '0');
+				wireGroup.appendChild(p);
+				return p;
+			});
+
 			let raf = null;
+			let lastW = 0;
+			let lastH = 0;
 			const render = () => {
 				raf = null;
 				const boardRect = board.getBoundingClientRect();
 				const w = Math.max(1, boardRect.width);
 				const h = Math.max(1, boardRect.height);
-				wiresSvg.setAttribute('viewBox', `0 0 ${w} ${h}`);
-				while (wireGroup.firstChild) wireGroup.removeChild(wireGroup.firstChild);
+				if (w !== lastW || h !== lastH) {
+					lastW = w;
+					lastH = h;
+					wiresSvg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+				}
+
+				// Cache rects per element for this render.
+				const rectCache = new Map();
+				const getCenterCached = (el) => {
+					let c = rectCache.get(el);
+					if (c) return c;
+					const r = el.getBoundingClientRect();
+					c = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+					rectCache.set(el, c);
+					return c;
+				};
 
 				edges.forEach(([a, b], i) => {
 					const elA = byKey.get(a);
 					const elB = byKey.get(b);
-					if (!elA || !elB) return;
-					const ca = getCenter(elA);
-					const cb = getCenter(elB);
+					const p = paths[i];
+					if (!p) return;
+					if (!elA || !elB) {
+						p.style.display = 'none';
+						return;
+					}
+					p.style.display = '';
+
+					const ca = getCenterCached(elA);
+					const cb = getCenterCached(elB);
 					const ax = ca.x - boardRect.left;
 					const ay = ca.y - boardRect.top;
 					const bx = cb.x - boardRect.left;
@@ -340,17 +378,7 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 					const c2x = ax + dx * 0.75;
 					const c2y = ay + dy * 0.75 + bend * 0.45;
 
-					const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-					p.setAttribute('data-a', a);
-					p.setAttribute('data-b', b);
 					p.setAttribute('d', `M ${ax.toFixed(2)} ${ay.toFixed(2)} C ${c1x.toFixed(2)} ${c1y.toFixed(2)}, ${c2x.toFixed(2)} ${c2y.toFixed(2)}, ${bx.toFixed(2)} ${by.toFixed(2)}`);
-					p.setAttribute('fill', 'none');
-					p.setAttribute('stroke', i % 3 === 0 ? 'rgba(255,0,0,0.55)' : 'rgba(255,0,0,0.28)');
-					p.setAttribute('stroke-width', i % 4 === 0 ? '2.2' : '1.4');
-					p.setAttribute('stroke-linecap', 'round');
-					p.setAttribute('stroke-linejoin', 'round');
-					p.setAttribute('stroke-dasharray', i % 2 === 0 ? '10 9' : '0');
-					wireGroup.appendChild(p);
 				});
 			};
 
@@ -379,7 +407,6 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 					el.classList.toggle('is-hot-main', k === key);
 				});
 
-				const paths = wireGroup.querySelectorAll('path');
 				paths.forEach((p) => {
 					const a = p.getAttribute('data-a');
 					const b = p.getAttribute('data-b');
@@ -393,7 +420,7 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 					el.classList.remove('is-hot');
 					el.classList.remove('is-hot-main');
 				});
-				wireGroup.querySelectorAll('path').forEach((p) => p.classList.remove('wire-hot'));
+				paths.forEach((p) => p.classList.remove('wire-hot'));
 			};
 
 			nodes.forEach((el) => {
@@ -544,7 +571,7 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 				let last = 0;
 				window.addEventListener('pointermove', (e) => {
 					const now = performance.now();
-					if (now - last < 24) return;
+					if (now - last < 60) return;
 					last = now;
 					const dot = document.createElement('span');
 					dot.className = 'spray-dot';
@@ -641,7 +668,7 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 		}
 
 		.moi-h1 {
-			font-family: var(--font-display, 'Bebas Neue', system-ui, sans-serif);
+			font-family: var(--font-display, 'Acme', system-ui, sans-serif);
 			font-weight: 900;
 			letter-spacing: 0.02em;
 			font-size: clamp(44px, 8vw, 90px);
@@ -841,7 +868,7 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 
 		.node__text {
 			margin-top: 10px;
-			font-family: 'Patrick Hand', ui-rounded, system-ui, sans-serif;
+			font-family: var(--font-ui);
 			font-size: clamp(20px, 3vw, 36px);
 			line-height: 1.15;
 			color: var(--fg);
@@ -886,7 +913,7 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 
 		.node__list {
 			margin-top: 10px;
-			font-family: 'Patrick Hand', ui-rounded, system-ui, sans-serif;
+			font-family: var(--font-ui);
 			font-size: 19px;
 			line-height: 1.18;
 			color: rgba(246, 246, 246, 0.88);
@@ -924,7 +951,7 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 		.node__noteText {
 			margin-top: 8px;
 			margin-bottom: 0;
-			font-family: 'Patrick Hand', ui-rounded, system-ui, sans-serif;
+			font-family: var(--font-ui);
 			font-size: 16px;
 			line-height: 1.15;
 			color: rgba(246, 246, 246, 0.84);
@@ -932,7 +959,7 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 
 		.node__quote {
 			margin-top: 12px;
-			font-family: 'Patrick Hand', ui-rounded, system-ui, sans-serif;
+			font-family: var(--font-ui);
 			font-size: 28px;
 			line-height: 1.15;
 		}
@@ -979,11 +1006,18 @@ const pieces: Piece[] = [...piecesCore, ...piecesNotes];
 		}
 
 		.stamp__big {
-			font-family: 'Bebas Neue', system-ui, sans-serif;
+			font-family: var(--font-display);
 			font-size: 52px;
 			letter-spacing: 0.06em;
 			font-weight: 900;
 			line-height: 0.95;
+		}
+
+		/* Hidden mode typography */
+		.moi-8bit .node,
+		.moi-8bit .moi-btn,
+		.moi-8bit .moi-h1 {
+			font-family: var(--font-secret);
 		}
 
 		.stamp__small {
