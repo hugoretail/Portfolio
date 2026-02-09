@@ -50,9 +50,9 @@
       "Paramétrer des logiciels selon des besoins"
     ],
     "tools": [
-      "VMware (Machine virtuelle)",
-      "VS Code (Éditeur)",
-      "Haskell (Langage)"
+      "VMware",
+      "VS Code",
+      "Haskell"
     ],
     "cdc": [
       "Installer une machine virtuelle",
@@ -85,9 +85,9 @@
       "Expliquer simplement"
     ],
     "tools": [
-      "Nextcloud (Suite bureautique)",
-      "NEmu (Émulateur de réseaux)",
-      "Markdown (Langage de balisage)"
+      "Nextcloud",
+      "NEmu",
+      "Markdown"
     ],
     "cdc": [
       "Rédaction d’un tutoriel :",
@@ -120,8 +120,8 @@
       "Appliquer des relations strictes pour maintenir l’intégrité du code"
     ],
     "tools": [
-      "Editeur (type NetBeans)",
-      "UML (Unified Modeling Language)"
+      "Editeur",
+      "UML"
     ],
     "cdc": [
       "Mise à jour d’un jeu de labyrinthe :",
@@ -157,7 +157,7 @@
       "Conjuguer des verbes en japonais :)"
     ],
     "tools": [
-      "HTML, JavaScript, CSS (Langages)"
+      "HTML, JavaScript, CSS"
     ],
     "cdc": [
       "Création d’un site web de conjugaison japonaise :",
@@ -191,9 +191,9 @@
       "Collaborer avec une équipe aux compétences variées"
     ],
     "tools": [
-      "MySQL (Base de données)",
-      "WinDesign (Modélisation)",
-      "PyCharm / Visual Studio (Environnement de développement)"
+      "MySQL",
+      "WinDesign",
+      "PyCharm / Visual Studio"
     ],
     "cdc": [
       "Développement d’un logiciel de visualisation des émissions de CO2 :",
@@ -232,9 +232,9 @@
       "Évaluation des performances d’algorithmes et proposition d’optimisations"
     ],
     "tools": [
-      "Java (Langage)",
-      "GitLab (Versioning)",
-      "Editeur type NetBeans (Environnement)"
+      "Java",
+      "GitLab",
+      "NetBeans"
     ],
     "cdc": [
       "Implémentation d’une structure polyvalente :",
@@ -271,9 +271,9 @@
       "Respect des règles de l’architecture MVC"
     ],
     "tools": [
-      "Python (Langage)",
-      "PyCharm (IDE)",
-      "Qt (Visualisation)"
+      "Python",
+      "PyCharm",
+      "Qt"
     ],
     "cdc": [
       "Appliquer des algorithmes de recherche :",
@@ -311,9 +311,9 @@
       "Gérer la conversion et la manipulation de clés et messages"
     ],
     "tools": [
-      "Python (algorithmes, interface)",
-      "Bash (interface shell)",
-      "Pytest (tests unitaires)"
+      "Python",
+      "Bash",
+      "Pytest"
     ],
     "cdc": [
       "Implémenter les algorithmes Mini-RSA, Diffie-Hellman, signature numérique",
@@ -354,10 +354,10 @@
       "Structurer un projet Python scientifique (modules, tests, documentation)"
     ],
     "tools": [
-      "Python (algorithmes, visualisation)",
-      "Matplotlib (graphiques)",
-      "Pytest (tests)",
-      "LaTeX (rapport scientifique)"
+      "Python",
+      "Matplotlib",
+      "Pytest",
+      "LaTeX"
     ],
     "cdc": [
       "Implémenter les opérations de base sur courbes elliptiques (point, addition, doublement, ECDH)",
@@ -399,10 +399,10 @@
       "Adapter le gameplay à des contraintes pédagogiques et techniques"
     ],
     "tools": [
-      "Unity (moteur de jeu, XR)",
-      "C# (scripts)",
-      "Git (versioning)",
-      "Visual Studio (IDE)"
+      "Unity",
+      "C#",
+      "Git",
+      "Visual Studio"
     ],
     "cdc": [
       "Concevoir un jeu de labyrinthe jouable en réalité virtuelle",
@@ -440,12 +440,12 @@
       "Organiser le travail en équipe (versioning, répartition des tâches)"
     ],
     "tools": [
-      "Symfony (PHP, framework MVC)",
-      "Twig (templates)",
-      "Tailwind CSS (styles)",
-      "PHPUnit (tests PHP)",
-      "Python (tests base de données)",
-      "Git (versioning)"
+      "Symfony",
+      "Twig",
+      "Tailwind CSS",
+      "PHPUnit",
+      "Python",
+      "Git"
     ],
     "cdc": [
       "Développer un site web pour organiser un tournoi de football de robots",
@@ -494,13 +494,13 @@
       "Organiser le travail en équipe (Git, documentation, CI/CD)"
     ],
     "tools": [
-      "Node.js, Express (API backend)",
-      "React, Vite (frontend)",
-      "PostgreSQL (base de données)",
-      "Docker, docker-compose (déploiement)",
-      "Jest (tests)",
-      "Axios (client API)",
-      "Git (versioning)"
+      "Node.js, Express",
+      "React, Vite)",
+      "PostgreSQL",
+      "Docker",
+      "Jest",
+      "Axios",
+      "Git"
     ],
     "cdc": [
       "Permettre le signalement et la gestion des incidents informatiques par les étudiants et administrateurs",
@@ -557,11 +557,10 @@
       "Organiser le travail en équipe (Git, CI/CD, documentation)"
     ],
     "tools": [
-      "Django REST (backend)",
-      "React, Vite, Tailwind CSS (frontend)",
-      "Docker, docker-compose (déploiement)",
-      "Git (versioning)",
-      "PDF export (frontend)"
+      "Django REST",
+      "React, Vite, Tailwind CSS",
+      "Docker",
+      "Git"
     ],
     "cdc": [
       "Permettre le dessin, l’annotation et le partage d’objets géographiques sur une carte interactive",
@@ -614,12 +613,13 @@
       "Organisation et gestion de projet en équipe (Git, documentation, répartition des tâches)"
     ],
     "tools": [
-      "Python (PyTorch, OpenCV, scripts)",
-      "YOLOv11 (détection)",
-      "Label Studio (annotation)",
-      "Streamlit/Gradio (interface de test)",
-      "RealSense D435i (caméra)",
-      "Git (versioning)"
+      "Python",
+      "PyTorch",
+      "YOLOv11",
+      "Label Studio",
+      "Streamlit/Gradio",
+      "RealSense D435i",
+      "Git"
     ],
     "cdc": [
       "Comparer les performances de YOLOv11 et d’un CNN custom pour la détection et la localisation 3D d’objets",
@@ -669,10 +669,10 @@
       "Documenter et structurer un projet Python"
     ],
     "tools": [
-      "Python (langage principal)",
-      "PyQt5, Qt Designer (interface graphique)",
-      "Threading (gestion de l’audio)",
-      "Git (versioning)"
+      "Python",
+      "PyQt5, Qt Designer",
+      "Threading",
+      "Git"
     ],
     "cdc": [
       "Développer un assistant vocal simple avec interface graphique",
@@ -713,11 +713,11 @@
       "Documenter et structurer un projet web"
     ],
     "tools": [
-      "React (SPA, composants)",
-      "Tailwind CSS (styles)",
-      "JSON (données)",
-      "Jest, React Testing Library (tests)",
-      "Git (versioning)"
+      "React",
+      "Tailwind CSS",
+      "JSON",
+      "Jest, React Testing Library",
+      "Git"
     ],
     "cdc": [
       "Permettre la recherche, le filtrage et la visualisation des compétences et ressources de l’IUT",
@@ -760,10 +760,11 @@
       "Travailler en autonomie dans un contexte international (anglais, Japon)"
     ],
     "tools": [
-      "Python (PyTorch, scikit-learn, Transformers)",
-      "Jupyter Notebook (expérimentation)",
-      "Git (versioning)",
-      "CoNLL-2003 (corpus)"
+      "Python",
+      "PyTorch",
+      "Jupyter Notebook",
+      "Git",
+      "CoNLL-2003"
     ],
     "cdc": [
       "Implémenter et comparer plusieurs modèles de NER sur CoNLL-2003",
@@ -805,11 +806,11 @@
       "Automatiser l’évaluation et la reproductibilité (scripts, notebooks)"
     ],
     "tools": [
-      "Python (Transformers, RoBERTa, Flask)",
-      "Bootstrap 5 (interface)",
-      "Matplotlib, charts.js (visualisation)",
-      "Jupyter Notebook (évaluation)",
-      "Git (versioning)"
+      "Python",
+      "Bootstrap 5",
+      "Matplotlib, charts.js",
+      "Jupyter Notebook",
+      "Git"
     ],
     "cdc": [
       "Déployer une application web d’analyse de sentiments avec scoring continu",
@@ -859,13 +860,13 @@
       "Adapter l’UX à la pratique du japonais (UI, prompts, audio)"
     ],
     "tools": [
-      "Python (langage principal)",
-      "Streamlit (web app)",
-      "Ollama (LLM japonais)",
-      "Whisper (speech-to-text)",
-      "TTS (text-to-speech)",
-      "SQLite (base de données)",
-      "Git (versioning)"
+      "Python",
+      "Streamlit",
+      "Ollama",
+      "Whisper",
+      "TTS",
+      "SQLite",
+      "Git"
     ],
     "cdc": [
       "Développer un chatbot vocal japonais avec interface web",
@@ -907,11 +908,12 @@
       "Documenter, auditer et assurer la conformité légale (licences, RGPD)"
     ],
     "tools": [
-      "Next.js, TypeScript (frontend/backend)",
-      "Prisma (ORM)",
-      "PostgreSQL (base de données)",
-      "GitHub Actions (CI/CD)",
-      "Docker (déploiement)"
+      "Next.js",
+      "TypeScript",
+      "Prisma",
+      "PostgreSQL",
+      "GitHub Actions",
+      "Docker"
     ],
     "cdc": [
       "Référencer et recommander des produits/entreprises éco-responsables",
@@ -960,12 +962,11 @@
       "Documenter et itérer sur des idées d’UX/UI"
     ],
     "tools": [
-      "HTML, CSS, JavaScript (base)",
-      "Three.js (3D)",
-      "GSAP (animations)",
-      "GLTFLoader (import modèles)",
-      "Live Server, http-server (dev local)",
-      "Git (versioning)"
+      "HTML, CSS, JavaScript",
+      "Three.js",
+      "GSAP",
+      "GLTFLoader",
+      "Git"
     ],
     "cdc": [
       "Prototyper et tester des idées d’UX/UI et d’animations",
@@ -1006,9 +1007,11 @@
       "Documenter et annoter les expériences pour la révision"
     ],
     "tools": [
-      "Python (NumPy, PyTorch)",
-      "Jupyter Notebook (expérimentation)",
-      "Git (versioning)"
+      "Python",
+      "Numpy",
+      "PyTorch",
+      "Jupyter Notebook",
+      "Git"
     ],
     "cdc": [
       "Étudier et reproduire les chapitres du cours D2L",
@@ -1049,11 +1052,12 @@
       "Mettre en avant l’authenticité et la singularité dans la présentation"
     ],
     "tools": [
-      "Astro (framework statique)",
-      "Svelte (composants dynamiques)",
-      "TypeScript (robustesse)",
-      "CSS, SVG (styles et animations)",
-      "Git (versioning)"
+      "Astro",
+      "Svelte",
+      "TypeScript",
+      "CSS",
+      "SVG",
+      "Git"
     ],
     "cdc": [
       "Créer un portfolio web qui me représente authentiquement",
