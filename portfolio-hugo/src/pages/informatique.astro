@@ -704,6 +704,160 @@ const nodes: NodeData[] = [
         return Number.isFinite(n) ? n : 0;
       };
 
+      const stripParens = (s) => String(s ?? '').replace(/\s*\([^)]*\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
+      const normTech = (x) =>
+        stripParens(x)
+          .trim()
+          .toLowerCase()
+          .normalize('NFKD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/&/g, ' and ')
+          .replace(/[^a-z0-9#+.\-\s]/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim();
+
+      // Map common tech names to logo filenames (public/assets/images/informatique/logos)
+      const TECH_LOGO_ALIASES = {
+        'java': 'java-logo.svg',
+        'apache netbeans': 'apachenetbeanside.svg',
+        'netbeans': 'apachenetbeanside.svg',
+        'c#': 'sharp.svg',
+        'csharp': 'sharp.svg',
+        'label studio': 'label-studio.svg',
+        'streamlit': 'streamlit.svg',
+        'jupyter notebook': 'jupyter.svg',
+        'jupyter-notebook': 'jupyter.svg',
+        'bootstrap': 'bootstrap.svg',
+        'django': 'django.svg',
+        'unity': 'unity.svg',
+        'qt': 'qt.svg',
+        'qt designer': 'qt.svg',
+        'qtdesigner': 'qt.svg',
+        'pyqt': 'qt.svg',
+        'pyqt5': 'qt.svg',
+        'pyqt6': 'qt.svg',
+        'whisper': 'whisper-ai-logo-vector.svg',
+        'openai whisper': 'whisper-ai-logo-vector.svg',
+        'three.js': 'threedotjs.svg',
+        'threejs': 'threedotjs.svg',
+        'node.js': 'nodedotjs.svg',
+        'nodejs': 'nodedotjs.svg',
+        'next.js': 'nextdotjs.svg',
+        'nextjs': 'nextdotjs.svg',
+        'chart.js': 'chartdotjs.svg',
+        'chartjs': 'chartdotjs.svg',
+        'github actions': 'githubactions.svg',
+        'github-actions': 'githubactions.svg',
+        'bash': 'gnubash.svg',
+        'shell': 'gnubash.svg',
+      };
+
+      const techLogoCandidates = (tech) => {
+        const key = normTech(tech);
+        if (!key) return [];
+
+        const dedupe = (arr) => Array.from(new Set(arr.filter(Boolean)));
+
+        // Derive simpler keys so "Python (langage principal)", "Bootstrap 5", etc. still match.
+        const baseKey = key
+          .replace(/\b(v?\d+(?:\.\d+)*)\b/g, ' ') // versions
+          .replace(/\bframework\b|\blangage\b|\bprincipal\b|\binterface\b|\bgraphique\b|\bbackend\b|\bfrontend\b/gi, ' ')
+          .replace(/\s+/g, ' ')
+          .trim();
+        const firstWord = baseKey.split(' ')[0] || '';
+        const firstTwo = baseKey.split(' ').slice(0, 2).join(' ').trim();
+        const reductions = dedupe([
+          key,
+          baseKey,
+          firstTwo,
+          firstWord,
+          baseKey.replace(/\bnotebook\b/g, '').replace(/\s+/g, ' ').trim(),
+          baseKey.replace(/\bengine\b|\bide\b/g, '').replace(/\s+/g, ' ').trim(),
+        ]);
+
+        const out = [];
+        const push = (f) => {
+          if (!f) return;
+          if (!out.includes(f)) out.push(f);
+        };
+
+        reductions.forEach((k) => {
+          if (!k) return;
+          const compact = k.replace(/\s+/g, '');
+          const dashed = k.replace(/\s+/g, '-');
+          const slug = dashed.replace(/[^a-z0-9\-]/g, '');
+          const compactSlug = compact.replace(/[^a-z0-9]/g, '');
+          const dotStyle = k.replace(/\s+/g, '').replace(/\./g, 'dot').replace(/[^a-z0-9]/g, '');
+
+          push(TECH_LOGO_ALIASES[k]);
+          push(`${slug}.svg`);
+          push(`${compactSlug}.svg`);
+          push(`${dotStyle}.svg`);
+        });
+
+        return out.filter(Boolean);
+      };
+
+      const splitTechTokens = (raw) => {
+        const s = String(raw ?? '');
+        return s
+          .replace(/\r?\n/g, ',')
+          .replace(/\s*(\/|\+|\|)\s*/g, ',')
+          .replace(/\s*&\s*/g, ',')
+          .replace(/\s+\bet\b\s+/gi, ',')
+          .replace(/\s+\band\b\s+/gi, ',')
+          .split(',')
+          .map((x) => x.trim())
+          .filter(Boolean);
+      };
+
+      const appendTechChip = (parent, techRaw) => {
+        const tech = String(techRaw ?? '').trim();
+        if (!tech) return;
+
+        const chip = document.createElement('span');
+        chip.className = 'nn-chip';
+        chip.title = tech;
+        chip.setAttribute('aria-label', tech);
+
+        const candidates = techLogoCandidates(tech);
+        if (!candidates.length) {
+          chip.textContent = tech;
+          parent.appendChild(chip);
+          return;
+        }
+
+        const img = document.createElement('img');
+        img.className = 'nn-chip__logo';
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        img.alt = '';
+        img.setAttribute('aria-hidden', 'true');
+
+        let idx = 0;
+        const setSrc = () => {
+          const f = candidates[idx];
+          img.src = `${baseUrl}assets/images/informatique/logos/${f}`;
+        };
+        img.addEventListener('error', () => {
+          idx += 1;
+          if (idx < candidates.length) {
+            setSrc();
+            return;
+          }
+          chip.classList.remove('nn-chip--logo');
+          chip.replaceChildren();
+          chip.textContent = tech;
+        });
+        img.addEventListener('load', () => {
+          chip.classList.add('nn-chip--logo');
+        });
+        setSrc();
+
+        chip.appendChild(img);
+        parent.appendChild(chip);
+      };
+
       const renderProjectDetail = (p) => {
         if (!pDetail) return;
         pDetail.replaceChildren();
@@ -754,12 +908,13 @@ const nodes: NodeData[] = [
         if (Array.isArray(p?.tools) && p.tools.length) {
           const tools = document.createElement('div');
           tools.className = 'nn-proj__chips';
-          p.tools.slice(0, 14).forEach((t) => {
-            const chip = document.createElement('span');
-            chip.className = 'nn-chip';
-            chip.textContent = String(t);
-            tools.appendChild(chip);
-          });
+          const flat = [];
+          p.tools
+            .slice(0, 14)
+            .forEach((t) => {
+              splitTechTokens(t).forEach((x) => flat.push(x));
+            });
+          flat.slice(0, 18).forEach((t) => appendTechChip(tools, t));
           head.appendChild(tools);
         }
 
@@ -1896,6 +2051,27 @@ const nodes: NodeData[] = [
       text-transform: none;
       font-size: 11px;
       color: rgba(246,246,246,0.86);
+    }
+
+    .nn-chip--logo {
+      padding: 6px 10px;
+      min-height: 34px;
+    }
+
+    .nn-chip__logo {
+      height: 22px;
+      width: auto;
+      max-width: 140px;
+      display: block;
+      object-fit: contain;
+      /* Most of these SVGs are black by default: force a readable light tint on dark UI. */
+      filter: brightness(0) invert(1);
+      opacity: 0.92;
+      transition: opacity 140ms ease;
+    }
+
+    .nn-chip:hover .nn-chip__logo {
+      opacity: 1;
     }
 
     .nn-chip--tag {

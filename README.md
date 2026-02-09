@@ -14,13 +14,9 @@ npm run dev
 
 ## TODO :
 
-[ACCUEIL] Animation lorsque l'on arrive sur la page.
+[GRAFFITI] Bruit de page qui se tourne lors du clic
 
-[INFORMATIQUE] On va rajouter des logos à la place des noms des technologies. Donc à la place, ce sera au survol du logo que le nom de la techno apparait
-
-[HIP-HOP] Mettre à jour le QR Code pour qu'il renvoie vers la playlist Youtube Music : https://music.youtube.com/playlist?list=PLyMcm67aKG0ZoMSzRv
-
-[ENVIRONNEMENT] Supprimer la page littérature et la remplacer par une page Environnement où je parle de mon investissement écologique (ADT, etc...)
+[ENVIRONNEMENT] TODO
 
 ## SONGS TO DOWNLOAD
 
