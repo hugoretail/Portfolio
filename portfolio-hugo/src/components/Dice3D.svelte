@@ -164,15 +164,23 @@
     return Math.max(min, Math.min(max, v));
   }
 
+  function getBoundsSize() {
+    const r = boundsEl?.getBoundingClientRect();
+    if (!r) return null;
+    return { w: Math.max(1, r.width), h: Math.max(1, r.height), left: r.left, top: r.top };
+  }
+
   function computeDiceSize() {
-    const w = window.innerWidth;
-    // Brutaliste, chunky, but not screen-hogging.
-    diceSize = clamp(Math.floor(w * 0.22), 140, 210);
+    const b = getBoundsSize();
+    const base = Math.min(b?.w ?? window.innerWidth, b?.h ?? 320);
+    // Smaller + always fits inside the frame.
+    diceSize = clamp(Math.floor(base * 0.52), 110, 160);
   }
 
   function keepInBounds() {
-    const maxX = Math.max(padding, window.innerWidth - diceSize - padding);
-    const maxY = Math.max(padding, window.innerHeight - diceSize - padding);
+    const b = getBoundsSize();
+    const maxX = Math.max(padding, (b?.w ?? window.innerWidth) - diceSize - padding);
+    const maxY = Math.max(padding, (b?.h ?? window.innerHeight) - diceSize - padding);
     pos.x = clamp(pos.x, padding, maxX);
     pos.y = clamp(pos.y, padding, maxY);
   }
@@ -201,8 +209,9 @@
     vel.x *= d;
     vel.y *= d;
 
-    const maxX = Math.max(padding, window.innerWidth - diceSize - padding);
-    const maxY = Math.max(padding, window.innerHeight - diceSize - padding);
+    const b = getBoundsSize();
+    const maxX = Math.max(padding, (b?.w ?? window.innerWidth) - diceSize - padding);
+    const maxY = Math.max(padding, (b?.h ?? window.innerHeight) - diceSize - padding);
 
     // Bounce on viewport edges.
     if (pos.x <= padding) {
@@ -596,9 +605,13 @@
   function onPointerMove(e: PointerEvent) {
     if (!dragging || dragPointerId !== e.pointerId) return;
 
+    const b = getBoundsSize();
+    const localX = e.clientX - (b?.left ?? 0);
+    const localY = e.clientY - (b?.top ?? 0);
+
     // Move dice with pointer.
-    pos.x = e.clientX - dragOffset.x;
-    pos.y = e.clientY - dragOffset.y;
+    pos.x = localX - dragOffset.x;
+    pos.y = localY - dragOffset.y;
     keepInBounds();
 
     // Estimate throw velocity from last delta.
@@ -672,12 +685,12 @@
     // Spawn in the bottom-right of the "Dé 3D" frame, then roam freely.
     requestAnimationFrame(() => {
       computeDiceSize();
-      const rect = boundsEl?.getBoundingClientRect();
-      if (rect) {
-        pos.x = rect.right - diceSize - padding;
-        pos.y = rect.bottom - diceSize - padding;
+      const b = getBoundsSize();
+      if (b) {
+        pos.x = b.w - diceSize - padding;
+        pos.y = b.h - diceSize - padding;
       } else {
-        pos.x = window.innerWidth - diceSize - padding;
+        pos.x = Math.max(padding, window.innerWidth - diceSize - padding);
         pos.y = Math.max(padding, window.innerHeight - diceSize - padding);
       }
       keepInBounds();
@@ -797,44 +810,44 @@
   </div>
 
   <!-- keeps layout space in embedded contexts (also used as spawn reference) -->
-  <div bind:this={boundsEl} class="brutal-border relative h-[320px] w-full bg-black/10" aria-hidden="true">
+  <div bind:this={boundsEl} class="brutal-border relative h-[320px] w-full overflow-hidden bg-black/10" aria-hidden="true">
     <div class="pointer-events-none absolute inset-0 bg-graffiti opacity-10" aria-hidden="true"></div>
     <div class="pointer-events-none absolute bottom-3 left-3 rounded bg-black/60 px-2 py-1 text-xs font-black uppercase tracking-wide">
       Laissez vous tenter !
     </div>
+
+    <button
+      bind:this={buttonEl}
+      type="button"
+      class="brutal-border absolute left-0 top-0 z-20 bg-black/30 text-left select-none touch-none"
+      aria-label="Lancer le dé 3D"
+      on:click={() => {
+        if (prefersReducedMotion) onClick();
+      }}
+      on:pointerdown={onPointerDown}
+      on:pointermove={onPointerMove}
+      on:pointerup={onPointerUp}
+      on:pointercancel={onPointerUp}
+      style={`width:${diceSize}px;height:${diceSize}px;opacity:${isReady ? 1 : 0};transform:translate3d(${pos.x}px, ${pos.y}px, 0) rotate(${clamp((vel.x + vel.y) * 0.0016, -6, 6)}deg);`}
+      class:cursor-grab={!dragging && !prefersReducedMotion}
+      class:cursor-grabbing={dragging}
+    >
+      <div class="pointer-events-none absolute inset-0 noise-overlay" aria-hidden="true"></div>
+      <div bind:this={container} class="absolute inset-0"></div>
+
+      <div bind:this={auraEl} class="pointer-events-none absolute inset-0 opacity-0" aria-hidden="true">
+        <div class="aura"></div>
+        <span class="spark"></span>
+        <span class="spark"></span>
+        <span class="spark"></span>
+        <span class="spark"></span>
+        <span class="spark"></span>
+        <span class="spark"></span>
+        <span class="spark"></span>
+        <span class="spark"></span>
+      </div>
+    </button>
   </div>
-
-  <button
-    bind:this={buttonEl}
-    type="button"
-    class="brutal-border fixed left-0 top-0 z-20 bg-black/30 text-left select-none touch-none"
-    aria-label="Lancer le dé 3D"
-    on:click={() => {
-      if (prefersReducedMotion) onClick();
-    }}
-    on:pointerdown={onPointerDown}
-    on:pointermove={onPointerMove}
-    on:pointerup={onPointerUp}
-    on:pointercancel={onPointerUp}
-    style={`width:${diceSize}px;height:${diceSize}px;opacity:${isReady ? 1 : 0};transform:translate3d(${pos.x}px, ${pos.y}px, 0) rotate(${clamp((vel.x + vel.y) * 0.0016, -6, 6)}deg);`}
-    class:cursor-grab={!dragging && !prefersReducedMotion}
-    class:cursor-grabbing={dragging}
-  >
-    <div class="pointer-events-none absolute inset-0 noise-overlay" aria-hidden="true"></div>
-    <div bind:this={container} class="absolute inset-0"></div>
-
-    <div bind:this={auraEl} class="pointer-events-none absolute inset-0 opacity-0" aria-hidden="true">
-      <div class="aura"></div>
-      <span class="spark"></span>
-      <span class="spark"></span>
-      <span class="spark"></span>
-      <span class="spark"></span>
-      <span class="spark"></span>
-      <span class="spark"></span>
-      <span class="spark"></span>
-      <span class="spark"></span>
-    </div>
-  </button>
 </div>
 
 <style>

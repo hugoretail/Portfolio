@@ -29,10 +29,10 @@
 
   function buildPath(height: number, scrollY: number, width: number) {
     // Anchor the thread near the left, but keep it in-bounds on small screens.
-    const xCenter = Math.max(18, Math.min(width * 0.12, 68));
+    const xCenter = Math.max(10, Math.min(width * 0.08, 46));
 
     // Scroll-driven wobble: subtle, organic, not “neon wave”.
-    const amplitude = Math.min(22, 6 + (scrollY % 700) / 55);
+    const amplitude = Math.min(16, 4 + (scrollY % 800) / 90);
 
     const points: Array<{ x: number; y: number }> = [];
     for (let i = 0; i < pointCount; i++) {
@@ -167,7 +167,7 @@
   function openThread() {
     // Component is client:load, but keep it defensive.
     if (typeof window === 'undefined') return;
-    window.location.assign(href);
+    window.location.assign(withBase(href));
   }
 
   function onHitKeydown(e: KeyboardEvent) {
@@ -182,7 +182,7 @@
 <a class="thread-access" href={withBase(href)}>Ouvrir la frise chronologique</a>
 
 <!-- Click zone: ONLY the stroke is interactive (rest of the page stays clickable) -->
-<div class="thread-hit fixed inset-0 z-30" aria-hidden="true">
+<div class="thread-hit fixed inset-0 z-50" aria-hidden="true">
   <svg
     bind:this={hitSvgEl}
     class="h-full w-full"
@@ -194,7 +194,7 @@
       d="M 40 0 C 40 0, 40 1000, 40 1000"
       fill="none"
       stroke="transparent"
-      stroke-width="22"
+      stroke-width="18"
       stroke-linecap="round"
       stroke-linejoin="round"
       tabindex="0"
@@ -207,7 +207,7 @@
 </div>
 
 <!-- Visual thread (never intercepts pointer events) -->
-<div class="pointer-events-none fixed inset-0 z-20">
+<div class="pointer-events-none fixed inset-0 z-10">
   <svg
     bind:this={svgEl}
     class="h-full w-full"

@@ -3,7 +3,7 @@ import '../styles/global.css';
 import RedThread from '../components/RedThread.svelte';
 import SiteHeader from '../components/SiteHeader.astro';
 import BrutalAnimatedBackground from '../components/BrutalAnimatedBackground.svelte';
-import { withBase } from '../lib/withBase';
+import { getBaseUrl, withBase } from '../lib/withBase';
 
 type Props = {
   title?: string;
@@ -29,6 +29,15 @@ const baseImages = {
   signature: withBase('/assets/images/signature.svg'),
   graffitiTexture: withBase('/assets/images/graffiti-texture.svg'),
 };
+
+const baseUrl = getBaseUrl();
+const basePrefix = baseUrl === '/' ? '' : baseUrl.slice(0, -1);
+const pathname = Astro.url?.pathname ?? '/';
+const pathnameNoBase = basePrefix && pathname.startsWith(basePrefix)
+  ? (pathname.slice(basePrefix.length) || '/')
+  : pathname;
+
+const showHomeButton = pathnameNoBase !== '/';
 ---
 <!doctype html>
 <html lang="fr">
@@ -69,12 +78,23 @@ const baseImages = {
     style={`--img-graffiti-wall: url('${baseImages.graffitiWall}'); --img-nature-loops: url('${baseImages.natureLoops}'); --img-graffiti-texture: url('${baseImages.graffitiTexture}');`}
     class={`min-h-screen bg-[color:var(--bg)] text-[color:var(--fg)] ${showAnimatedBackground ? 'has-animated-bg' : ''}`}
   >
+    {showHomeButton ? (
+      <a
+        href={withBase('/')}
+        class="fixed left-4 top-4 z-[70] inline-grid h-11 w-11 place-items-center brutal-border bg-black/60 text-[color:var(--fg)] shadow-[8px_8px_0_rgba(0,0,0,0.60)] transition hover:bg-black/70 hover:-translate-y-[1px] focus:outline-none focus:ring-2 focus:ring-[color:var(--acid-yellow)]/40 sm:left-5 sm:top-5"
+        aria-label="Accueil"
+        title="Accueil"
+      >
+        <span aria-hidden="true">⌂</span>
+      </a>
+    ) : null}
+
     {showAnimatedBackground ? <BrutalAnimatedBackground client:only="svelte" tint={backgroundTint} /> : null}
-    {showThread ? <RedThread client:load href={withBase('/frise')} /> : null}
+    {showThread ? <RedThread client:load href="/frise" /> : null}
 
     {showHeaderNav ? <SiteHeader /> : null}
 
-    <div class="relative">
+    <div class="relative z-30">
       <slot />
     </div>
   </body>

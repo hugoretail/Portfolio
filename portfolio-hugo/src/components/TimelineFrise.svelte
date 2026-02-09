@@ -394,7 +394,7 @@
   const DOT_H = 24;
   const ABOVE_STEP = 30;
   const RANGE_STEP = 76;
-  const RANGE_Y0 = threadY + 34;
+  const RANGE_Y0 = threadY + 54;
 
   function dotTopFor(lane: number) {
     // Always above the thread.
@@ -755,7 +755,7 @@
             {#if t.show}
               <text
                 x={t.x}
-                y={yy + 30}
+                y={threadY + 44}
                 text-anchor="middle"
                 fill="rgba(246,246,246,0.65)"
                 font-size="12"

@@ -17,7 +17,7 @@ const PLAYLIST_URL = 'https://music.youtube.com/playlist?list=PLyMcm67aKG0ZoMSzR
     <div class="noise-overlay" aria-hidden="true"></div>
 
     <div class="pointer-events-none absolute inset-0 opacity-80" aria-hidden="true">
-      <BrutalAnimatedBackground client:load density={10} tint="fire" cycleSeconds={22} />
+      <BrutalAnimatedBackground client:load density={6} tint="fire" cycleSeconds={26} />
     </div>
 
     <a class="bb-backbtn brutal-border" href={withBase('/moi')} aria-label="Retour à /moi" title="Retour">
@@ -64,7 +64,7 @@ const PLAYLIST_URL = 'https://music.youtube.com/playlist?list=PLyMcm67aKG0ZoMSzR
 
   .bb-backbtn {
     position: fixed;
-    top: 18px;
+    top: 70px;
     left: 18px;
     z-index: 60;
     display: inline-grid;
@@ -89,7 +89,7 @@ const PLAYLIST_URL = 'https://music.youtube.com/playlist?list=PLyMcm67aKG0ZoMSzR
 
   @media (max-width: 860px) {
     .bb-backbtn {
-      top: 12px;
+      top: 60px;
       left: 12px;
       width: 40px;
       height: 40px;

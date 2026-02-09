@@ -2,7 +2,7 @@
   import { onDestroy, onMount } from 'svelte';
 
   // LIGHT by default: few strokes + CSS dash animation.
-  export let density = 7;
+  export let density = 5;
   export let tint: 'fire' | 'mono' = 'fire';
   export let randomize = true;
   export let regenOnCycleEnd = true;
@@ -217,7 +217,7 @@
 
     const cycleSec = clamp(cycleSeconds, 10, 34);
 
-    const count = clamp(Math.round(density), 6, 14);
+    const count = clamp(Math.round(density), 4, 10);
     const strokes: Array<{
       d: string;
       stroke: string;

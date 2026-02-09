@@ -106,7 +106,6 @@ const pieces: GraffPiece[] = [
         <a class="bb-ig ig-float" href={INSTAGRAM_URL} target="_blank" rel="noreferrer">Instagram ↗</a>
         <div class="bb-top" aria-hidden="true">
           <div class="bb-top__left">GRAFFITI / BLACKBOOK</div>
-          <div class="bb-top__right">← → pour tourner</div>
         </div>
 
         <div class="bb-shell">
@@ -116,6 +115,13 @@ const pieces: GraffPiece[] = [
             tabindex="0"
             aria-label="Blackbook (L pour couper la lampe, flèches gauche/droite pour tourner)"
           >
+            <button class="bb-turn bb-turn--prev" type="button" aria-label="Page précédente" data-turn="prev">
+              <span aria-hidden="true">←</span>
+            </button>
+            <button class="bb-turn bb-turn--next" type="button" aria-label="Page suivante" data-turn="next">
+              <span aria-hidden="true">→</span>
+            </button>
+
             <div class="bb-book__spine" aria-hidden="true"></div>
 
             <div class="bb-book__halves">
@@ -174,7 +180,9 @@ const pieces: GraffPiece[] = [
             <a id="mIG" class="modal__ig" target="_blank" rel="noreferrer">Instagram ↗</a>
           </div>
           <div class="modal__media brutal-border">
-            <img id="mImg" alt="" loading="lazy" />
+            <div id="mZoom" class="modal__zoom" aria-label="Zoom de l’image (molette pour zoomer, glisser pour déplacer)" role="application">
+              <img id="mImg" alt="" loading="lazy" />
+            </div>
           </div>
           <div class="modal__foot">
             <div class="modal__hint">Esc pour fermer</div>
@@ -198,6 +206,7 @@ const pieces: GraffPiece[] = [
       const mTitle = document.getElementById('mTitle');
       const mSub = document.getElementById('mSub');
       const mImg = document.getElementById('mImg');
+      const mZoom = document.getElementById('mZoom');
       const mIG = document.getElementById('mIG');
 
       if (!page || !book || !left || !right || !flip || !torch || !templatesRoot) return;
@@ -233,6 +242,9 @@ const pieces: GraffPiece[] = [
           // ignore
         }
       };
+
+      // Always start on the first spread.
+      try { window.localStorage.removeItem(STORAGE_KEY); } catch {}
 
       // Lamp / torch
       let lampEnabled = true;
@@ -319,6 +331,15 @@ const pieces: GraffPiece[] = [
         mIG.setAttribute('href', ig || 'https://www.instagram.com/kamen___n/');
         mImg.src = src || fallbackImg;
         mImg.alt = title;
+
+        // Reset zoom on open
+        if (mZoom) {
+          mZoom.style.setProperty('--s', '1');
+          mZoom.style.setProperty('--tx', '0px');
+          mZoom.style.setProperty('--ty', '0px');
+          mZoom.classList.remove('is-zoomed', 'is-dragging');
+        }
+
         try {
           if (typeof modal.showModal === 'function') modal.showModal();
           else modal.setAttribute('open', 'true');
@@ -333,6 +354,87 @@ const pieces: GraffPiece[] = [
         modal.addEventListener('cancel', () => setModalOpen(false));
       }
 
+      // Modal zoom / pan
+      if (mZoom && mImg) {
+        const clamp2 = (v, a, b) => Math.max(a, Math.min(b, v));
+
+        const readZoom = () => {
+          const s = parseFloat(getComputedStyle(mZoom).getPropertyValue('--s'));
+          const tx = parseFloat(getComputedStyle(mZoom).getPropertyValue('--tx'));
+          const ty = parseFloat(getComputedStyle(mZoom).getPropertyValue('--ty'));
+          return {
+            s: Number.isFinite(s) && s > 0 ? s : 1,
+            tx: Number.isFinite(tx) ? tx : 0,
+            ty: Number.isFinite(ty) ? ty : 0
+          };
+        };
+
+        const setZoom = ({ s, tx, ty }) => {
+          const nextS = clamp2(s, 1, 4);
+          const r = mZoom.getBoundingClientRect();
+          const maxX = ((nextS - 1) * r.width) / 2;
+          const maxY = ((nextS - 1) * r.height) / 2;
+          const nextTx = clamp2(tx, -maxX, maxX);
+          const nextTy = clamp2(ty, -maxY, maxY);
+          mZoom.style.setProperty('--s', String(nextS));
+          mZoom.style.setProperty('--tx', `${nextTx}px`);
+          mZoom.style.setProperty('--ty', `${nextTy}px`);
+          mZoom.classList.toggle('is-zoomed', nextS > 1.01);
+        };
+
+        mZoom.addEventListener(
+          'wheel',
+          (e) => {
+            if (!modal?.open) return;
+            e.preventDefault();
+            const cur = readZoom();
+            const k = e.deltaY < 0 ? 1.12 : 0.90;
+            const nextS = cur.s * k;
+            if (nextS <= 1.02) {
+              setZoom({ s: 1, tx: 0, ty: 0 });
+              return;
+            }
+            setZoom({ s: nextS, tx: cur.tx, ty: cur.ty });
+          },
+          { passive: false }
+        );
+
+        let drag = null;
+        mZoom.addEventListener('pointerdown', (e) => {
+          if (!modal?.open) return;
+          const cur = readZoom();
+          if (cur.s <= 1.01) return;
+          drag = { id: e.pointerId, x0: e.clientX, y0: e.clientY, tx0: cur.tx, ty0: cur.ty };
+          mZoom.classList.add('is-dragging');
+          try { mZoom.setPointerCapture(e.pointerId); } catch {}
+        });
+
+        mZoom.addEventListener('pointermove', (e) => {
+          if (!drag || e.pointerId !== drag.id) return;
+          const dx = e.clientX - drag.x0;
+          const dy = e.clientY - drag.y0;
+          const cur = readZoom();
+          setZoom({ s: cur.s, tx: drag.tx0 + dx, ty: drag.ty0 + dy });
+        });
+
+        const endDrag = (e) => {
+          if (!drag || e.pointerId !== drag.id) return;
+          drag = null;
+          mZoom.classList.remove('is-dragging');
+        };
+
+        mZoom.addEventListener('pointerup', endDrag);
+        mZoom.addEventListener('pointercancel', endDrag);
+
+        mZoom.addEventListener('dblclick', (e) => {
+          if (!modal?.open) return;
+          e.preventDefault();
+          const cur = readZoom();
+          if (cur.s > 1.01) setZoom({ s: 1, tx: 0, ty: 0 });
+          else setZoom({ s: 2, tx: 0, ty: 0 });
+        });
+      }
+
       // Book rendering
       const makeBlank = (side) => {
         const el = document.createElement('div');
@@ -341,7 +443,7 @@ const pieces: GraffPiece[] = [
           el.innerHTML = `
             <div class="blank__mark">Kamen</div>
             <div class="blank__sub">BLACKBOOK</div>
-            <div class="blank__fine">Navigue sur les pages en cliquant, ou en utilisant les flèches ~</div>
+            <div class="blank__fine">La lumière peut être désactivée en appuyant sur "L".</div>
           `;
         } else {
           el.innerHTML = `
@@ -365,7 +467,7 @@ const pieces: GraffPiece[] = [
 
       // rightIdx is the index of the RIGHT page of the current spread.
       // Special case: rightIdx === sheets.length means "blank right page" (end / back cover).
-      let rightIdx = clamp(readSavedPage(), 0, sheets.length);
+      let rightIdx = 0;
       let flipping = false;
       let activeTurn = null;
       let turnAnim = null;
@@ -553,6 +655,21 @@ const pieces: GraffPiece[] = [
       renderSpread();
       flip.hidden = true;
 
+      // Explicit turn buttons (more discoverable than the click-halves affordance)
+      book.querySelector('[data-turn="prev"]')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (modal?.open) return;
+        if (flipping) return;
+        turnPrev();
+      });
+
+      book.querySelector('[data-turn="next"]')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (modal?.open) return;
+        if (flipping) return;
+        turnNext();
+      });
+
       const isInteractiveTarget = (t) => !!t?.closest?.('a, button, input, textarea, select, [data-open]');
 
       book.addEventListener('click', (e) => {
@@ -719,7 +836,7 @@ const pieces: GraffPiece[] = [
 
     .bb-backbtn {
       position: fixed;
-      top: 18px;
+      top: 70px;
       left: 18px;
       z-index: 60;
       display: inline-grid;
@@ -742,6 +859,39 @@ const pieces: GraffPiece[] = [
       transform: translateY(-1px);
     }
 
+    .bb-turn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 8;
+      display: inline-grid;
+      place-items: center;
+      width: 54px;
+      height: 64px;
+      border: 2px solid rgba(246,246,246,0.45);
+      background: rgba(0,0,0,0.34);
+      color: rgba(246,246,246,0.88);
+      font-weight: 900;
+      font-size: 22px;
+      line-height: 1;
+      box-shadow: 10px 10px 0 rgba(0,0,0,0.55);
+      transition: background 140ms ease, transform 140ms ease;
+      cursor: pointer;
+    }
+
+    .bb-turn:hover {
+      background: rgba(0,0,0,0.48);
+      transform: translateY(calc(-50% - 1px));
+    }
+
+    .bb-turn--prev {
+      left: 12px;
+    }
+
+    .bb-turn--next {
+      right: 12px;
+    }
+
     @media (max-width: 860px) {
       .ig-float {
         top: 12px;
@@ -752,10 +902,15 @@ const pieces: GraffPiece[] = [
       }
 
       .bb-backbtn {
-        top: 12px;
+        top: 60px;
         left: 12px;
         width: 40px;
         height: 40px;
+      }
+
+      .bb-turn {
+        width: 48px;
+        height: 58px;
       }
     }
 
@@ -1185,7 +1340,8 @@ const pieces: GraffPiece[] = [
       color: rgba(0,0,0,0.25);
     }
 
-    .modal { border: none; background: transparent; padding: 0; max-width: none; max-height: none; }
+    .modal { border: none; background: transparent; padding: 0; max-width: none; max-height: none; margin: 0; }
+    .modal[open] { position: fixed; inset: 0; }
     .modal::backdrop { background: rgba(0,0,0,0.68); }
     .modal__backdrop {
       width: 100%;
@@ -1228,7 +1384,32 @@ const pieces: GraffPiece[] = [
       box-shadow: 8px 8px 0 rgba(0,0,0,0.55);
     }
     .modal__media { margin-top: 12px; background: rgba(0,0,0,0.55); }
-    .modal__media img { display: block; width: 100%; height: min(60vh, 520px); object-fit: cover; opacity: 0.96; }
+    .modal__zoom {
+      width: 100%;
+      height: min(60vh, 520px);
+      overflow: hidden;
+      touch-action: pan-y;
+      display: grid;
+      place-items: center;
+      cursor: zoom-in;
+      --s: 1;
+      --tx: 0px;
+      --ty: 0px;
+    }
+    .modal__zoom.is-zoomed { cursor: grab; }
+    .modal__zoom.is-zoomed.is-dragging { cursor: grabbing; }
+    .modal__zoom img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      opacity: 0.96;
+      transform: translate3d(var(--tx), var(--ty), 0) scale(var(--s));
+      transform-origin: center;
+      will-change: transform;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
     .modal__foot { margin-top: 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
     .modal__hint { font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(246,246,246,0.58); }
 
