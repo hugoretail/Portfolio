@@ -3,7 +3,7 @@
   import { onDestroy, onMount } from 'svelte';
   import { withBase } from '../lib/withBase';
 
-  export let src = withBase('/assets/images/signature.svg');
+  export let src = withBase('/assets/images/signature.svgz');
   export let stroke = '#FF0000';
   export let duration = 1.8;
 
@@ -13,13 +13,45 @@
   let lastReplayAt = 0;
   let isDrawing = false;
 
+  function isGzip(buf: ArrayBuffer) {
+    if (buf.byteLength < 2) return false;
+    const u = new Uint8Array(buf);
+    return u[0] === 0x1f && u[1] === 0x8b;
+  }
+
+  async function loadSvgText(url: string) {
+    const res = await fetch(url);
+    const buf = await res.arrayBuffer();
+
+    if (isGzip(buf)) {
+      if (typeof DecompressionStream === 'undefined') {
+        throw new Error('SVGZ gzip not supported by this browser');
+      }
+      const stream = new Blob([buf]).stream().pipeThrough(new DecompressionStream('gzip'));
+      return await new Response(stream).text();
+    }
+
+    return new TextDecoder('utf-8').decode(buf);
+  }
+
   async function loadAndAnimate() {
     if (!host) return;
 
     isDrawing = true;
 
-    const res = await fetch(src);
-    const svgText = await res.text();
+    let svgText = '';
+    try {
+      svgText = await loadSvgText(src);
+    } catch {
+      // Fallback: if someone passes a .svgz but the browser can't decompress it,
+      // try the uncompressed neighbor (.svg).
+      if (src.endsWith('.svgz')) {
+        const fallback = src.slice(0, -1);
+        svgText = await loadSvgText(fallback);
+      } else {
+        throw new Error('Failed to load signature SVG');
+      }
+    }
 
     host.innerHTML = svgText;
 
