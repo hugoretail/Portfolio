@@ -20,6 +20,8 @@ npm run dev
 
 [ENVIRONNEMENT] TODO
 
+[ACCUEIL] Check si le svg a été convert en gif : https://convertio.co/ja/download/24e9216cdfb87edac146dc10b34a661e840978/
+
 ## SONGS TO DOWNLOAD
 
 - https://music.youtube.com/watch?v=ijYcnszH0Fk&si=r0teSdU0PB3CcIIo

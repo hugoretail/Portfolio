@@ -19,7 +19,7 @@
   };
 
   // “Aujourd’hui” (page statique) : février 2026
-  const TODAY = '2026-02-08';
+  const TODAY = '2026-02-10';
 
   // Début de frise : naissance (ce n'est pas un événement, juste l'origine)
   const ORIGIN = '2005-01-01';
@@ -84,7 +84,7 @@
       date: '2024-09-01',
       title: 'Fresque participative — Campulsations',
       description:
-        "Artiste sur une fresque participative (CROUS, Pessac). Avec Love Is Wall, en partenariat avec Vibrations Urbaines (street de Pessac). Fresque réalisée avec l’artiste Corbeaux Suave."
+        "Artiste sur une fresque participative (CROUS, Pessac). Avec l'association Love Is Wall, en partenariat avec Vibrations Urbaines (street de Pessac). Fresque réalisée avec l’artiste Corbeaux Suave."
     },
     {
       kind: 'point',
@@ -92,6 +92,18 @@
       title: 'Fresque participative — Campulsations (bis)',
       description:
         "Septembre 2025 · Avec Love Is Wall, en partenariat avec Vibrations Urbaines. Fresque réalisée avec l’artiste Corbeaux Suave."
+    },
+    {
+      kind: 'point',
+      date: '2025-08-01',
+      title: 'Animateur BAFA en colo — La Teste de Buch',
+      description: 'Août 2025 · Camp « Les Bonnes Vacances ».'
+    },
+    {
+      kind: 'point',
+      date: '2024-12-01',
+      title: 'JLPT N2 — Japonais',
+      description: 'Décembre 2024 · Passage du JLPT N2 (test de japonais) : 82/180 points.'
     }
   ];
 
@@ -365,7 +377,7 @@
 
   function formatMonthLabel(s: string) {
     const p = parseDate(s);
-    const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+    const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
     return `${months[p.m - 1]} ${p.y}`;
   }
 
