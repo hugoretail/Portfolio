@@ -6,12 +6,11 @@ import svelte from '@astrojs/svelte';
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 
-const isProd = process.env.NODE_ENV === 'production' || process.env.CI === 'true';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://hugoretail.github.io',
-  base: isProd ? '/Portfolio' : '/',
+  site: 'https://hugo-retail.fr',
+  base: '/',
   integrations: [svelte(), react()],
 
   vite: {
