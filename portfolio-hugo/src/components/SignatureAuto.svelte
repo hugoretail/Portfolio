@@ -9,10 +9,6 @@
 
   let host: HTMLDivElement | null = null;
   let tl: gsap.core.Timeline | null = null;
-
-  let imgEl: HTMLImageElement | null = null;
-
-  let lastReplayAt = 0;
   let isDrawing = false;
 
   const isSvgLike = (value: string) => /\.svg(z)?(\?.*)?$/i.test(value);
@@ -38,7 +34,6 @@
       img.style.objectFit = 'contain';
       img.style.display = 'block';
       host.appendChild(img);
-      imgEl = img;
       isDrawing = false;
       return;
     }
@@ -106,26 +101,6 @@
     });
   }
 
-  function replay() {
-    const now = performance.now();
-    if (isDrawing) return;
-    if (now - lastReplayAt < 650) return;
-    lastReplayAt = now;
-
-    if (imgEl && imgEl.src) {
-      try {
-        const u = new URL(imgEl.src, window.location.href);
-        u.searchParams.set('r', String(Math.floor(now)));
-        imgEl.src = u.toString();
-        return;
-      } catch {
-        // ignore and fallback
-      }
-    }
-
-    loadAndAnimate();
-  }
-
   onMount(() => {
     loadAndAnimate();
   });
@@ -141,18 +116,14 @@
     <div class="font-hand text-lg text-[color:var(--muted)]">Kamen</div>
   </div>
 
-  <button
-    type="button"
+  <div
     class="brutal-border-red relative h-[280px] w-full bg-black/20 p-3 text-left"
-    aria-label="Signature animée (survol = rejouer)"
-    on:pointerenter={replay}
-    on:focus={replay}
+    aria-label="Signature animée"
   >
     <div class="pointer-events-none absolute inset-0 bg-graffiti opacity-10" aria-hidden="true"></div>
     <div class="pointer-events-none absolute inset-0 paper-grain" aria-hidden="true"></div>
 
     <div bind:this={host} class="relative h-full w-full" aria-label="Signature animée"></div>
 
-
-  </button>
+  </div>
 </div>

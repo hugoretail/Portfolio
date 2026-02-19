@@ -81,7 +81,7 @@ const showHomeButton = pathnameNoBase !== '/';
     {showHomeButton ? (
       <a
         href={withBase('/')}
-        class="fixed left-4 top-4 z-[70] inline-grid h-11 w-11 place-items-center brutal-border bg-black/60 text-[color:var(--fg)] shadow-[8px_8px_0_rgba(0,0,0,0.60)] transition hover:bg-black/70 hover:-translate-y-[1px] focus:outline-none focus:ring-2 focus:ring-[color:var(--acid-yellow)]/40 sm:left-5 sm:top-5"
+        class="fixed left-[18px] top-[18px] z-[70] inline-grid h-11 w-11 place-items-center bg-black/60 text-[rgba(246,246,246,0.88)] font-black text-[18px] leading-none no-underline border-2 border-[rgba(246,246,246,0.45)] shadow-[8px_8px_0_rgba(0,0,0,0.60)] transition hover:bg-black/70 hover:-translate-y-[1px] focus:outline-none focus:ring-2 focus:ring-[color:var(--acid-yellow)]/40 max-[860px]:left-[12px] max-[860px]:top-[12px] max-[860px]:h-10 max-[860px]:w-10"
         aria-label="Accueil"
         title="Accueil"
       >
@@ -94,7 +94,7 @@ const showHomeButton = pathnameNoBase !== '/';
 
     {showHeaderNav ? <SiteHeader /> : null}
 
-    <div class="relative z-30">
+    <div class="relative">
       <slot />
     </div>
   </body>

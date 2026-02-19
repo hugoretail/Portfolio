@@ -37,7 +37,7 @@
   export let floating = true;
   $: floating;
   let diceSize = 240;
-  const padding = 14;
+  const padding = 0;
   // Heavier feel: less bounce, more damping.
   const restitution = 0.56;
   const damping = 0.965;
@@ -819,7 +819,7 @@
     <button
       bind:this={buttonEl}
       type="button"
-      class="brutal-border absolute left-0 top-0 z-20 bg-black/30 text-left select-none touch-none"
+      class="absolute left-0 top-0 z-20 border-0 bg-black/30 text-left select-none touch-none"
       aria-label="Lancer le dé 3D"
       on:click={() => {
         if (prefersReducedMotion) onClick();

@@ -27,7 +27,7 @@
 
   const pointCount = 9;
 
-  function buildPath(height: number, scrollY: number, width: number) {
+  function buildPath(height: number, scrollY: number, width: number, topPad = 0) {
     // Anchor the thread near the left, but keep it in-bounds on small screens.
     const xCenter = Math.max(10, Math.min(width * 0.08, 46));
 
@@ -37,7 +37,7 @@
     const points: Array<{ x: number; y: number }> = [];
     for (let i = 0; i < pointCount; i++) {
       const t = i / (pointCount - 1);
-      const y = t * height;
+      const y = topPad + t * Math.max(1, height - topPad);
       const wobble = Math.sin(t * Math.PI * 2 + scrollY * 0.01) * amplitude;
       const x = xCenter + wobble;
       points.push({ x, y });
@@ -70,12 +70,14 @@
     hitSvgEl?.setAttribute('viewBox', `0 0 ${width} ${height}`);
 
     const d = buildPath(height, motionY, width);
+    const SAFE_TOP = 132; // keep the top-left navigation buttons clickable
+    const dHit = buildPath(height, motionY, width, SAFE_TOP);
     pathEl.setAttribute('d', d);
     pathShadowEl?.setAttribute('d', d);
     pathHighlightEl?.setAttribute('d', d);
     pathDarkEl?.setAttribute('d', d);
     pathLightEl?.setAttribute('d', d);
-    pathHitEl?.setAttribute('d', d);
+    pathHitEl?.setAttribute('d', dHit);
 
     // Fake rope twist: slide the stripe pattern as you scroll.
     const twist = (motionY * 0.25) % 32;
@@ -207,7 +209,7 @@
 </div>
 
 <!-- Visual thread (never intercepts pointer events) -->
-<div class="pointer-events-none fixed inset-0 z-10">
+<div class="pointer-events-none fixed inset-0 z-40">
   <svg
     bind:this={svgEl}
     class="h-full w-full"
