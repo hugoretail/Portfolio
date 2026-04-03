@@ -47,10 +47,38 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+      contents: read
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Preflight Pages configuration
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              const { data } = await github.rest.repos.getPages({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+              });
+
+              core.info(`Pages preflight: ${JSON.stringify({
+                html_url: data.html_url,
+                cname: data.cname,
+                build_type: data.build_type,
+                source: data.source,
+              }, null, 2)}`);
+
+              if (data.build_type !== 'workflow') {
+                core.setFailed('GitHub Pages source is not set to GitHub Actions. Go to Settings > Pages > Source and select GitHub Actions.');
+              }
+            } catch (error) {
+              core.setFailed(`Failed to read GitHub Pages configuration via API: ${error.message}`);
+            }
+
       - name: Deploy
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
