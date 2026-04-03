@@ -813,7 +813,7 @@ Résultat :
     - Accessibilité et performance sur tous supports
     - Internationalisation et adaptation à d’autres contextes
     - Automatisation de la mise à jour des contenus
-
+  
 Outils :
 - Astro (framework statique)
 - Svelte (composants dynamiques)
