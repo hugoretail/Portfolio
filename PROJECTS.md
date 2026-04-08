@@ -2,7 +2,6 @@
 
 ### Prompt
 
-Regarde tout ce projet pour me faire le RETEX simple. Liste donc :
 - Outils Technologiques
 - Compétences
 - Résultat (A garder / A améliorer)
