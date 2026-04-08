@@ -1,6 +1,5 @@
 ## Projets
 
-### Prompt
 
 - Outils Technologiques
 - Compétences
